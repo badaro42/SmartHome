@@ -97,6 +97,7 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
@@ -105,11 +106,7 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.living_room),
                         getString(R.string.kitchen),
                         getString(R.string.bathroom),
-                        getString(R.string.hall),
-                        getString(R.string.pantry),
-                        getString(R.string.office),
-                        getString(R.string.bedroom),
-                        getString(R.string.basement)
+                        getString(R.string.bedroom)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

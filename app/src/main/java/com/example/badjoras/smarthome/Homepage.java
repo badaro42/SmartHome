@@ -5,18 +5,14 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class Homepage extends Activity
@@ -45,42 +41,57 @@ public class Homepage extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+
+        Toast.makeText(getApplicationContext(), " " + position, Toast.LENGTH_SHORT).show();
+        switch (position)
+        {
+
+            case 0:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, LivingRoom.newInstance())
+                        .commit();
+                break;
+            case 1:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, Kitchen.newInstance())
+                        .commit();
+                break;
+            case 2:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, Bathroom.newInstance())
+                        .commit();
+                break;
+            case 3:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, Bedroom.newInstance())
+                        .commit();
+                break;
+        }
+
+
+
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
-            case 1:
+            case 0:
                 mTitle = getString(R.string.living_room);
                 break;
-            case 2:
+            case 1:
                 mTitle = getString(R.string.kitchen);
                 break;
-            case 3:
+            case 2:
                 mTitle = getString(R.string.bathroom);
                 break;
-            case 4:
-                mTitle = getString(R.string.hall);
-                break;
-            case 5:
-                mTitle = getString(R.string.pantry);
-                break;
-            case 6:
-                mTitle = getString(R.string.office);
-                break;
-            case 7:
+            case 3:
                 mTitle = getString(R.string.bedroom);
-                break;
-            case 8:
-                mTitle = getString(R.string.basement);
                 break;
         }
     }
