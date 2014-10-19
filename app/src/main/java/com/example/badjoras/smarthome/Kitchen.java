@@ -12,20 +12,7 @@ import android.view.ViewGroup;
  */
 public class Kitchen extends Fragment {
 
-        public static Kitchen newInstance(){
-            Kitchen fragment = new Kitchen();
-            return fragment;
-        }
         public Kitchen(){}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-          /*  getActivity().setContentView(R.layout.office);
-
-            View view = getActivity().findViewById(R.id.office_layout);
-            view.setBackgroundColor(0xFF00FF);*/
-        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,12 +21,5 @@ public class Kitchen extends Fragment {
                     false);
             return rootView;
         }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((Homepage) activity).onSectionAttached(2);
-        }
-
 
 }

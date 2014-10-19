@@ -12,19 +12,7 @@ import android.view.ViewGroup;
  */
 public class Bedroom extends Fragment {
 
-    public static Bedroom newInstance(){
-        Bedroom fragment = new Bedroom();
-        return fragment;
-    }
-    public Bedroom(){}
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-          /*  getActivity().setContentView(R.layout.office);
-
-            View view = getActivity().findViewById(R.id.office_layout);
-            view.setBackgroundColor(0xFF00FF);*/
+    public Bedroom() {
     }
 
     @Override
@@ -33,11 +21,5 @@ public class Bedroom extends Fragment {
         View rootView = inflater.inflate(R.layout.bedroom, container,
                 false);
         return rootView;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ((Homepage) activity).onSectionAttached(4);
     }
 }

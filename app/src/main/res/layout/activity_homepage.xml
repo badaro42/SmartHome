@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Homepage">
+    android:layout_height="match_parent">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
     <FrameLayout
-        android:id="@+id/container"
+        android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -21,11 +20,18 @@
          android:layout_gravity="left" instead. -->
     <!-- The drawer is given a fixed width in dp and extends the full height of
          the container. -->
-    <fragment android:id="@+id/navigation_drawer"
-        android:layout_width="@dimen/navigation_drawer_width"
+
+
+    <ListView
+        android:id="@+id/list_slidermenu"
+        android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:name="com.example.badjoras.smarthome.NavigationDrawerFragment"
-        tools:layout="@layout/fragment_navigation_drawer" />
+        android:choiceMode="singleChoice"
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/drawer_list_selector"
+        android:background="@color/list_background"/>
+
 
 </android.support.v4.widget.DrawerLayout>
