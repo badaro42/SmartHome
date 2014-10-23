@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 /**
  * Created by Diogo on 17/10/14.
  */
-public class Kitchen extends Fragment {
+public class Blinds extends Fragment {
 
-        public Kitchen(){}
+        public Blinds(){}
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,

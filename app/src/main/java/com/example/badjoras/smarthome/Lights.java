@@ -10,10 +10,10 @@ import android.app.Activity;
 /**
  * Created by Rafael on 16/10/2014.
  */
-public class LivingRoom extends Fragment {
+public class Lights extends Fragment {
 
 
-    public LivingRoom() {
+    public Lights() {
     }
 
     @Override

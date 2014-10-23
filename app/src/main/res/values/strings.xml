@@ -2,31 +2,15 @@
 <resources>
 
     <string name="app_name">SmartHome</string>
-    <string name="kitchen">Cozinha</string>
-    <string name="bathroom">Casa de Banho</string>
-    <string name="living_room">Sala</string>
-    <string name="bedroom">Quarto</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
-    <string name="action_settings">Settings</string>
+    <string name="kitchen">Kitchen</string>
+    <string name="bathroom">Bathroom</string>
+    <string name="living_room">Living Room</string>
+    <string name="bedroom">Bedroom</string>
+    <string name="choose_room">Change room...</string>
+    <string name="settings_str">Settings</string>
+    <string name="help_str">Help</string>
+    <string name="about_str">About</string>
 
-
-    <!-- Nav Drawer Menu Items -->
-    <string-array name="nav_drawer_items">
-        <item >Cozinha</item>
-        <item >Casa de Banho</item>
-        <item >Sala</item>
-        <item >Quarto</item>
-    </string-array>
-
-    <!--manter a mesma ordem dos titulos-->
-    <array name="nav_drawer_icons">
-        <item>@drawable/ic_home</item>
-        <item>@drawable/ic_people</item>
-        <item>@drawable/ic_photos</item>
-        <item>@drawable/ic_pages</item>
-    </array>
 
     <!-- Content Description -->
     <!--nao sei para que serve mas fica-->

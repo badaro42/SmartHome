@@ -1,0 +1,36 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item1"
+        android:showAsAction="ifRoom|withText"
+        android:title="Change room...">
+        <menu>
+            <item
+                android:id="@+id/room_menu_kitchen"
+                android:title="@string/kitchen" />
+            <item
+                android:id="@+id/room_menu_bathroom"
+                android:title="@string/bathroom" />
+            <item
+                android:id="@+id/room_menu_living_room"
+                android:title="@string/living_room" />
+            <item
+                android:id="@+id/room_menu_bedroom"
+                android:title="@string/bedroom" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/setting_submenu"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/settings_str" />
+    <item
+        android:id="@+id/help_submenu"
+        android:orderInCategory="200"
+        android:showAsAction="never"
+        android:title="@string/help_str" />
+    <item
+        android:id="@+id/about_submenu"
+        android:orderInCategory="300"
+        android:showAsAction="never"
+        android:title="@string/about_str" />
+</menu>
