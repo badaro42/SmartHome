@@ -2,19 +2,14 @@ package com.example.badjoras.smarthome;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -69,8 +64,8 @@ public class AirConditioner extends Fragment {
 //        rootView.setLayoutParams(params);
 
 
-        textField = (EditText) rootView.findViewById(R.id.editText1); //reference to the text field
-        button = (Button) rootView.findViewById(R.id.button1);   //reference to the send button
+        textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
+        button = (Button) rootView.findViewById(R.id.button_airConditioner);   //reference to the send button
 
         //Button press event listener
         button.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +77,8 @@ public class AirConditioner extends Fragment {
 
                 try {
 //                    client = new Socket("192.168.2.2", 4444);  //ip da rede eduroam
-                    client = new Socket("10.171.240.101", 4444);  //este ip é do hotspot BALELE
+                    client = new Socket("192.168.1.78", 4444);  //ip de casa
+//                    client = new Socket("10.171.240.101", 4444);  //este ip é do hotspot BALELE
                     printwriter = new PrintWriter(client.getOutputStream(),true);
                     printwriter.write(messsage);  //write the message to output stream
 

@@ -14,6 +14,9 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends FragmentActivity {
 
     private static final String AIR_CONDITIONER = "Ar Condicionado";
@@ -33,6 +36,8 @@ public class MainActivity extends FragmentActivity {
     private static final String BEDROOM = "Bedroom";
     private static final String LIVING_ROOM = "Living Room";
 
+    private List<Fragment> fragment_list;
+
     //TODO rever estas features mais tarde
     //por enquanto estão à toa apenas para efeitos de teste
     private String[] kitchen_features = new String[]{
@@ -43,6 +48,8 @@ public class MainActivity extends FragmentActivity {
 
     private String[] bathroom_features = new String[]{
             SPRINKLER, AIR_CONDITIONER, LIGHTS, BLINDS, GARAGE_DOOR, SCHEDULED_FUNCTIONS, STOVE_OVEN};
+
+    private String[] living_room_features = new String[]{};
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
@@ -58,6 +65,13 @@ public class MainActivity extends FragmentActivity {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        //calcular o maximo de features que teremos em qualquer momento no ecra
+        int max_lenght1 = Math.max(bedroom_features.length, bathroom_features.length);
+        int max_length2 = Math.max(kitchen_features.length, living_room_features.length);
+        int max_length_final = Math.max(max_lenght1, max_length2);
+
+        fragment_list = new ArrayList<Fragment>(max_length_final);
 
         refreshTabs();
 
@@ -116,8 +130,13 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void refreshTabs() {
+
+        for(Fragment frag : fragment_list) {
+            getSupportFragmentManager().beginTransaction().remove(frag).commit();
+        }
+
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        tabs.setTextSize(28);
+//        tabs.setTextSize(28);
         pager = (ViewPager) findViewById(R.id.pager);
         app_fm = getSupportFragmentManager();
         adapter = new MyPagerAdapter(app_fm);
@@ -233,7 +252,7 @@ public class MainActivity extends FragmentActivity {
         public Fragment getItem(int position) {
             Log.v("GET_ITEM:", String.valueOf(position));
 
-//            Fragment myfrag = null;
+            Fragment myfrag = null;
             String feature;
             String chosen_arr;
             String[] temp_arr;
@@ -260,16 +279,19 @@ public class MainActivity extends FragmentActivity {
             Log.v("chosen_array", chosen_arr);
             Log.v("feature_name", feature);
 
-            if (feature.equals(AIR_CONDITIONER))
-                return AirConditioner.newInstance(position, temp_arr[position]);
-//                myfrag = AirConditioner.newInstance(position, temp_arr[position]);
-            else if (feature.equals(PANTRY_STOCK))
-                return PantryStock.newInstance(position, temp_arr[position]);
-//                myfrag = PantryStock.newInstance(position, temp_arr[position]);
-            else
-                return PageFragment.newInstance(position, temp_arr[position]);
-//                myfrag = PageFragment.newInstance(position, temp_arr[position]);
+            if (feature.equals(AIR_CONDITIONER)) {
+                myfrag =  AirConditioner.newInstance(position, temp_arr[position]);
 
+            }
+            else if (feature.equals(PANTRY_STOCK)) {
+                myfrag = PantryStock.newInstance(position, temp_arr[position]);
+            }
+            else {
+                myfrag = PageFragment.newInstance(position, temp_arr[position]);
+            }
+
+            fragment_list.add(myfrag);
+            return myfrag;
 //            app_fm.beginTransaction().replace(R.id.pager, myfrag).commit();
 //            return myfrag;
         }
