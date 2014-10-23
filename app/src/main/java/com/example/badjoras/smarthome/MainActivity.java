@@ -27,6 +27,11 @@ public class MainActivity extends FragmentActivity {
     private static final String STOVE_OVEN = "Fogão/Forno";
     private static final String SPRINKLER = "Aspersores da Rega";
 
+    private static final String BATHROOM = "Bathroom";
+    private static final String KITCHEN = "Kitchen";
+    private static final String BEDROOM = "Bedroom";
+    private static final String LIVING_ROOM = "Living Room";
+
     //TODO rever estas features mais tarde
     //por enquanto estão à toa apenas para efeitos de teste
     private String[] kitchen_features = new String[]{
@@ -41,6 +46,7 @@ public class MainActivity extends FragmentActivity {
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
     private MyPagerAdapter adapter;
+    private FragmentManager app_fm;
 
     private CharSequence m_title;
 
@@ -50,12 +56,6 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_homepage);
 
         refreshTabs();
-
-        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                .getDisplayMetrics());
-        pager.setPageMargin(pageMargin);
-
-        tabs.setViewPager(pager);
 
         m_title = getTitle();
 
@@ -115,9 +115,16 @@ public class MainActivity extends FragmentActivity {
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setTextSize(28);
         pager = (ViewPager) findViewById(R.id.pager);
-        adapter = new MyPagerAdapter(getSupportFragmentManager());
+        app_fm = getSupportFragmentManager();
+        adapter = new MyPagerAdapter(app_fm);
 
         pager.setAdapter(adapter);
+
+        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
+                .getDisplayMetrics());
+        pager.setPageMargin(pageMargin);
+
+        tabs.setViewPager(pager);
     }
 
     @Override
@@ -191,44 +198,76 @@ public class MainActivity extends FragmentActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
-            if (m_title == "Bathroom") {
-                return bathroom_features[position];
+            //Log.v("str_eq_bathroom", String.valueOf(m_title == BATHROOM));
+            if(m_title != null) {
+                if (m_title.toString().equals(BATHROOM)) {
+                    Log.v("getpagetitle", "loli isto é uma casa de banho");
+                    return bathroom_features[position];
+                } else if (m_title.toString().equals(BEDROOM))
+                    return bedroom_features[position];
+                else
+                    return kitchen_features[position];
             }
-            else if (m_title == "Bedroom")
-                return bedroom_features[position];
-            else
-                return kitchen_features[position];
+            return kitchen_features[position];
         }
 
         @Override
         public int getCount() {
             //Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
-            if (m_title == "Bathroom")
-                return bathroom_features.length;
-            else if (m_title == "Bedroom")
-                return bedroom_features.length;
-            else
-                return kitchen_features.length;
+            if(m_title != null) {
+                if (m_title.toString().equals(BATHROOM))
+                    return bathroom_features.length;
+                else if (m_title.toString().equals(BEDROOM))
+                    return bedroom_features.length;
+                else
+                    return kitchen_features.length;
+            }
+            return kitchen_features.length;
         }
 
         @Override
         public Fragment getItem(int position) {
             Log.v("GET_ITEM:", String.valueOf(position));
-            String feature;
 
-            if (m_title == "Bathroom")
-                feature = bathroom_features[position];
-            else if (m_title == "Bedroom")
-                feature =  bedroom_features[position];
-            else
-                feature =  kitchen_features[position];
+//            Fragment myfrag = null;
+            String feature;
+            String chosen_arr;
+            String[] temp_arr;
+
+            if(m_title != null) {
+                if (m_title.toString().equals(BATHROOM)) {
+                    temp_arr = bathroom_features;
+                    feature = temp_arr[position];
+                } else if (m_title.toString().equals(BEDROOM)) {
+                    temp_arr = bedroom_features;
+                    feature = temp_arr[position];
+                } else { //falta o caso da sala de estar. ou seja, se for cozinha ou sala de estar entra aqui
+                    temp_arr = kitchen_features;
+                    feature = temp_arr[position];
+                }
+            }
+            else {
+                temp_arr = kitchen_features;
+                feature = temp_arr[position];
+            }
+
+            chosen_arr = m_title.toString();
+
+            Log.v("chosen_array", chosen_arr);
+            Log.v("feature_name", feature);
 
             if (feature.equals(AIR_CONDITIONER))
-                return AirConditioner.newInstance(position, kitchen_features[position]);
+                return AirConditioner.newInstance(position, temp_arr[position]);
+//                myfrag = AirConditioner.newInstance(position, temp_arr[position]);
             else if (feature.equals(PANTRY_STOCK))
-                return PantryStock.newInstance(position, kitchen_features[position]);
+                return PantryStock.newInstance(position, temp_arr[position]);
+//                myfrag = PantryStock.newInstance(position, temp_arr[position]);
             else
-                return PageFragment.newInstance(position, kitchen_features[position]);
+                return PageFragment.newInstance(position, temp_arr[position]);
+//                myfrag = PageFragment.newInstance(position, temp_arr[position]);
+
+//            app_fm.beginTransaction().replace(R.id.pager, myfrag).commit();
+//            return myfrag;
         }
     }
 }
