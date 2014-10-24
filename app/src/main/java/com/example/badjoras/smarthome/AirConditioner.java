@@ -9,10 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * Created by Diogo on 17/10/14.
@@ -28,8 +26,8 @@ public class AirConditioner extends Fragment {
     private EditText textField;
     private Button button;
     private String messsage;
-    private Button test;
-    private Button test2;
+    private Button hot;
+    private Button cold;
 
     private int position;
     private String function;
@@ -68,32 +66,32 @@ public class AirConditioner extends Fragment {
 //        params.setMargins(margin, margin, margin, margin);
 //        rootView.setLayoutParams(params);
 
-        test = (Button) rootView.findViewById(R.id.button2);
-        test2 = (Button) rootView.findViewById(R.id.button3);
+        hot = (Button) rootView.findViewById(R.id.hot);
+        cold = (Button) rootView.findViewById(R.id.cold);
 
-        test.setOnClickListener(new View.OnClickListener() {
+        hot.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-                if(test.isPressed()) {
-                    test.setEnabled(false);
-                    test2.setEnabled(true);
+                if(hot.isPressed()) {
+                    hot.setEnabled(false);
+                    cold.setEnabled(true);
                     Toast.makeText(getActivity(),
                             "Sun is clicked!", Toast.LENGTH_SHORT).show();
                 }
             }
 
         });
-        test2.setOnClickListener(new View.OnClickListener() {
+        cold.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-                if(test2.isPressed())
+                if(cold.isPressed())
                 {
-                    test.setEnabled(true);
-                    test2.setEnabled(false);
+                    hot.setEnabled(true);
+                    cold.setEnabled(false);
                     Toast.makeText(getActivity(),
                             "Frozen is clicked!", Toast.LENGTH_SHORT).show();
                 }
@@ -101,11 +99,11 @@ public class AirConditioner extends Fragment {
 
         });
 
-        textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
-        button = (Button) rootView.findViewById(R.id.button_airConditioner);   //reference to the send button
+       // textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
+        //button = (Button) rootView.findViewById(R.id.button_airConditioner);   //reference to the send button
 
         //Button press event listener
-        button.setOnClickListener(new View.OnClickListener() {
+       /* button.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
 
@@ -129,7 +127,7 @@ public class AirConditioner extends Fragment {
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
 
         return rootView;
     }
