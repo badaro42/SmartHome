@@ -7,6 +7,7 @@
     android:clickable="false">
 
 
+
     <TextView
         android:id="@+id/textView_airConditioner"
         android:layout_width="wrap_content"
@@ -39,5 +40,31 @@
         android:text="Enviar">
 
     </Button>
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button2"
+        android:drawableBottom="@drawable/ic_photos"
+        android:layout_marginTop="77dp"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/button_airConditioner"
+        android:textColor="@drawable/textcolor_bedroom"
+        android:background="#FFA500"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button3"
+        android:layout_alignTop="@+id/button2"
+        android:layout_toRightOf="@+id/button_airConditioner"
+        android:drawableBottom="@drawable/ic_pages"
+        android:textColor="@drawable/textcolor_bedroom"
+        android:background="#FFA500"/>
+
 
 </RelativeLayout>

@@ -1,12 +1,13 @@
 package com.example.badjoras.smarthome;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,6 +28,8 @@ public class AirConditioner extends Fragment {
     private EditText textField;
     private Button button;
     private String messsage;
+    private Button test;
+    private Button test2;
 
     private int position;
     private String function;
@@ -49,6 +52,8 @@ public class AirConditioner extends Fragment {
     }
 
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -63,6 +68,38 @@ public class AirConditioner extends Fragment {
 //        params.setMargins(margin, margin, margin, margin);
 //        rootView.setLayoutParams(params);
 
+        test = (Button) rootView.findViewById(R.id.button2);
+        test2 = (Button) rootView.findViewById(R.id.button3);
+
+        test.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                if(test.isPressed()) {
+                    test.setEnabled(false);
+                    test2.setEnabled(true);
+                    Toast.makeText(getActivity(),
+                            "Sun is clicked!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
+        test2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                if(test2.isPressed())
+                {
+                    test.setEnabled(true);
+                    test2.setEnabled(false);
+                    Toast.makeText(getActivity(),
+                            "Frozen is clicked!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
 
         textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
         button = (Button) rootView.findViewById(R.id.button_airConditioner);   //reference to the send button
