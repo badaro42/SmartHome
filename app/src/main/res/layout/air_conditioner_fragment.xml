@@ -1,32 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bathroom_layout"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
-    android:clickable="false"
-    >
+    android:fillViewport="true">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp">
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="40dp"
-        android:drawableStart="@drawable/sunny"
-        android:id="@+id/hot"
-        android:background="@drawable/new_button"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/cold"
-        android:drawableStart="@drawable/snowflake1"
-        android:background="@drawable/new_button"/>
+    <RelativeLayout
+        android:id="@+id/bathroom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#eee"
+        android:clickable="false"
+        android:longClickable="false"
+        android:padding="8dp">
 
-    </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:background="#FFFFFF">
 
-</RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_choose_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="100dp">
+
+                <Button
+                    android:id="@+id/hot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/new_button"
+                    android:drawableStart="@drawable/sunny" />
+
+                <Button
+                    android:id="@+id/cold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/new_button"
+                    android:drawableStart="@drawable/snowflake1" />
+
+            </LinearLayout>
+
+            <!--<it.moondroid.seekbarhint.library.SeekBarHint-->
+            <!--android:id="@+id/seekbar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:max="1000"-->
+            <!--hint:popupWidth="100dp"-->
+            <!--hint:yOffset="15dp"-->
+            <!--hint:popupStyle="fixed"/>-->
+
+            <SeekBar
+                android:id="@+id/air_cond_choose_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/layout_choose_temperature"
+                android:layout_alignRight="@+id/layout_choose_temperature"
+                android:layout_below="@+id/layout_choose_temperature"
+                android:layout_marginTop="75dp" />
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

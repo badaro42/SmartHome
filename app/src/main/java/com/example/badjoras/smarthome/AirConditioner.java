@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.PrintWriter;
@@ -50,8 +51,6 @@ public class AirConditioner extends Fragment {
     }
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -68,13 +67,14 @@ public class AirConditioner extends Fragment {
 
         hot = (Button) rootView.findViewById(R.id.hot);
         cold = (Button) rootView.findViewById(R.id.cold);
+        //sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
 
         hot.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-                if(hot.isPressed()) {
+                if (hot.isPressed()) {
                     hot.setEnabled(false);
                     cold.setEnabled(true);
                     Toast.makeText(getActivity(),
@@ -88,8 +88,7 @@ public class AirConditioner extends Fragment {
             @Override
             public void onClick(View arg0) {
 
-                if(cold.isPressed())
-                {
+                if (cold.isPressed()) {
                     hot.setEnabled(true);
                     cold.setEnabled(false);
                     Toast.makeText(getActivity(),
@@ -99,7 +98,8 @@ public class AirConditioner extends Fragment {
 
         });
 
-       // textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
+
+        // textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
         //button = (Button) rootView.findViewById(R.id.button_airConditioner);   //reference to the send button
 
         //Button press event listener
