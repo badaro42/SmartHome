@@ -16,6 +16,8 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends FragmentActivity {
 
@@ -31,7 +33,7 @@ public class MainActivity extends FragmentActivity {
     private static final String STOVE_OVEN = "Fogão/Forno";
     private static final String SPRINKLER = "Aspersores da Rega";
 
-    private static final String BATHROOM = "Bathroom";
+    private static final String OUTSIDE_GENERAL = "Outdoor/General";
     private static final String KITCHEN = "Kitchen";
     private static final String BEDROOM = "Bedroom";
     private static final String LIVING_ROOM = "Living Room";
@@ -39,17 +41,21 @@ public class MainActivity extends FragmentActivity {
     private List<Fragment> fragment_list;
 
     //TODO rever estas features mais tarde
-    //por enquanto estão à toa apenas para efeitos de teste
     private String[] kitchen_features = new String[]{
-            PANTRY_STOCK, AIR_CONDITIONER, LIGHTS, BLINDS, COFFEE_MACHINE, STOVE_OVEN};
+            PANTRY_STOCK, AIR_CONDITIONER, LIGHTS, BLINDS, COFFEE_MACHINE, STOVE_OVEN
+    };
 
-    private String[] bedroom_features = new String[]{
-            POWER_MONITORING, AIR_CONDITIONER, LIGHTS, BLINDS, GARAGE_DOOR, SURVEILLANCE_CAMERAS};
+    private String[] bedroom_features = new String[]{ //TODO acrescentar mais??
+            AIR_CONDITIONER, LIGHTS, BLINDS
+    };
 
-    private String[] bathroom_features = new String[]{
-            SPRINKLER, AIR_CONDITIONER, LIGHTS, BLINDS, GARAGE_DOOR, SCHEDULED_FUNCTIONS, STOVE_OVEN};
+    private String[] outside_general_features = new String[]{
+            SPRINKLER, GARAGE_DOOR, SURVEILLANCE_CAMERAS, POWER_MONITORING, SCHEDULED_FUNCTIONS
+    };
 
-    private String[] living_room_features = new String[]{};
+    private String[] living_room_features = new String[]{
+            LIGHTS, BLINDS, AIR_CONDITIONER
+    };
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
@@ -57,6 +63,8 @@ public class MainActivity extends FragmentActivity {
     private FragmentManager app_fm;
 
     private CharSequence m_title;
+
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +74,16 @@ public class MainActivity extends FragmentActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
+        timer = new Timer();
+        timer.schedule(new AlertTask(), 0, //initial delay
+                1 * 5000); //subsequent rate (in ms)
+
+        //obtem a posição inicial do utilizador
+        getUserPosition();
+
         //calcular o maximo de features que teremos em qualquer momento no ecra
-        int max_lenght1 = Math.max(bedroom_features.length, bathroom_features.length);
+        int max_lenght1 = Math.max(bedroom_features.length, outside_general_features.length);
         int max_length2 = Math.max(kitchen_features.length, living_room_features.length);
         int max_length_final = Math.max(max_lenght1, max_length2);
 
@@ -75,54 +91,18 @@ public class MainActivity extends FragmentActivity {
 
         refreshTabs();
 
-        m_title = getTitle();
+        //m_title = getTitle();
 
         //activa o icon da barra e faz com que ele se comporte como um botão de toggle
         getActionBar().setDisplayShowTitleEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
     }
 
+    //TODO placeholder!!! colocar aqui a obtenção da posição
+    public void getUserPosition() {
+        setTitle(KITCHEN);
+    }
 
-    /**
-     * //     * Diplaying fragment view for selected nav drawer list item
-     * //
-     */
-//    private void displayView(int position) {
-//        // update the main content by replacing fragments
-//        android.app.Fragment fragment = null;
-//        switch (position) {
-//            case 0:
-//                fragment = new Blinds();
-//                break;
-//            case 1:
-//                fragment = new AirConditioner();
-//                break;
-//            case 2:
-//                fragment = new Lights();
-//                break;
-//            case 3:
-//                fragment = new PantryStock();
-//                break;
-//
-//            default:
-//                break;
-//        }
-//
-//        if (fragment != null) {
-//            android.app.FragmentManager fragmentManager = getFragmentManager();
-//            fragmentManager.beginTransaction()
-//                    .replace(R.id.frame_container, fragment).commit();
-//
-//            // update selected item and title, then close the drawer
-//            m_drawer_list.setItemChecked(position, true);
-//            m_drawer_list.setSelection(position);
-//            setTitle(nav_menu_titles[position]);
-//            m_drawer_layout.closeDrawer(m_drawer_list);
-//        } else {
-//            // error in creating fragment
-//            Log.e("MainActivity", "Error in creating fragment");
-//        }
-//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -136,7 +116,6 @@ public class MainActivity extends FragmentActivity {
         }
 
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-//        tabs.setTextSize(28);
         pager = (ViewPager) findViewById(R.id.pager);
         app_fm = getSupportFragmentManager();
         adapter = new MyPagerAdapter(app_fm);
@@ -159,45 +138,14 @@ public class MainActivity extends FragmentActivity {
         int id = item.getItemId();
         Log.v("menu_id", String.valueOf(id));
 
-        if (id == R.id.room_menu_bathroom) {
+        if ((id == R.id.room_menu_bedroom) || (id == R.id.room_menu_outside_general) ||
+                (id == R.id.room_menu_kitchen) || (id == R.id.room_menu_living_room)) {
             setTitle(item.getTitle());
-            Log.v("onoptionsselected", "TOU NO ON_OPTIONS_SELECTED");
-            Log.v("onoptionsselected", String.valueOf(item.getTitle()));
-
-//            finish();
-//            startActivity(getIntent());
-
-            refreshTabs();
-            return true;
         }
-        else if (id == R.id.room_menu_bedroom) {
-            setTitle(item.getTitle());
 
-//            finish();
-//            startActivity(getIntent());
-
-            refreshTabs();
-            return true;
-        }
-        else if (id == R.id.room_menu_kitchen) {
-            setTitle(item.getTitle());
-
-//            finish();
-//            startActivity(getIntent());
-
-            refreshTabs();
-            return true;
-        }
-        else if (id == R.id.room_menu_living_room) {
-            setTitle(item.getTitle());
-
-//            finish();
-//            startActivity(getIntent());
-
-            refreshTabs();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        refreshTabs();
+        return true;
+        //return super.onOptionsItemSelected(item);
     }
 
 
@@ -223,29 +171,43 @@ public class MainActivity extends FragmentActivity {
             Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             //Log.v("str_eq_bathroom", String.valueOf(m_title == BATHROOM));
             if(m_title != null) {
-                if (m_title.toString().equals(BATHROOM)) {
-                    Log.v("getpagetitle", "loli isto é uma casa de banho");
-                    return bathroom_features[position];
-                } else if (m_title.toString().equals(BEDROOM))
+                if(m_title.toString().equals(OUTSIDE_GENERAL)) {
+                    //Log.v("getpagetitle", "loli isto é uma casa de banho");
+                    return outside_general_features[position];
+                }
+                else if(m_title.toString().equals(BEDROOM)) {
                     return bedroom_features[position];
-                else
+                }
+                else if(m_title.toString().equals(KITCHEN)) {
                     return kitchen_features[position];
+                }
+                else if(m_title.toString().equals(LIVING_ROOM)) {
+                    return living_room_features[position];
+                }
             }
-            return kitchen_features[position];
+           //return kitchen_features[position];
+            return null;
         }
 
         @Override
         public int getCount() {
             //Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             if(m_title != null) {
-                if (m_title.toString().equals(BATHROOM))
-                    return bathroom_features.length;
-                else if (m_title.toString().equals(BEDROOM))
+                if(m_title.toString().equals(OUTSIDE_GENERAL)) {
+                    return outside_general_features.length;
+                }
+                else if(m_title.toString().equals(BEDROOM)) {
                     return bedroom_features.length;
-                else
+                }
+                else if(m_title.toString().equals(KITCHEN)) {
                     return kitchen_features.length;
+                }
+                else if(m_title.toString().equals(LIVING_ROOM)) {
+                    return living_room_features.length;
+                }
             }
-            return kitchen_features.length;
+            return 0;
+            //return kitchen_features.length;
         }
 
         @Override
@@ -253,26 +215,32 @@ public class MainActivity extends FragmentActivity {
             Log.v("GET_ITEM:", String.valueOf(position));
 
             Fragment myfrag = null;
-            String feature;
+            String feature = "";
             String chosen_arr;
-            String[] temp_arr;
+            String[] temp_arr = new String[]{};
 
             if(m_title != null) {
-                if (m_title.toString().equals(BATHROOM)) {
-                    temp_arr = bathroom_features;
+                if(m_title.toString().equals(OUTSIDE_GENERAL)) {
+                    temp_arr = outside_general_features;
                     feature = temp_arr[position];
-                } else if (m_title.toString().equals(BEDROOM)) {
+                }
+                else if(m_title.toString().equals(BEDROOM)) {
                     temp_arr = bedroom_features;
                     feature = temp_arr[position];
-                } else { //falta o caso da sala de estar. ou seja, se for cozinha ou sala de estar entra aqui
+                }
+                else if(m_title.toString().equals(KITCHEN)) {
                     temp_arr = kitchen_features;
                     feature = temp_arr[position];
                 }
+                else if(m_title.toString().equals(LIVING_ROOM)) {
+                    temp_arr = living_room_features;
+                    feature = temp_arr[position];
+                }
             }
-            else {
-                temp_arr = kitchen_features;
-                feature = temp_arr[position];
-            }
+//            else {
+//                temp_arr = kitchen_features;
+//                feature = temp_arr[position];
+//            }
 
             chosen_arr = m_title.toString();
 
@@ -281,7 +249,6 @@ public class MainActivity extends FragmentActivity {
 
             if (feature.equals(AIR_CONDITIONER)) {
                 myfrag =  AirConditioner.newInstance(position, temp_arr[position]);
-
             }
             else if (feature.equals(PANTRY_STOCK)) {
                 myfrag = PantryStock.newInstance(position, temp_arr[position]);
@@ -292,8 +259,23 @@ public class MainActivity extends FragmentActivity {
 
             fragment_list.add(myfrag);
             return myfrag;
-//            app_fm.beginTransaction().replace(R.id.pager, myfrag).commit();
-//            return myfrag;
         }
     }
+
+
+    class AlertTask extends TimerTask {
+        int numWarningBeeps = 5;
+
+        public void run() {
+            if (numWarningBeeps > 0) {
+                Log.v("Beep-test", "Beep Beep!!");
+                numWarningBeeps--;
+            } else {
+                Log.v("Beep-test-last", "Last Beep Beep!!");
+                timer.cancel(); //Not necessary because we call System.exit
+//                System.exit(0); //Stops the AWT thread (and everything else)
+            }
+        }
+    }
+
 }

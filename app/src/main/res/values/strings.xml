@@ -3,7 +3,7 @@
 
     <string name="app_name">SmartHome</string>
     <string name="kitchen">Kitchen</string>
-    <string name="bathroom">Bathroom</string>
+    <string name="outside_general">Outdoor/General</string>
     <string name="living_room">Living Room</string>
     <string name="bedroom">Bedroom</string>
     <string name="choose_room">Change room...</string>

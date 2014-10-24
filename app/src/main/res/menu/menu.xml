@@ -8,8 +8,8 @@
                 android:id="@+id/room_menu_kitchen"
                 android:title="@string/kitchen" />
             <item
-                android:id="@+id/room_menu_bathroom"
-                android:title="@string/bathroom" />
+                android:id="@+id/room_menu_outside_general"
+                android:title="@string/outside_general" />
             <item
                 android:id="@+id/room_menu_living_room"
                 android:title="@string/living_room" />
