@@ -141,9 +141,9 @@ public class MainActivity extends FragmentActivity {
         if ((id == R.id.room_menu_bedroom) || (id == R.id.room_menu_outside_general) ||
                 (id == R.id.room_menu_kitchen) || (id == R.id.room_menu_living_room)) {
             setTitle(item.getTitle());
+            refreshTabs();
         }
 
-        refreshTabs();
         return true;
         //return super.onOptionsItemSelected(item);
     }
