@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.PrintWriter;
@@ -29,6 +30,8 @@ public class AirConditioner extends Fragment {
     private String messsage;
     private Button hot;
     private Button cold;
+    private SeekBar sb;
+    private TextView text_to_show;
 
     private int position;
     private String function;
@@ -54,106 +57,56 @@ public class AirConditioner extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.air_conditioner_fragment, container,
-                false);
+        View rootView = inflater.inflate(R.layout.air_conditioner_fragment, container, false);
 
-//        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
-//                .getDisplayMetrics());
-//
-//		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-//
-//        params.setMargins(margin, margin, margin, margin);
-//        rootView.setLayoutParams(params);
+        hot = (Button) rootView.findViewById(R.id.button_hot);
+        cold = (Button) rootView.findViewById(R.id.button_cold);
+        sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
+        text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
 
-        hot = (Button) rootView.findViewById(R.id.hot);
-        cold = (Button) rootView.findViewById(R.id.cold);
-        //sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
+        text_to_show.setText(String.valueOf(sb.getProgress()));
+
+        cold.setEnabled(false);
+        cold.setBackground(getResources().getDrawable(R.drawable.new_button));
 
         hot.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
+                hot.setEnabled(false);
+                cold.setEnabled(true);
+                Toast.makeText(getActivity(),
+                        "Sun is clicked!", Toast.LENGTH_SHORT).show();
 
-                if (hot.isPressed()) {
-                    hot.setEnabled(false);
-                    cold.setEnabled(true);
-                    Toast.makeText(getActivity(),
-                            "Sun is clicked!", Toast.LENGTH_SHORT).show();
-                }
             }
-
         });
+
         cold.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
-
-                if (cold.isPressed()) {
-                    hot.setEnabled(true);
-                    cold.setEnabled(false);
-                    Toast.makeText(getActivity(),
-                            "Frozen is clicked!", Toast.LENGTH_SHORT).show();
-                }
+                hot.setEnabled(true);
+                cold.setEnabled(false);
+                Toast.makeText(getActivity(),
+                        "Frozen is clicked!", Toast.LENGTH_SHORT).show();
             }
-
         });
 
-
-        // textField = (EditText) rootView.findViewById(R.id.editText_airConditioner); //reference to the text field
-        //button = (Button) rootView.findViewById(R.id.button_airConditioner);   //reference to the send button
-
-        //Button press event listener
-       /* button.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
-                messsage = textField.getText().toString(); //get the text message on the text field
-                textField.setText("");      //Reset the text field to blank
-
-                try {
-//                    client = new Socket("192.168.2.2", 4444);  //ip da rede eduroam
-                    client = new Socket("192.168.1.78", 4444);  //ip de casa
-//                    client = new Socket("10.171.240.101", 4444);  //este ip é do hotspot BALELE
-                    printwriter = new PrintWriter(client.getOutputStream(),true);
-                    printwriter.write(messsage);  //write the message to output stream
-
-                    printwriter.flush();
-                    printwriter.close();
-                    client.close();   //closing the connection
-
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                text_to_show.setText(String.valueOf(i));
             }
-        });*/
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         return rootView;
     }
-
-
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//
-//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-//
-//        FrameLayout fl = new FrameLayout(getActivity());
-//        fl.setLayoutParams(params);
-//
-//        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
-//                .getDisplayMetrics());
-//
-//        TextView v = new TextView(getActivity());
-//        params.setMargins(margin, margin, margin, margin);
-//        v.setLayoutParams(params);
-//        //v.setLayoutParams(params);
-//        v.setGravity(Gravity.CENTER);
-//        v.setBackgroundResource(R.drawable.background_card);
-//        v.setText("AR CONDICIONADO DO CARALHO1!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-//
-//        fl.addView(v);
-//        return fl;
-//    }
-
 }

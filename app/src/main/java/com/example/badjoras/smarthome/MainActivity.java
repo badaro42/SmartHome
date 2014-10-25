@@ -75,9 +75,9 @@ public class MainActivity extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
-        timer = new Timer();
-        timer.schedule(new AlertTask(), 0, //initial delay
-                1 * 5000); //subsequent rate (in ms)
+//        timer = new Timer();
+//        timer.schedule(new AlertTask(), 0, //initial delay
+//                1 * 5000); //subsequent rate (in ms)
 
         //obtem a posição inicial do utilizador
         getUserPosition();
@@ -95,7 +95,8 @@ public class MainActivity extends FragmentActivity {
 
         //activa o icon da barra e faz com que ele se comporte como um botão de toggle
         getActionBar().setDisplayShowTitleEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setIcon(android.R.color.transparent);
+//        getActionBar().setHomeButtonEnabled(true);
     }
 
     //TODO placeholder!!! colocar aqui a obtenção da posição
@@ -248,13 +249,13 @@ public class MainActivity extends FragmentActivity {
             Log.v("feature_name", feature);
 
             if (feature.equals(AIR_CONDITIONER)) {
-                myfrag =  AirConditioner.newInstance(position, temp_arr[position]);
+                myfrag = AirConditioner.newInstance(position, temp_arr[position]);
             }
             else if (feature.equals(PANTRY_STOCK)) {
                 myfrag = PantryStock.newInstance(position, temp_arr[position]);
             }
             else {
-                myfrag = PageFragment.newInstance(position, temp_arr[position]);
+                myfrag = AirConditioner.newInstance(position, temp_arr[position]);
             }
 
             fragment_list.add(myfrag);

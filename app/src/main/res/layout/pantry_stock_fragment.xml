@@ -8,7 +8,7 @@
         android:id="@+id/pantry_stock_fragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#eee"
+        android:background="@color/app_margin_background"
         android:clickable="false"
         android:longClickable="false"
         android:padding="8dp">
@@ -16,14 +16,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:background="#FF0000">
-
-
-            <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-            <!--android:id="@+id/kitchen_layout"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:background="#FF0000">-->
+            android:background="@color/app_fragment_background">
 
 
             <TextView
@@ -42,11 +35,9 @@
                 android:layout_below="@id/textView_pantryStock"
                 android:inputType="textMultiLine">
 
-                <requestFocus>
-
-                </requestFocus>
+                <!--<requestFocus>-->
+                <!--</requestFocus>-->
             </EditText>
-
 
             <Button
                 android:id="@+id/button_pantryStock"

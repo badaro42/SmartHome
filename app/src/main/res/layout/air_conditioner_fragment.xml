@@ -9,7 +9,7 @@
         android:id="@+id/bathroom_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#eee"
+        android:background="@color/app_margin_background"
         android:clickable="false"
         android:longClickable="false"
         android:padding="8dp">
@@ -17,7 +17,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:background="#FFFFFF">
+            android:background="@color/app_fragment_background">
 
 
             <LinearLayout
@@ -28,7 +28,7 @@
                 android:layout_marginTop="100dp">
 
                 <Button
-                    android:id="@+id/hot"
+                    android:id="@+id/button_hot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="40dp"
@@ -36,7 +36,7 @@
                     android:drawableStart="@drawable/sunny" />
 
                 <Button
-                    android:id="@+id/cold"
+                    android:id="@+id/button_cold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/new_button"
@@ -58,10 +58,20 @@
                 android:id="@+id/air_cond_choose_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="155dp"
+                android:layout_below="@+id/layout_choose_temperature"
                 android:layout_alignLeft="@+id/layout_choose_temperature"
                 android:layout_alignRight="@+id/layout_choose_temperature"
-                android:layout_below="@+id/layout_choose_temperature"
-                android:layout_marginTop="75dp" />
+                android:progress="5"
+                android:max="15"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/display_curr_temp_air_cond"
+                android:layout_marginBottom="68dp"
+                android:layout_alignBottom="@+id/air_cond_choose_temperature"
+                android:layout_centerHorizontal="true" />
 
 
         </RelativeLayout>
