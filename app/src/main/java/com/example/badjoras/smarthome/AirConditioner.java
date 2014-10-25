@@ -2,7 +2,9 @@ package com.example.badjoras.smarthome;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,7 +24,9 @@ public class AirConditioner extends Fragment {
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
-
+    private static final int SEEKBAR_DEFAULT_PROGRESS = 20;
+    private static final int SEEKBAR_ACTUAL_MIN = 14; //o valor do minimo que temos que pôr na app
+    private static final int SEEKBAR_DESIRED_MIN = 16; //o valor do minimo que vemos na view
     private Socket client;
     private PrintWriter printwriter;
     private EditText textField;
@@ -64,7 +68,8 @@ public class AirConditioner extends Fragment {
         sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
         text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
 
-        text_to_show.setText(String.valueOf(sb.getProgress()));
+        sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN); //TODO alterar para o valor que recebemos do servidor
+        text_to_show.setText(String.valueOf(sb.getProgress() + SEEKBAR_DESIRED_MIN));
 
         cold.setEnabled(false);
         cold.setBackground(getResources().getDrawable(R.drawable.new_button));
@@ -90,21 +95,30 @@ public class AirConditioner extends Fragment {
             }
         });
 
+        sb.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                text_to_show.setText(String.valueOf(i));
+                text_to_show.setText(String.valueOf(i+16));
+
+                //TODO somar o offset ao valor (SEEKBAR_DESIRED_MIN) que passamos ao servidor
+
+                Log.v("seekbar_val", String.valueOf(i + SEEKBAR_DESIRED_MIN));
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) { }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
         return rootView;
