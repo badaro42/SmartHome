@@ -5,7 +5,7 @@ package com.example.badjoras.control;
  */
 public class PantryStock extends Feature {
 
-    public PantryStock() {
-
+    public PantryStock(String featName) {
+        super(featName);
     }
 }

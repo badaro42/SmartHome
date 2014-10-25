@@ -9,6 +9,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/app_margin_background"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:clickable="false"
         android:longClickable="false"
         android:padding="8dp">
@@ -18,6 +20,28 @@
             android:layout_height="fill_parent"
             android:background="@color/app_fragment_background">
 
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Modo de operação"
+                    android:id="@+id/textView" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_below="@+id/textView"
+                    android:layout_alignParentLeft="true" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/layout_choose_temperature"
@@ -30,7 +54,7 @@
                     android:id="@+id/button_hot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginRight="75dp"
                     android:background="@drawable/new_button"
                     android:drawableStart="@drawable/sunny" />
 
@@ -53,6 +77,44 @@
             <!--hint:yOffset="15dp"-->
             <!--hint:popupStyle="fixed"/>-->
 
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:layout_alignBottom="@+id/display_curr_temp_air_cond"
+                android:layout_alignParentLeft="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Temperatura"
+                    android:id="@+id/textView42" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_below="@+id/textView42"
+                    android:layout_alignParentLeft="true" />
+            </RelativeLayout>
+
+            <!--<SeekBar-->
+                <!--android:id="@+id/air_cond_choose_temperature"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="300dp"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:rotation="270"-->
+                <!--android:layout_margin="10dp"-->
+                <!--android:progressDrawable="@drawable/styled_progress_bar"-->
+                <!--android:paddingLeft="15dp"-->
+                <!--android:paddingRight="15dp"-->
+                <!--android:indeterminate="false" />-->
+
             <SeekBar
                 android:id="@+id/air_cond_choose_temperature"
                 android:scaleY="1.5"
@@ -72,6 +134,15 @@
                 android:layout_marginBottom="68dp"
                 android:layout_alignBottom="@+id/air_cond_choose_temperature"
                 android:layout_centerHorizontal="true" />
+
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/imageView"-->
+                <!--android:layout_below="@+id/air_cond_choose_temperature"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_marginTop="108dp"-->
+                <!--android:src="@drawable/termometer"/>-->
 
 
         </RelativeLayout>

@@ -6,8 +6,9 @@ package com.example.badjoras.control;
 public class Feature {
 
     public int id;
+    public String featName;
 
-    public Feature() {
-
+    public Feature(String featName) {
+        this.featName = featName;
     }
 }

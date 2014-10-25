@@ -5,7 +5,7 @@ package com.example.badjoras.control;
  */
 public class AirConditioner extends Feature {
 
-    public AirConditioner() {
-        
+    public AirConditioner(String featName) {
+        super(featName);
     }
 }
