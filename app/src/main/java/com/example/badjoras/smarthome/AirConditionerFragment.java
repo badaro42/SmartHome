@@ -19,7 +19,7 @@ import java.net.Socket;
 /**
  * Created by Diogo on 17/10/14.
  */
-public class AirConditioner extends Fragment {
+public class AirConditionerFragment extends Fragment {
 
 
     private static final String ARG_POSITION = "position";
@@ -40,8 +40,8 @@ public class AirConditioner extends Fragment {
     private int position;
     private String function;
 
-    public static AirConditioner newInstance(int position, String function) {
-        AirConditioner f = new AirConditioner();
+    public static AirConditionerFragment newInstance(int position, String function) {
+        AirConditionerFragment f = new AirConditionerFragment();
         Bundle b = new Bundle();
         b.putInt(ARG_POSITION, position);
         b.putString(ARG_FUNCTION, function);

@@ -4,9 +4,8 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-
     <RelativeLayout
-        android:id="@+id/bathroom_layout"
+        android:id="@+id/air_conditioner_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/app_margin_background"

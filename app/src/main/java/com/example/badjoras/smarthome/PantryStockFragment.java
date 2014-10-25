@@ -1,16 +1,12 @@
 package com.example.badjoras.smarthome;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +14,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 
-public class PantryStock extends Fragment {
+public class PantryStockFragment extends Fragment {
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
@@ -32,8 +28,8 @@ public class PantryStock extends Fragment {
     private Button button;
     private String messsage;
 
-    public static PantryStock newInstance(int position, String function) {
-        PantryStock f = new PantryStock();
+    public static PantryStockFragment newInstance(int position, String function) {
+        PantryStockFragment f = new PantryStockFragment();
         Bundle b = new Bundle();
         b.putInt(ARG_POSITION, position);
         b.putString(ARG_FUNCTION, function);
@@ -55,15 +51,6 @@ public class PantryStock extends Fragment {
 
         View rootView = inflater.inflate(R.layout.pantry_stock_fragment, container,
                 false);
-
-//        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
-//                .getDisplayMetrics());
-//
-//		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-//
-//        params.setMargins(margin, margin, margin, margin);
-//        rootView.setLayoutParams(params);
-
 
         textField = (EditText) rootView.findViewById(R.id.editText_pantryStock); //reference to the text field
         button = (Button) rootView.findViewById(R.id.button_pantryStock);   //reference to the send button
@@ -97,47 +84,4 @@ public class PantryStock extends Fragment {
 
         return rootView;
     }
-
-
-
-
-
-
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//
-//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-//
-//        FrameLayout fl = new FrameLayout(getActivity());
-//        fl.setLayoutParams(params);
-//
-//        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
-//                .getDisplayMetrics());
-//
-//        TextView v = new TextView(getActivity());
-//        params.setMargins(margin, margin, margin, margin);
-//        v.setLayoutParams(params);
-//        v.setLayoutParams(params);
-//        v.setGravity(Gravity.CENTER);
-//        v.setBackgroundResource(R.drawable.background_card);
-//        v.setText("STOCK CARALHO!!!!!!!!!!!!!!!!!!!!");
-//
-//        fl.addView(v);
-//        return fl;
-//    }
-
-
-
-
-
-//    public PantryStock() {
-//    }
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        View rootView = inflater.inflate(R.layout.pantry_stock_fragment, container,
-//                false);
-//        return rootView;
-//    }
 }
