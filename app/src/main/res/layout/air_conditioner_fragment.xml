@@ -44,7 +44,7 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/layout_choose_temperature"
+                android:id="@+id/layout_choose_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -67,16 +67,6 @@
 
             </LinearLayout>
 
-            <!--<it.moondroid.seekbarhint.library.SeekBarHint-->
-            <!--android:id="@+id/seekbar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:max="1000"-->
-            <!--hint:popupWidth="100dp"-->
-            <!--hint:yOffset="15dp"-->
-            <!--hint:popupStyle="fixed"/>-->
-
             <RelativeLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
@@ -84,7 +74,8 @@
                 android:paddingTop="50dp"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
-                android:layout_alignBottom="@+id/display_curr_temp_air_cond"
+                android:id="@+id/layout_separator_temperature"
+                android:layout_below="@+id/layout_choose_mode"
                 android:layout_alignParentLeft="true">
 
                 <TextView
@@ -92,48 +83,54 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Temperatura"
-                    android:id="@+id/textView42" />
+                    android:id="@+id/textView42"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="false" />
 
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="1dp"
                     android:background="@android:color/darker_gray"
-                    android:layout_below="@+id/textView42"
-                    android:layout_alignParentLeft="true" />
+                    android:layout_below="@id/textView42"/>
+
             </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_below="@+id/layout_separator_temperature"
+                android:layout_centerHorizontal="true">
+
+                <SeekBar
+                    android:id="@+id/air_cond_choose_temperature"
+                    android:layout_width="160dp"
+                    android:layout_height="33dp"
+                    android:thumb="@android:color/transparent"
+                    android:progressDrawable="@drawable/styled_progress_bar"
+                    android:rotation="270"
+                    android:max="14"
+                    android:layout_marginTop="100dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/display_curr_temp_air_cond"
+                    android:layout_marginTop="80dp"
+                    android:textSize="40sp" />
+            </LinearLayout>
 
             <!--<SeekBar-->
                 <!--android:id="@+id/air_cond_choose_temperature"-->
-                <!--android:layout_width="50dp"-->
-                <!--android:layout_height="300dp"-->
-                <!--android:layout_alignParentLeft="true"-->
-                <!--android:layout_centerVertical="true"-->
-                <!--android:rotation="270"-->
-                <!--android:layout_margin="10dp"-->
-                <!--android:progressDrawable="@drawable/styled_progress_bar"-->
-                <!--android:paddingLeft="15dp"-->
-                <!--android:paddingRight="15dp"-->
-                <!--android:indeterminate="false" />-->
-
-            <SeekBar
-                android:id="@+id/air_cond_choose_temperature"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="155dp"
-                android:layout_below="@+id/layout_choose_temperature"
-                android:layout_alignLeft="@+id/layout_choose_temperature"
-                android:layout_alignRight="@+id/layout_choose_temperature"
-                android:max="14"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/display_curr_temp_air_cond"
-                android:layout_marginBottom="68dp"
-                android:layout_alignBottom="@+id/air_cond_choose_temperature"
-                android:layout_centerHorizontal="true" />
+                <!--android:scaleY="1.5"-->
+                <!--android:scaleX="1.5"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="155dp"-->
+                <!--android:layout_below="@+id/layout_choose_temperature"-->
+                <!--android:layout_alignLeft="@+id/layout_choose_temperature"-->
+                <!--android:layout_alignRight="@+id/layout_choose_temperature"-->
+                <!--android:max="14"/>-->
 
             <!--<ImageView-->
                 <!--android:layout_width="wrap_content"-->

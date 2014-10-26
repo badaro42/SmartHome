@@ -69,7 +69,7 @@ public class AirConditionerFragment extends Fragment {
         text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
 
         sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN); //TODO alterar para o valor que recebemos do servidor
-        text_to_show.setText(String.valueOf(sb.getProgress() + SEEKBAR_DESIRED_MIN));
+        text_to_show.setText(String.valueOf(sb.getProgress() + SEEKBAR_DESIRED_MIN) + "ºC");
 
         cold.setEnabled(false);
         cold.setBackground(getResources().getDrawable(R.drawable.new_button));
@@ -107,7 +107,7 @@ public class AirConditionerFragment extends Fragment {
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                text_to_show.setText(String.valueOf(i+16));
+                text_to_show.setText(String.valueOf(i+16) + " ºC");
 
                 //TODO somar o offset ao valor (SEEKBAR_DESIRED_MIN) que passamos ao servidor
 
