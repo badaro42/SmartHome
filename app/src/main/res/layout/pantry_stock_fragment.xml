@@ -18,37 +18,62 @@
             android:layout_height="fill_parent"
             android:background="@color/app_fragment_background">
 
-
-            <TextView
-                android:id="@+id/textView_pantryStock"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/pantry_separator_options"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:text="Stock da Despensa"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:orientation="horizontal"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:paddingTop="50dp">
 
-            <EditText
-                android:id="@+id/editText_pantryStock"
+                <TextView
+                    android:id="@+id/pantry_option_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Opções da tabela"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/pantry_option_text_view"
+                    android:background="@android:color/darker_gray" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pantry_separator_options">
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinner" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/textView_pantryStock"
-                android:inputType="textMultiLine">
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:layout_below="@id/pantry_separator_options"
+                android:layout_marginLeft="35dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginBottom="15dp">
 
-                <!--<requestFocus>-->
-                <!--</requestFocus>-->
-            </EditText>
+                <ListView
+                    android:id="@+id/listView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true">
 
-            <Button
-                android:id="@+id/button_pantryStock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/editText_pantryStock"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center"
-                android:text="Enviar">
+                    </ListView>
 
-            </Button>
+            </RelativeLayout>
 
         </RelativeLayout>
     </RelativeLayout>
