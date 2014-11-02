@@ -98,14 +98,14 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:layout_below="@+id/layout_separator_temperature"
                 android:layout_centerHorizontal="true">
 
                 <SeekBar
                     android:id="@+id/air_cond_choose_temperature"
-                    android:layout_width="160dp"
-                    android:layout_height="33dp"
+                    android:layout_width="224dp"
+                    android:layout_height="50dp"
                     android:thumb="@android:color/transparent"
                     android:progressDrawable="@drawable/styled_progress_bar"
                     android:rotation="270"

@@ -18,8 +18,6 @@ import java.util.HashMap;
 
 import static com.example.badjoras.smarthome.ListViewAdapter.FIRST_COLUMN;
 import static com.example.badjoras.smarthome.ListViewAdapter.SECOND_COLUMN;
-//import static com.example.badjoras.smarthome.ListViewAdapter.THIRD_COLUMN;
-//import static com.example.badjoras.smarthome.ListViewAdapter.FOURTH_COLUMN;
 
 
 public class PantryStockFragment extends Fragment {
@@ -81,7 +79,6 @@ public class PantryStockFragment extends Fragment {
         });
 
 
-
 //        textField = (EditText) rootView.findViewById(R.id.editText_pantryStock); //reference to the text field
 //        button = (Button) rootView.findViewById(R.id.button_pantryStock);   //reference to the send button
 //
@@ -117,62 +114,61 @@ public class PantryStockFragment extends Fragment {
 
 
     private void populateList() {
-        // TODO Auto-generated method stub
 
-        list=new ArrayList<HashMap<String,String>>();
-        HashMap<String,String> temp;
+        list = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> temp;
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Tomate");
         temp.put(SECOND_COLUMN, "5");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Alface");
         temp.put(SECOND_COLUMN, "2");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Lata de Atum");
         temp.put(SECOND_COLUMN, "0");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Esparguete");
         temp.put(SECOND_COLUMN, "3");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Cebola");
         temp.put(SECOND_COLUMN, "7");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Batata");
         temp.put(SECOND_COLUMN, "25");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Alho francês");
         temp.put(SECOND_COLUMN, "1");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Lata de Salsichas");
         temp.put(SECOND_COLUMN, "2");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Arroz Agulha");
         temp.put(SECOND_COLUMN, "1");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Café");
         temp.put(SECOND_COLUMN, "2");
         list.add(temp);
 
-        temp=new HashMap<String, String>();
+        temp = new HashMap<String, String>();
         temp.put(FIRST_COLUMN, "Papel Higiénico");
         temp.put(SECOND_COLUMN, "30");
         list.add(temp);
