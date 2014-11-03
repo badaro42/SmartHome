@@ -10,7 +10,9 @@ public class Feature implements Serializable {
     public int id;
     public String featName;
 
-    public Feature(String featName) {
-        this.featName = featName;
-    }
+//    public Feature(String featName) {
+//        this.featName = featName;
+//    }
+
+    public Feature() { }
 }

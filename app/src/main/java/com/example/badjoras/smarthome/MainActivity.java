@@ -27,22 +27,22 @@ import java.util.TimerTask;
 
 public class MainActivity extends FragmentActivity {
 
-    private static final String AIR_CONDITIONER = "Ar Condicionado";
-    private static final String PANTRY_STOCK = "Stock da Despensa";
-    private static final String LIGHTS = "Iluminação";
-    private static final String BLINDS = "Estores";
-    private static final String POWER_MONITORING = "Monitorização Energética";
-    private static final String GARAGE_DOOR = "Portão da Garagem";
-    private static final String SURVEILLANCE_CAMERAS = "Câmaras de Vigilância";
-    private static final String SCHEDULED_FUNCTIONS = "Tarefas Agendadas";
-    private static final String COFFEE_MACHINE = "Máquina de Café";
-    private static final String STOVE_OVEN = "Fogão/Forno";
-    private static final String SPRINKLER = "Aspersores da Rega";
+    public static final String AIR_CONDITIONER = "Ar Condicionado";
+    public static final String PANTRY_STOCK = "Stock da Despensa";
+    public static final String LIGHTS = "Iluminação";
+    public static final String BLINDS = "Estores";
+    public static final String POWER_MONITORING = "Monitorização Energética";
+    public static final String GARAGE_DOOR = "Portão da Garagem";
+    public static final String SURVEILLANCE_CAMERAS = "Câmaras de Vigilância";
+    public static final String SCHEDULED_FUNCTIONS = "Tarefas Agendadas";
+    public static final String COFFEE_MACHINE = "Máquina de Café";
+    public static final String STOVE_OVEN = "Fogão/Forno";
+    public static final String SPRINKLER = "Aspersores da Rega";
 
-    private static final String OUTSIDE_GENERAL = "Outdoor/General";
-    private static final String KITCHEN = "Kitchen";
-    private static final String BEDROOM = "Bedroom";
-    private static final String LIVING_ROOM = "Living Room";
+    public static final String OUTSIDE_GENERAL = "Exterior/Geral";
+    public static final String KITCHEN = "Cozinha";
+    public static final String BEDROOM = "Quarto";
+    public static final String LIVING_ROOM = "Sala de Estar";
 
     private Socket client;
     private ObjectOutputStream obj_os;

@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Room;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -90,10 +91,13 @@ public class PantryStockFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.v("badjoras", "carreguei num elemento da lista");
 
-//                    ObjectOutputStream outstream = ((MainActivity) getActivity()).getOutputStream();
+//                ObjectOutputStream outstream = ((MainActivity) getActivity()).getOutputStream();
+//                outstream.writeObject(house);
+//                outstream.close();
                 Home house = ((MainActivity) getActivity()).getHouse();
-//                    outstream.writeObject(house);
-//                    outstream.close();
+                HashMap<String, Room> map = house.getMap();
+                map.put("casa da peles", new Room());
+                house.modifyMap(map);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
 

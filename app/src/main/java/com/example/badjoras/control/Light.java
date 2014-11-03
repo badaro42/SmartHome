@@ -7,8 +7,20 @@ import java.io.Serializable;
  */
 public class Light extends Feature implements Serializable {
 
-    public Light(String featName) {
-        super(featName);
+    private int intensity;
+
+    public Light() {
+        super();
+        intensity = 0;
+    }
+
+    public int getIntensity() {
+        return intensity;
+    }
+
+    public void changeIntensity(int new_value) {
+        if((new_value >= 0) && (new_value <= 100))
+            intensity = new_value;
     }
 
 }
