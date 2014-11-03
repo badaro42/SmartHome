@@ -13,7 +13,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.example.badjoras.control.Home;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -37,6 +43,12 @@ public class MainActivity extends FragmentActivity {
     private static final String KITCHEN = "Kitchen";
     private static final String BEDROOM = "Bedroom";
     private static final String LIVING_ROOM = "Living Room";
+
+    private Socket client;
+    private ObjectOutputStream obj_os;
+    private ObjectInputStream obj_is;
+
+    private Home house;
 
     private List<Fragment> fragment_list;
 
@@ -74,6 +86,28 @@ public class MainActivity extends FragmentActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        house = new Home();
+
+        try {
+            client = new Socket("192.168.1.78", 4444);  //ip de casa
+
+            //TODO descomentar aqui para obter do servidor o estado inicial da casa
+//            obj_is = getInputStream();
+//            obj_os = getOutputStream();
+//            obj_os = getOutputStream();
+//            house = (Home)obj_is.readObject();
+//            obj_os.writeObject(house);
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+
+
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
 //        timer = new Timer();
 //        timer.schedule(new AlertTask(), 0, //initial delay
@@ -104,6 +138,58 @@ public class MainActivity extends FragmentActivity {
         setTitle(KITCHEN);
     }
 
+    public Home getHouse() {
+        return house;
+    }
+
+    public void modifyHouse(Home home) {
+        this.house = home;
+    }
+
+    //cria o output stream e envia um objecto com o estado da aplicação para o servidor
+    public int sendObjectToServer(Home home) {
+        int result = 0;
+        try {
+            createOutputStream();
+            obj_os.writeObject(home);
+            result = 1;
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return result;
+        }
+    }
+
+    //TODO: talvez nao seja preciso ser public!!
+    //cria (ou devolve, caso ja exista) um outputstream para comunicar com o server
+    public void createOutputStream() {
+        try {
+            if(obj_os == null)
+                obj_os = new ObjectOutputStream(client.getOutputStream());
+
+//            return obj_os;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+//            return null;
+        }
+    }
+
+    //cria (ou devolve, caso ja exista) um inputstream para comunicar com o server
+    public ObjectInputStream getInputStream() {
+        try {
+            if(obj_is == null)
+                obj_is = new ObjectInputStream(client.getInputStream());
+
+            return obj_is;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -112,7 +198,7 @@ public class MainActivity extends FragmentActivity {
 
     public void refreshTabs() {
 
-        for(Fragment frag : fragment_list) {
+        for (Fragment frag : fragment_list) {
             getSupportFragmentManager().beginTransaction().remove(frag).commit();
         }
 
@@ -171,39 +257,33 @@ public class MainActivity extends FragmentActivity {
         public CharSequence getPageTitle(int position) {
             Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             //Log.v("str_eq_bathroom", String.valueOf(m_title == BATHROOM));
-            if(m_title != null) {
-                if(m_title.toString().equals(OUTSIDE_GENERAL)) {
+            if (m_title != null) {
+                if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     //Log.v("getpagetitle", "loli isto é uma casa de banho");
                     return outside_general_features[position];
-                }
-                else if(m_title.toString().equals(BEDROOM)) {
+                } else if (m_title.toString().equals(BEDROOM)) {
                     return bedroom_features[position];
-                }
-                else if(m_title.toString().equals(KITCHEN)) {
+                } else if (m_title.toString().equals(KITCHEN)) {
                     return kitchen_features[position];
-                }
-                else if(m_title.toString().equals(LIVING_ROOM)) {
+                } else if (m_title.toString().equals(LIVING_ROOM)) {
                     return living_room_features[position];
                 }
             }
-           //return kitchen_features[position];
+            //return kitchen_features[position];
             return null;
         }
 
         @Override
         public int getCount() {
             //Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
-            if(m_title != null) {
-                if(m_title.toString().equals(OUTSIDE_GENERAL)) {
+            if (m_title != null) {
+                if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     return outside_general_features.length;
-                }
-                else if(m_title.toString().equals(BEDROOM)) {
+                } else if (m_title.toString().equals(BEDROOM)) {
                     return bedroom_features.length;
-                }
-                else if(m_title.toString().equals(KITCHEN)) {
+                } else if (m_title.toString().equals(KITCHEN)) {
                     return kitchen_features.length;
-                }
-                else if(m_title.toString().equals(LIVING_ROOM)) {
+                } else if (m_title.toString().equals(LIVING_ROOM)) {
                     return living_room_features.length;
                 }
             }
@@ -220,20 +300,17 @@ public class MainActivity extends FragmentActivity {
             String chosen_arr;
             String[] temp_arr = new String[]{};
 
-            if(m_title != null) {
-                if(m_title.toString().equals(OUTSIDE_GENERAL)) {
+            if (m_title != null) {
+                if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     temp_arr = outside_general_features;
                     feature = temp_arr[position];
-                }
-                else if(m_title.toString().equals(BEDROOM)) {
+                } else if (m_title.toString().equals(BEDROOM)) {
                     temp_arr = bedroom_features;
                     feature = temp_arr[position];
-                }
-                else if(m_title.toString().equals(KITCHEN)) {
+                } else if (m_title.toString().equals(KITCHEN)) {
                     temp_arr = kitchen_features;
                     feature = temp_arr[position];
-                }
-                else if(m_title.toString().equals(LIVING_ROOM)) {
+                } else if (m_title.toString().equals(LIVING_ROOM)) {
                     temp_arr = living_room_features;
                     feature = temp_arr[position];
                 }
@@ -250,14 +327,11 @@ public class MainActivity extends FragmentActivity {
 
             if (feature.equals(AIR_CONDITIONER)) {
                 myfrag = AirConditionerFragment.newInstance(position, temp_arr[position]);
-            }
-            else if (feature.equals(PANTRY_STOCK)) {
+            } else if (feature.equals(PANTRY_STOCK)) {
                 myfrag = PantryStockFragment.newInstance(position, temp_arr[position]);
-            }
-            else if (feature.equals(LIGHTS)) {
+            } else if (feature.equals(LIGHTS)) {
                 myfrag = LightsFragment.newInstance(position, temp_arr[position]);
-            }
-            else {
+            } else {
                 myfrag = AirConditionerFragment.newInstance(position, temp_arr[position]);
             }
 

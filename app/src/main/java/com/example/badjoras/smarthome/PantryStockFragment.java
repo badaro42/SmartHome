@@ -3,14 +3,20 @@ package com.example.badjoras.smarthome;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.badjoras.control.Home;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -75,6 +81,22 @@ public class PantryStockFragment extends Fragment {
             public boolean onTouch(View v, MotionEvent event) {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
                 return false;
+            }
+
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.v("badjoras", "carreguei num elemento da lista");
+
+//                    ObjectOutputStream outstream = ((MainActivity) getActivity()).getOutputStream();
+                Home house = ((MainActivity) getActivity()).getHouse();
+//                    outstream.writeObject(house);
+//                    outstream.close();
+
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+
             }
         });
 
