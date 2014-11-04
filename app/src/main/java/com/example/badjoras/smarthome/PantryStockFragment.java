@@ -26,14 +26,18 @@ import java.util.HashMap;
 import static com.example.badjoras.smarthome.ListViewAdapter.FIRST_COLUMN;
 import static com.example.badjoras.smarthome.ListViewAdapter.SECOND_COLUMN;
 
+import static com.example.badjoras.smarthome.MainActivity.*;
+
 
 public class PantryStockFragment extends Fragment {
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
+    private static final String ARG_TITLE = "title";
 
     private int position;
     private String function;
+    private String title;
 
     private Socket client;
     private PrintWriter printwriter;
@@ -44,11 +48,12 @@ public class PantryStockFragment extends Fragment {
     private ArrayList<HashMap<String, String>> list;
     private Bundle bundle;
 
-    public static PantryStockFragment newInstance(int position, String function) {
+    public static PantryStockFragment newInstance(int position, String title, String function) {
         PantryStockFragment f = new PantryStockFragment();
         Bundle b = new Bundle();
         b.putInt(ARG_POSITION, position);
         b.putString(ARG_FUNCTION, function);
+        b.putString(ARG_TITLE, title);
         f.setArguments(b);
         return f;
     }
@@ -58,6 +63,7 @@ public class PantryStockFragment extends Fragment {
         super.onCreate(savedInstanceState);
         bundle = savedInstanceState;
 
+        title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
     }
@@ -96,10 +102,15 @@ public class PantryStockFragment extends Fragment {
 //                outstream.close();
                 Home house = ((MainActivity) getActivity()).getHouse();
                 HashMap<String, Room> map = house.getMap();
-                map.put("casa da peles", new Room());
+                map.put("casa da peles", new Room(BEDROOM));
                 house.modifyMap(map);
+                Log.v("MAP_SIZE_1", String.valueOf(map.size()));
 
-                ((MainActivity) getActivity()).sendObjectToServer(house);
+                house = ((MainActivity) getActivity()).getHouse();
+                map = house.getMap();
+                Log.v("MAP_SIZE_2", String.valueOf(map.size()));
+
+//                ((MainActivity) getActivity()).sendObjectToServer(house);
 
             }
         });

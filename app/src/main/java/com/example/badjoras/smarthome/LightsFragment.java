@@ -9,24 +9,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Light;
+import com.example.badjoras.control.Room;
+
+import static com.example.badjoras.smarthome.MainActivity.*;
+import static com.example.badjoras.control.Light.*;
+
 /**
  * Created by Rafael on 16/10/2014.
  */
 public class LightsFragment extends Fragment {
 
+    private static final String ARG_TITLE = "title";
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
 
     private int position;
     private String function;
+    private String title;
+
     private SeekBar sb;
     private ImageView image;
 
-    public static LightsFragment newInstance(int position, String function) {
+    public static LightsFragment newInstance(int position, String function, String title) {
         LightsFragment f = new LightsFragment();
         Bundle b = new Bundle();
         b.putInt(ARG_POSITION, position);
         b.putString(ARG_FUNCTION, function);
+        b.putString(ARG_TITLE, title);
         f.setArguments(b);
         return f;
     }
@@ -35,6 +46,7 @@ public class LightsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
     }
@@ -66,6 +78,15 @@ public class LightsFragment extends Fragment {
                    image.setImageResource(R.drawable.lamp125);
                 else
                    image.setImageResource(R.drawable.on_lamp_icon);
+
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(title);
+                Light light = (Light) room.getMap().get(LIGHTS);
+                light.changeIntensity(progress);
+
+                System.out.println("Luzes: Intensidade - " + progress);
+
+                ((MainActivity) getActivity()).sendObjectToServer(house);
             }
 
             @Override

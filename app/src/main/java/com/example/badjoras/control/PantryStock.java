@@ -20,6 +20,7 @@ public class PantryStock extends Feature implements Serializable {
         return products;
     }
 
+
     public void insertOrUpdateProduct(String name, int quantity) {
         int position = containsProduct(name);
 

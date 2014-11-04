@@ -326,13 +326,13 @@ public class MainActivity extends FragmentActivity {
             Log.v("feature_name", feature);
 
             if (feature.equals(AIR_CONDITIONER)) {
-                myfrag = AirConditionerFragment.newInstance(position, temp_arr[position]);
+                myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(PANTRY_STOCK)) {
-                myfrag = PantryStockFragment.newInstance(position, temp_arr[position]);
+                myfrag = PantryStockFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(LIGHTS)) {
-                myfrag = LightsFragment.newInstance(position, temp_arr[position]);
+                myfrag = LightsFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
-                myfrag = AirConditionerFragment.newInstance(position, temp_arr[position]);
+                myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
 
             fragment_list.add(myfrag);
