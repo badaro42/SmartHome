@@ -43,10 +43,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Luminosidade"
-                android:id="@+id/textView"
-                android:layout_below="@+id/imageLampView"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_alignLeft="@+id/seekBarLights"
+                android:id="@+id/luminosityTextView"
+                android:layout_above="@+id/seekBarLights"
                 android:layout_centerHorizontal="true" />
 
         </RelativeLayout>
