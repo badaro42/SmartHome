@@ -170,7 +170,7 @@ public class MainActivity extends FragmentActivity {
 //            establishConnection();
 //            createOutputStream();
 
-            client = new Socket("192.168.1.78", 4444);
+            client = new Socket("10.171.240.101", 4444);
             obj_os = new ObjectOutputStream(client.getOutputStream());
 
             obj_os.writeObject(home);
