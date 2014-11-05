@@ -10,9 +10,19 @@ public class PantryStock extends Feature implements Serializable {
 
     private LinkedList<Product> products;
 
+    private String[] init_products_names = new String[]{
+            "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
+            "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico"
+    };
+
+    private Integer[] init_products_quantities = new Integer[]{
+            5, 2, 0, 3, 7, 25, 1, 2, 1, 2, 30
+    };
+
+
     public PantryStock() {
         super();
-        products = new LinkedList<Product>();
+        populateList();
         //TODO: popular aqui a lista ou apenas na actividade???
     }
 
@@ -21,14 +31,30 @@ public class PantryStock extends Feature implements Serializable {
     }
 
 
-    public void insertOrUpdateProduct(String name, int quantity) {
-        int position = containsProduct(name);
+    private void populateList() {
+        products = new LinkedList<Product>();
+        Product prod;
+        for(int i = 0; i < init_products_names.length; i++) {
+            insertOrUpdateProduct(init_products_names[i],
+                    init_products_quantities[i], true);
+//            prod = new Product(init_products_names[i], init_products_quantities[i]);
+//            products.add(prod);
+        }
+    }
+
+    public void insertOrUpdateProduct(String name, int quantity, boolean skipCheck) {
+        int position = -1;
+        if(!skipCheck)
+            position = getItemByName(name);
 
         if(position == -1) {
             Product prod = new Product(name, quantity);
             products.add(prod);
         }
         else {
+            System.out.println("****Alterar quantidade****\n" + "Producto: " + name +
+                    "\nQuantidade antiga: " + products.get(position).getQuantity() +
+                    "\nNova quantidade: " + quantity + "\n**************************");
             changeQuantity(position, quantity);
         }
     }
@@ -39,7 +65,7 @@ public class PantryStock extends Feature implements Serializable {
 
     //procura na lista se o elemento já existe
     //retorna o indice na lista se encontrar, ou -1 caso nao exista
-    private int containsProduct(String prod_name) {
+    public int getItemByName(String prod_name) {
         int i = 0;
         for (Product product : products) {
             if (product.getName().equalsIgnoreCase(prod_name)) //producto encontrado, retornamos o indice

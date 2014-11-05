@@ -97,6 +97,13 @@ public class AirConditionerFragment extends Fragment {
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
 
+                //TODO: apenas para efeitos de teste, remover!!
+                boolean out_open = ((MainActivity) getActivity()).isOutputStreamOpen();
+                boolean client_open = ((MainActivity) getActivity()).isClientSocketOpen();
+
+                System.out.println("HOT - Output stream open? " + out_open);
+                System.out.println("HOT - Client socket open? " + client_open);
+
             }
         });
 
@@ -117,6 +124,13 @@ public class AirConditionerFragment extends Fragment {
                 //((MainActivity) getActivity()).setHouse(house);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
+
+                //TODO: apenas para efeitos de teste, remover!!
+                boolean out_open = ((MainActivity) getActivity()).isOutputStreamOpen();
+                boolean client_open = ((MainActivity) getActivity()).isClientSocketOpen();
+
+                System.out.println("COLD - Output stream open? " + out_open);
+                System.out.println("COLD - Client socket open? " + client_open);
             }
         });
 

@@ -88,21 +88,15 @@ public class MainActivity extends FragmentActivity {
 
         house = new Home();
 
-        try {
-            client = new Socket("192.168.1.78", 4444);  //ip de casa
+        //establishConnection();
 
-            //TODO descomentar aqui para obter do servidor o estado inicial da casa
+        //TODO descomentar aqui para obter do servidor o estado inicial da casa
 //            obj_is = getInputStream();
 //            obj_os = getOutputStream();
 //            obj_os = getOutputStream();
 //            house = (Home)obj_is.readObject();
 //            obj_os.writeObject(house);
 
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 //        catch (ClassNotFoundException e) {
 //            e.printStackTrace();
 //        }
@@ -133,6 +127,29 @@ public class MainActivity extends FragmentActivity {
 //        getActionBar().setHomeButtonEnabled(true);
     }
 
+    private void establishConnection() {
+        try {
+            if (client == null)
+                client = new Socket("192.168.1.78", 4444);  //ip de casa
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //TODO: apenas para teste, remover!!
+    public boolean isOutputStreamOpen() {
+        return obj_os == null;
+    }
+
+    //TODO: apenas para teste, remover!!
+    public boolean isClientSocketOpen() {
+        return client == null;
+    }
+
+
     //TODO placeholder!!! colocar aqui a obtenção da posição
     public void getUserPosition() {
         setTitle(KITCHEN);
@@ -150,8 +167,17 @@ public class MainActivity extends FragmentActivity {
     public int sendObjectToServer(Home home) {
         int result = 0;
         try {
-            createOutputStream();
+//            establishConnection();
+//            createOutputStream();
+
+            client = new Socket("192.168.1.78", 4444);
+            obj_os = new ObjectOutputStream(client.getOutputStream());
+
             obj_os.writeObject(home);
+
+            obj_os.close();
+            client.close();
+
             result = 1;
             return result;
         } catch (IOException e) {
@@ -160,11 +186,21 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public void onPause(){
+        try {
+            super.onPause();
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //TODO: talvez nao seja preciso ser public!!
     //cria (ou devolve, caso ja exista) um outputstream para comunicar com o server
     public void createOutputStream() {
         try {
-            if(obj_os == null)
+            if (obj_os == null)
                 obj_os = new ObjectOutputStream(client.getOutputStream());
 
 //            return obj_os;
@@ -178,7 +214,7 @@ public class MainActivity extends FragmentActivity {
     //cria (ou devolve, caso ja exista) um inputstream para comunicar com o server
     public ObjectInputStream getInputStream() {
         try {
-            if(obj_is == null)
+            if (obj_is == null)
                 obj_is = new ObjectInputStream(client.getInputStream());
 
             return obj_is;

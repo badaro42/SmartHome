@@ -1,9 +1,11 @@
 package com.example.badjoras.control;
 
+import java.io.Serializable;
+
 /**
  * Created by Rafael on 03/11/2014.
  */
-public class Product {
+public class Product implements Serializable {
 
     private int quantity;
     private String name;
