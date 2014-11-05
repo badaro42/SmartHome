@@ -130,7 +130,7 @@ public class MainActivity extends FragmentActivity {
     private void establishConnection() {
         try {
             if (client == null)
-                client = new Socket("192.168.1.78", 4444);  //ip de casa
+                client = new Socket("10.171.240.101", 4444);  //ip de casa
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {

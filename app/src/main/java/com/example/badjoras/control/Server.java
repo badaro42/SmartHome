@@ -28,7 +28,9 @@ public class Server implements Serializable {
         //TODO: e que da proxima vez vai obter o estado do servidor!!
         //cria um serversocket e fica à espera de novos clientes
         try {
-            InetAddress addr = InetAddress.getByName("192.168.1.78"); //ip de casa
+            String aux =InetAddress.getLocalHost().getHostAddress();
+            System.out.println(aux);
+            InetAddress addr = InetAddress.getByName(aux); //ip de casa
             serverSocket = new ServerSocket(4444, 50, addr);  //Server socket
             System.out.println("ServerSocket criado.");
 
