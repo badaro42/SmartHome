@@ -95,7 +95,7 @@ public class AirConditionerFragment extends Fragment {
                 //TODO: é preciso actualizar o objecto Home???
                 //((MainActivity) getActivity()).setHouse(house);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
                 //TODO: apenas para efeitos de teste, remover!!
                 boolean out_open = ((MainActivity) getActivity()).isOutputStreamOpen();
@@ -123,7 +123,7 @@ public class AirConditionerFragment extends Fragment {
                 //TODO: é preciso actualizar o objecto Home???
                 //((MainActivity) getActivity()).setHouse(house);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
                 //TODO: apenas para efeitos de teste, remover!!
                 boolean out_open = ((MainActivity) getActivity()).isOutputStreamOpen();
@@ -163,7 +163,7 @@ public class AirConditionerFragment extends Fragment {
                 //TODO: é preciso actualizar o objecto Home???
                 //((MainActivity) getActivity()).setHouse(house);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
             }
 
             @Override
