@@ -1,10 +1,12 @@
 package com.example.badjoras.smarthome;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 /**
  * Created by Diogo on 17/10/14.
@@ -19,6 +21,7 @@ public class BlindsFragment extends Fragment {
     private String title;
     private int position;
 
+    private SeekBar sb;
 
     public static BlindsFragment newInstance(int position, String function, String title) {
         BlindsFragment f = new BlindsFragment();
@@ -42,9 +45,37 @@ public class BlindsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.kitchen, container,
+        View rootView = inflater.inflate(R.layout.blinds_fragment, container,
                 false);
+
+        sb = (SeekBar) rootView.findViewById(R.id.blinds_interact);
+
+        sb.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
         return rootView;
     }
+
+
 
 }

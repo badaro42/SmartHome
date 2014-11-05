@@ -7,11 +7,12 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLOutput;
-import java.util.HashMap;
 import java.util.LinkedList;
 
-import static com.example.badjoras.smarthome.MainActivity.*;
+import static com.example.badjoras.smarthome.MainActivity.DEFAULT_PORT;
+import static com.example.badjoras.smarthome.MainActivity.IP_ADDRESS;
+import static com.example.badjoras.smarthome.MainActivity.KITCHEN;
+import static com.example.badjoras.smarthome.MainActivity.PANTRY_STOCK;
 
 
 public class Server implements Serializable {

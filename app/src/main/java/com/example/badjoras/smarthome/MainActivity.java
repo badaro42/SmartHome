@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -45,8 +44,8 @@ public class MainActivity extends FragmentActivity {
     public static final String LIVING_ROOM = "Sala de Estar";
 
     //USAR UM DESTES IPs
-//    public static final String IP_ADDRESS = "10.171.240.101";
-    public static final String IP_ADDRESS = "192.168.1.78";
+    public static final String IP_ADDRESS = "10.171.240.101";
+    //public static final String IP_ADDRESS = "192.168.1.78";
     public static final int DEFAULT_PORT = 4444;
 
     private Socket client;
