@@ -216,7 +216,8 @@ public class PantryStockFragment extends Fragment {
 
                         //TODO: FALTA ACTUALIZAR A LISTA, O SERVIDOR JA TEM A INFO CORRECTA!!!
 
-                        ((MainActivity) getActivity()).sendObjectToServer(house);
+
+                        ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
                         populateList();
                     }

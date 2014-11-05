@@ -44,6 +44,11 @@ public class MainActivity extends FragmentActivity {
     public static final String BEDROOM = "Quarto";
     public static final String LIVING_ROOM = "Sala de Estar";
 
+    //USAR UM DESTES IPs
+//    public static final String IP_ADDRESS = "10.171.240.101";
+    public static final String IP_ADDRESS = "192.168.1.78";
+    public static final int DEFAULT_PORT = 4444;
+
     private Socket client;
     private ObjectOutputStream obj_os;
     private ObjectInputStream obj_is;
@@ -88,6 +93,36 @@ public class MainActivity extends FragmentActivity {
 
         house = new Home();
 
+        //TODO: ver melhor esta cena de receber dados do servidor!!!!
+//        try {
+//            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+//
+//            System.out.println("11111 - SOCKET IS BOUND??" + client.isBound());
+//            System.out.println("11111 - SOCKET IS CLOSED??" + client.isClosed());
+//            System.out.println("11111 - SOCKET IS CONNECTED??" + client.isConnected());
+//
+//            house = new Home();
+//            System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHEHE\n Counter:" + house.getCounter());
+//
+//            //fazemos um "fake send" para o server nos enviar o objeto que ele tem
+//            sendObjectToServer(house, false);
+//
+//            System.out.println("22222 - SOCKET IS BOUND??" + client.isBound());
+//            System.out.println("22222 - SOCKET IS CLOSED??" + client.isClosed());
+//            System.out.println("22222 - SOCKET IS CONNECTED??" + client.isConnected());
+//
+//            System.out.println("***enviei obj para o server, espero pela resposta***");
+//
+//            //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+//            Home temp_house = getObjectFromServer();
+//            if (temp_house != null)
+//                house = temp_house;
+//
+//            client.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
         //establishConnection();
 
         //TODO descomentar aqui para obter do servidor o estado inicial da casa
@@ -127,16 +162,16 @@ public class MainActivity extends FragmentActivity {
 //        getActionBar().setHomeButtonEnabled(true);
     }
 
-    private void establishConnection() {
-        try {
-            if (client == null)
-                client = new Socket("10.171.240.101", 4444);  //ip de casa
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void establishConnection() {
+//        try {
+//            if (client == null)
+//                client = new Socket("10.171.240.101", 4444);  //ip de casa
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     //TODO: apenas para teste, remover!!
@@ -164,19 +199,58 @@ public class MainActivity extends FragmentActivity {
     }
 
     //cria o output stream e envia um objecto com o estado da aplicação para o servidor
-    public int sendObjectToServer(Home home) {
+    public Home getObjectFromServer() {
+        Home res_house = null;
+        try {
+
+            System.out.println("33333 - SOCKET IS BOUND??" + client.isBound());
+            System.out.println("33333 - SOCKET IS CLOSED??" + client.isClosed());
+            System.out.println("33333 - SOCKET IS CONNECTED??" + client.isConnected());
+
+//            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+            obj_is = new ObjectInputStream(client.getInputStream());
+
+            System.out.println("****criei o inputstream, fico à espera do server****");
+
+            res_house = (Home) obj_is.readObject();
+
+            System.out.println("+++++++++++++++++++++++++++\n" +
+                    "Objecto recebido do server!!!! Tamanho: " + res_house.getMap().size() +
+                    "\n+++++++++++++++++++++++++++");
+
+            obj_is.close();
+//            client.close();
+
+            return res_house;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return res_house;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return res_house;
+        }
+    }
+
+    //cria o output stream e envia um objecto com o estado da aplicação para o servidor
+    public int sendObjectToServer(Home home, boolean closeConnection) {
         int result = 0;
         try {
 //            establishConnection();
 //            createOutputStream();
 
-            client = new Socket("10.171.240.101", 4444);
+            if (closeConnection)
+                client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+
             obj_os = new ObjectOutputStream(client.getOutputStream());
 
             obj_os.writeObject(home);
+            home.incrementCounter();
 
             obj_os.close();
-            client.close();
+            if (closeConnection) {
+                System.out.println("jejejeje vou fechar o socket :D :D");
+                client.close();
+            }
 
             result = 1;
             return result;
@@ -187,7 +261,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         try {
             super.onPause();
             client.close();
@@ -196,34 +270,34 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    //TODO: talvez nao seja preciso ser public!!
-    //cria (ou devolve, caso ja exista) um outputstream para comunicar com o server
-    public void createOutputStream() {
-        try {
-            if (obj_os == null)
-                obj_os = new ObjectOutputStream(client.getOutputStream());
-
-//            return obj_os;
-
-        } catch (IOException e) {
-            e.printStackTrace();
+//    //TODO: talvez nao seja preciso ser public!!
+//    //cria (ou devolve, caso ja exista) um outputstream para comunicar com o server
+//    public void createOutputStream() {
+//        try {
+//            if (obj_os == null)
+//                obj_os = new ObjectOutputStream(client.getOutputStream());
+//
+////            return obj_os;
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+////            return null;
+//        }
+//    }
+//
+//    //cria (ou devolve, caso ja exista) um inputstream para comunicar com o server
+//    public ObjectInputStream getInputStream() {
+//        try {
+//            if (obj_is == null)
+//                obj_is = new ObjectInputStream(client.getInputStream());
+//
+//            return obj_is;
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
 //            return null;
-        }
-    }
-
-    //cria (ou devolve, caso ja exista) um inputstream para comunicar com o server
-    public ObjectInputStream getInputStream() {
-        try {
-            if (obj_is == null)
-                obj_is = new ObjectInputStream(client.getInputStream());
-
-            return obj_is;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//        }
+//    }
 
 
     @Override
@@ -367,6 +441,8 @@ public class MainActivity extends FragmentActivity {
                 myfrag = PantryStockFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(LIGHTS)) {
                 myfrag = LightsFragment.newInstance(position, temp_arr[position], chosen_arr);
+            } else if (feature.equals(BLINDS)) {
+                myfrag = BlindsFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
                 myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
             }

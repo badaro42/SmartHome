@@ -14,9 +14,19 @@ import static com.example.badjoras.smarthome.MainActivity.LIVING_ROOM;
 public class Home implements Serializable {
 
     private HashMap<String, Room> rooms;
+    private int counter;
 
     public Home() {
         populateMap();
+        counter = 0;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void incrementCounter() {
+        counter++;
     }
 
     private void populateMap() {
