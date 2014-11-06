@@ -45,8 +45,9 @@ public class MainActivity extends FragmentActivity {
 
     //USAR UM DESTES IPs
 //    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
-    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
 
     private Socket client;
@@ -167,16 +168,16 @@ public class MainActivity extends FragmentActivity {
 //        getActionBar().setHomeButtonEnabled(true);
     }
 
-//    private void establishConnection() {
-//        try {
-//            if (client == null)
-//                client = new Socket("10.171.240.101", 4444);  //ip de casa
+    private void establishConnection() {
+        try {
+            if (client == null)
+                client = new Socket("10.171.240.101", 4444);  //ip de casa
 //        } catch (UnknownHostException e) {
 //            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     //TODO: apenas para teste, remover!!
@@ -243,8 +244,18 @@ public class MainActivity extends FragmentActivity {
 //            establishConnection();
 //            createOutputStream();
 
-            if (closeConnection)
+            if (closeConnection) {
+                System.out.println("***************ANTES DE CRIAR O SOCKET*****************");
                 client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+                System.out.println("***************ANTES DE ABRIR O OUTPUTSTREAM*****************");
+                obj_os = new ObjectOutputStream(client.getOutputStream());
+                obj_is = new ObjectInputStream(client.getInputStream());
+                System.out.println("***************TUDO ABERTO, PROSSIGA!*****************");
+
+                System.out.println("44444 - SOCKET IS BOUND??" + client.isBound());
+                System.out.println("44444 - SOCKET IS CLOSED??" + client.isClosed());
+                System.out.println("44444 - SOCKET IS CONNECTED??" + client.isConnected());
+            }
 
 //            obj_os = new ObjectOutputStream(client.getOutputStream());
 
@@ -255,6 +266,8 @@ public class MainActivity extends FragmentActivity {
 //            obj_os.close();
             if (closeConnection) {
                 System.out.println("jejejeje vou fechar o socket :D :D");
+                obj_is.close();
+                obj_os.close();
                 client.close();
             }
 

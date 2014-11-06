@@ -21,6 +21,10 @@ public class Home implements Serializable {
         counter = 0;
     }
 
+    public void setCounter(int new_count) {
+        counter = new_count;
+    }
+
     public int getCounter() {
         return counter;
     }

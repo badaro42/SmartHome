@@ -35,7 +35,6 @@ public class Server implements Serializable {
         try {
             server_house = null;
 
-//            String aux =InetAddress.getLocalHost().getHostAddress();
             String aux = IP_ADDRESS;
             System.out.println("Server IP: " + aux);
             InetAddress addr = InetAddress.getByName(aux); //ip de casa
@@ -45,6 +44,7 @@ public class Server implements Serializable {
             while (true) {
                 System.out.println("À espera de novo cliente...");
                 clientSocket = serverSocket.accept();   //accept the client connection
+                System.out.println(clientSocket.toString());
                 System.out.println("Cliente ligado com sucesso!");
 
                 //TODO: tratar caso em que inicialmente se envia o objecto para a app
@@ -71,17 +71,12 @@ public class Server implements Serializable {
                     System.out.println(server_house == null);
                     System.out.println("**************************************************");
 
-                    if (server_house == null)
+                    if (server_house == null) {
                         server_house = new Home();
+                    }
 
-//                    try {
-//                        System.out.println("VOU AGR ESPERAR 5 SEGUNDOS");
-//                        Thread.sleep(5000);                 //1000 milliseconds is one second.
-//                    } catch(InterruptedException ex) {
-//                        Thread.currentThread().interrupt();
-//                    }
-//                    System.out.println("já esperei 5 segundos, vou enviar o estado");
-
+                    //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
+                    server_house.setCounter(1);
                     outputstream.writeObject(server_house);
                     outputstream.flush();
 
@@ -101,7 +96,6 @@ public class Server implements Serializable {
 
                     //TODO para efeitos de teste, remover mais tarde
                     System.out.println(server_house.getMap().size());
-
                 }
 
                 outputstream.close();
@@ -111,6 +105,7 @@ public class Server implements Serializable {
 
         } catch (IOException e) {
             System.out.println("Could not listen on port: 4444");
+            e.printStackTrace();
             serverSocket.close();
         } catch (ClassNotFoundException e) {
             serverSocket.close();
