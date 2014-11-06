@@ -44,8 +44,9 @@ public class MainActivity extends FragmentActivity {
     public static final String LIVING_ROOM = "Sala de Estar";
 
     //USAR UM DESTES IPs
-    public static final String IP_ADDRESS = "10.171.240.101";
-    //public static final String IP_ADDRESS = "192.168.1.78";
+//    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
+    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
 
     private Socket client;
@@ -90,37 +91,42 @@ public class MainActivity extends FragmentActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        house = new Home();
+//        house = new Home();
 
         //TODO: ver melhor esta cena de receber dados do servidor!!!!
-//        try {
-//            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
-//
-//            System.out.println("11111 - SOCKET IS BOUND??" + client.isBound());
-//            System.out.println("11111 - SOCKET IS CLOSED??" + client.isClosed());
-//            System.out.println("11111 - SOCKET IS CONNECTED??" + client.isConnected());
-//
-//            house = new Home();
-//            System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHEHE\n Counter:" + house.getCounter());
-//
-//            //fazemos um "fake send" para o server nos enviar o objeto que ele tem
-//            sendObjectToServer(house, false);
-//
-//            System.out.println("22222 - SOCKET IS BOUND??" + client.isBound());
-//            System.out.println("22222 - SOCKET IS CLOSED??" + client.isClosed());
-//            System.out.println("22222 - SOCKET IS CONNECTED??" + client.isConnected());
-//
-//            System.out.println("***enviei obj para o server, espero pela resposta***");
-//
-//            //obtemos o estado do server, para o caso de reiniciarmos a aplicação
-//            Home temp_house = getObjectFromServer();
-//            if (temp_house != null)
-//                house = temp_house;
-//
-//            client.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+
+            obj_os = new ObjectOutputStream(client.getOutputStream());
+            obj_is = new ObjectInputStream(client.getInputStream());
+
+            System.out.println("11111 - SOCKET IS BOUND??" + client.isBound());
+            System.out.println("11111 - SOCKET IS CLOSED??" + client.isClosed());
+            System.out.println("11111 - SOCKET IS CONNECTED??" + client.isConnected());
+
+            house = new Home();
+            System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHEHE\n Counter:" + house.getCounter());
+
+            //fazemos um "fake send" para o server nos enviar o objeto que ele tem
+            sendObjectToServer(house, false);
+
+            System.out.println("22222 - SOCKET IS BOUND??" + client.isBound());
+            System.out.println("22222 - SOCKET IS CLOSED??" + client.isClosed());
+            System.out.println("22222 - SOCKET IS CONNECTED??" + client.isConnected());
+
+            System.out.println("***enviei obj para o server, espero pela resposta***");
+
+            //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+            Home temp_house = getObjectFromServer();
+            if (temp_house != null)
+                house = temp_house;
+
+            obj_os.close();
+            obj_is.close();
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //establishConnection();
 
@@ -207,7 +213,7 @@ public class MainActivity extends FragmentActivity {
             System.out.println("33333 - SOCKET IS CONNECTED??" + client.isConnected());
 
 //            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
-            obj_is = new ObjectInputStream(client.getInputStream());
+//            obj_is = new ObjectInputStream(client.getInputStream());
 
             System.out.println("****criei o inputstream, fico à espera do server****");
 
@@ -217,7 +223,7 @@ public class MainActivity extends FragmentActivity {
                     "Objecto recebido do server!!!! Tamanho: " + res_house.getMap().size() +
                     "\n+++++++++++++++++++++++++++");
 
-            obj_is.close();
+//            obj_is.close();
 //            client.close();
 
             return res_house;
@@ -240,12 +246,13 @@ public class MainActivity extends FragmentActivity {
             if (closeConnection)
                 client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
 
-            obj_os = new ObjectOutputStream(client.getOutputStream());
+//            obj_os = new ObjectOutputStream(client.getOutputStream());
 
             obj_os.writeObject(home);
+            obj_os.flush();
             home.incrementCounter();
 
-            obj_os.close();
+//            obj_os.close();
             if (closeConnection) {
                 System.out.println("jejejeje vou fechar o socket :D :D");
                 client.close();

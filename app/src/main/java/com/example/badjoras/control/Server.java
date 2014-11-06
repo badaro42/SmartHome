@@ -49,7 +49,9 @@ public class Server implements Serializable {
 
                 //TODO: tratar caso em que inicialmente se envia o objecto para a app
 
+                outputstream = new ObjectOutputStream(clientSocket.getOutputStream());
                 inputstream = new ObjectInputStream(clientSocket.getInputStream());
+
                 System.out.println("Consegui abrir um socket para o endereço" +
                         clientSocket.getInetAddress().toString());
 
@@ -62,48 +64,48 @@ public class Server implements Serializable {
 
                 //TODO: VER MELHOR ESTA CENA DE ENVIAR CENAS PARA A APP
                 //verifica se se trata do "fake send", para assim enviar o estado actual do server
-//                if(house.getCounter() == 0) {
-////                    if(server_house == null)
-//
-//                    System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
-//                    System.out.println(server_house == null);
-//                    System.out.println("**************************************************");
-//
+                if (house.getCounter() == 0) {
 //                    if(server_house == null)
-//                        server_house = new Home();
-//
-////                    try {
-////                        System.out.println("VOU AGR ESPERAR 5 SEGUNDOS");
-////                        Thread.sleep(5000);                 //1000 milliseconds is one second.
-////                    } catch(InterruptedException ex) {
-////                        Thread.currentThread().interrupt();
-////                    }
-////                    System.out.println("já esperei 5 segundos, vou enviar o estado");
-//
-//                    outputstream = new ObjectOutputStream(clientSocket.getOutputStream());
-//                    outputstream.writeObject(server_house);
-//                    outputstream.close();
-//                }
-//                else {
-                server_house = house;
 
-                //TODO: para efeitos de teste, remover!!!
-                Room room = (Room) server_house.getMap().get(KITCHEN);
-                PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
-                LinkedList<Product> prods = pantry.getProductList();
+                    System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
+                    System.out.println(server_house == null);
+                    System.out.println("**************************************************");
 
-                String res = "";
-                for (Product prod : prods) {
-                    res += prod.getName() + ": " + prod.getQuantity() + "\n";
+                    if (server_house == null)
+                        server_house = new Home();
+
+//                    try {
+//                        System.out.println("VOU AGR ESPERAR 5 SEGUNDOS");
+//                        Thread.sleep(5000);                 //1000 milliseconds is one second.
+//                    } catch(InterruptedException ex) {
+//                        Thread.currentThread().interrupt();
+//                    }
+//                    System.out.println("já esperei 5 segundos, vou enviar o estado");
+
+                    outputstream.writeObject(server_house);
+                    outputstream.flush();
+
+                } else {
+                    server_house = house;
+
+                    //TODO: para efeitos de teste, remover!!!
+                    Room room = (Room) server_house.getMap().get(KITCHEN);
+                    PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
+                    LinkedList<Product> prods = pantry.getProductList();
+
+                    String res = "";
+                    for (Product prod : prods) {
+                        res += prod.getName() + ": " + prod.getQuantity() + "\n";
+                    }
+                    System.out.print(res);
+
+                    //TODO para efeitos de teste, remover mais tarde
+                    System.out.println(server_house.getMap().size());
+
                 }
-                System.out.print(res);
 
-                //TODO para efeitos de teste, remover mais tarde
-                System.out.println(server_house.getMap().size());
-
+                outputstream.close();
                 inputstream.close();
-//                }
-
                 clientSocket.close();
             }
 
