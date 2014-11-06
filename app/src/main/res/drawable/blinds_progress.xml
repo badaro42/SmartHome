@@ -3,7 +3,7 @@
 
     <item
         android:id="@android:id/background"
-        android:drawable="@color/blue_sky"/>
+        android:drawable="@drawable/rsz_sunset"/>
     <item
         android:id="@android:id/progress"
         android:drawable="@drawable/blindsfixe"/>

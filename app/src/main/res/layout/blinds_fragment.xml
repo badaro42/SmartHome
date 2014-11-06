@@ -58,18 +58,26 @@
                 android:id="@+id/blindState"
                 android:layout_centerHorizontal="true"
                  />
-                <SeekBar
-                    android:id="@+id/blinds_interact"
-                    android:layout_width="250dp"
-                    android:background="@color/red"
-                    android:layout_height="200dp"
-                    android:scrollbars="vertical"
-                    android:verticalScrollbarPosition="left"
-                    android:progressDrawable="@drawable/blinds_progress"
-                    android:max="14"
-                     />
 
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal">
+            <SeekBar
+                android:id="@+id/blinds_interact"
+                android:layout_width="250dp"
+                android:layout_height="500dp"
+                android:thumb="@android:color/transparent"
+                android:progressDrawable="@drawable/blinds_progress"
+                android:rotation="90"
+                android:max="14"
+                android:progress="100"
+                android:layout_below="@+id/blind_relative"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="182dp" />
+            </LinearLayout>
 
         </RelativeLayout>
     </RelativeLayout>

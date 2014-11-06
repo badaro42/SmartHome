@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+import android.widget.Switch;
+import android.widget.Toast;
 
 /**
  * Created by Diogo on 17/10/14.
@@ -22,6 +24,7 @@ public class BlindsFragment extends Fragment {
     private int position;
 
     private SeekBar sb;
+    private Switch sw;
 
     public static BlindsFragment newInstance(int position, String function, String title) {
         BlindsFragment f = new BlindsFragment();
@@ -49,6 +52,28 @@ public class BlindsFragment extends Fragment {
                 false);
 
         sb = (SeekBar) rootView.findViewById(R.id.blinds_interact);
+        sw = (Switch) rootView.findViewById(R.id.blindState);
+        sb.setEnabled(false);
+
+        sw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if(sw.isChecked()) {
+                    sb.setEnabled(true);
+                    Toast.makeText(getActivity(),
+                            "Ta ON", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    sb.setEnabled(false);
+                    Toast.makeText(getActivity(),
+                            "Ta OFF", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+
 
         sb.setOnTouchListener(new View.OnTouchListener() {
 

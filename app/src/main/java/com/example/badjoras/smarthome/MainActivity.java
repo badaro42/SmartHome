@@ -47,7 +47,7 @@ public class MainActivity extends FragmentActivity {
 //    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
 //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
-    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
 
     private Socket client;
