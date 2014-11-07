@@ -1,11 +1,5 @@
 package com.example.badjoras.smarthome;
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +13,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends FragmentActivity {
 
@@ -56,10 +48,10 @@ public class MainActivity extends FragmentActivity {
     public static final String LIVING_ROOM = "Sala de Estar";
 
     //USAR UM DESTES IPs
-//    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
+   public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
 //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
-    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
+ //   public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
 
     //TODO: colocar aqui os ids dos AP mais perto de cada sala
@@ -226,22 +218,18 @@ public class MainActivity extends FragmentActivity {
 
 
     private void establishConnection() {
-        int n_tries = 0;
         Toast t;
-        while ((n_tries != 3) || (client == null)) {
-            t = Toast.makeText(getBaseContext(), "Estabelecendo ligação ao server", Toast.LENGTH_LONG);
-            t.show();
-            try {
-                client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
-                t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
-                t.show();
-                connected_to_server = true;
-            } catch (IOException e) {
-                n_tries++;
-            }
-        }
-        t = Toast.makeText(getBaseContext(), "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG);
+        t = Toast.makeText(getBaseContext(), "Estabelecendo ligação ao server", Toast.LENGTH_LONG);
         t.show();
+        try {
+            client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
+            t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
+            t.show();
+            connected_to_server = true;
+        } catch (IOException e) {
+            t = Toast.makeText(getBaseContext(), "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG);
+            t.show();
+        }
     }
 
 
@@ -527,7 +515,14 @@ public class MainActivity extends FragmentActivity {
                 myfrag = LightsFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(BLINDS)) {
                 myfrag = BlindsFragment.newInstance(position, temp_arr[position], chosen_arr);
-            } else {
+
+            } else if (feature.equals(COFFEE_MACHINE)) {
+                myfrag = CoffeeFragment.newInstance(position, temp_arr[position], chosen_arr);
+            }
+            else if(feature.equals(STOVE_OVEN)){
+                myfrag = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
+            }
+            else {
                 myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
 

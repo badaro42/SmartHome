@@ -53,7 +53,11 @@ public class BlindsFragment extends Fragment {
 
         sb = (SeekBar) rootView.findViewById(R.id.blinds_interact);
         sw = (Switch) rootView.findViewById(R.id.blindState);
-        sb.setEnabled(false);
+
+        if(sw.isChecked())
+            sb.setEnabled(true);
+        if(!sw.isChecked())
+            sb.setEnabled(false);
 
         sw.setOnClickListener(new View.OnClickListener() {
             @Override
