@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 
 /**
@@ -21,6 +23,8 @@ public class CoffeeFragment extends Fragment {
     private static final String ARG_FUNCTION = "function";
 
     private ProgressBar progressBar;
+    private TimePicker tp;
+    private ToggleButton tb;
     private int progressStatus = 0;
     private TextView textView;
     private Button bt;
@@ -61,7 +65,22 @@ public class CoffeeFragment extends Fragment {
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar1);
         textView = (TextView) rootView.findViewById(R.id.textView1);
         bt = (Button) rootView.findViewById(R.id.coffee_button);
+        tp = (TimePicker) rootView.findViewById(R.id.coffee_picker);
+        tb = (ToggleButton) rootView.findViewById(R.id.coffee_toggle);
 
+        tp.setIs24HourView(true);
+
+        tb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+                if(tb.isChecked())
+                    tp.setEnabled(false);
+                else
+                    tp.setEnabled(true);
+
+            }
+        });
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

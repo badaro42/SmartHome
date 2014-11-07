@@ -88,7 +88,7 @@
                 android:paddingTop="50dp"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
-                android:layout_marginTop="300dp"
+                android:layout_marginTop="50dp"
                 android:id="@+id/blind_relative2">
 
                 <TextView
@@ -106,6 +106,32 @@
                     android:background="@android:color/darker_gray"
                     android:layout_below="@id/textView42"/>
             </RelativeLayout>
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/blind_relative2"
+                android:paddingTop="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:layout_marginTop="50dp"
+                android:id="@+id/blind_relative3">
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/coffee_toggle"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true" />
+
+            <TimePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/coffee_picker"
+                android:layout_centerHorizontal="true" />
+            </RelativeLayout>
+
         </RelativeLayout>
     </RelativeLayout>
 
