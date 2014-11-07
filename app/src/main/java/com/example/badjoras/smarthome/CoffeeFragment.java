@@ -1,12 +1,15 @@
 package com.example.badjoras.smarthome;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.Switch;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -17,12 +20,17 @@ public class CoffeeFragment extends Fragment {
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
 
+    private ProgressBar progressBar;
+    private int progressStatus = 0;
+    private TextView textView;
+    private Button bt;
+    private Handler handler = new Handler();
+
     private String function;
     private String title;
     private int position;
 
-    private SeekBar sb;
-    private Switch sw;
+
 
     public static CoffeeFragment newInstance(int position, String function, String title) {
         CoffeeFragment f = new CoffeeFragment();
@@ -41,6 +49,8 @@ public class CoffeeFragment extends Fragment {
         title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
+
+
     }
 
     @Override
@@ -48,8 +58,54 @@ public class CoffeeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.coffee_fragment, container,
                 false);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar1);
+        textView = (TextView) rootView.findViewById(R.id.textView1);
+        bt = (Button) rootView.findViewById(R.id.coffee_button);
+
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                bt.setEnabled(false);
+                progressBar.setVisibility(View.VISIBLE);
+                textView.setVisibility(View.VISIBLE);
+                // Start long running operation in a background thread
+                new Thread(new Runnable() {
+                    public void run() {
+                        while (progressStatus < 100) {
+                            progressStatus += 1;
+                            // Update the progress bar and display the
+                            //current value in the text view
+
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    progressBar.setProgress(progressStatus);
+                                    textView.setText(progressStatus+"/"+progressBar.getMax());
+                                    if(progressStatus==100)
+                                    {
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        textView.setVisibility(View.INVISIBLE);
+                                        bt.setEnabled(true);
+                                        Toast.makeText(getActivity(),
+                                                "O café está pronto", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                            try {
+                                // Sleep for 50 milliseconds.
+                                //Just to display the progress slowly
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        progressStatus=0;
+                    }
+                }).start();
+            }
+        });
         return rootView;
     }
+
 
 
 }

@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Estado"
+                    android:text="Tirar Café"
                     android:id="@+id/textViewBlinds" />
 
                 <View
@@ -50,13 +50,61 @@
                 android:layout_below="@+id/relativeLayout"
                 android:layout_marginTop="20dp"
                 android:id="@+id/blind_relative">
-                <Switch
+                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/blindState"
+                    android:text="Agora"
+                    android:id="@+id/coffee_button"
+                    android:layout_centerHorizontal="true" />
+                <ProgressBar
+                    android:id="@+id/progressBar1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    />
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:visibility="invisible"
+                    android:minHeight="50dp"
+                    android:minWidth="200dp"
+                    android:progress="1"
+                    android:layout_below="@+id/coffee_button"/>
 
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_alignLeft="@+id/progressBar1"
+                    android:layout_below="@+id/progressBar1"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/blind_relative"
+                android:paddingTop="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:layout_marginTop="300dp"
+                android:id="@+id/blind_relative2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Agendar"
+                    android:id="@+id/textView42"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="false" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_below="@id/textView42"/>
             </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>

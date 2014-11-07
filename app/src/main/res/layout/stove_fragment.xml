@@ -49,15 +49,56 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relativeLayout"
                 android:layout_marginTop="20dp"
-                android:id="@+id/blind_relative">
+                android:id="@+id/stove_relative">
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/blindState"
-                    android:layout_centerHorizontal="true"
-                    />
-
+                    android:layout_centerHorizontal="true"/>
             </RelativeLayout>
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:background="@color/red"
+                android:layout_below="@+id/stove_relative"
+                android:id="@+id/relativeLayout2">
+
+
+
+                </RelativeLayout>
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/blind_relative"
+                android:paddingTop="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:layout_marginTop="300dp"
+                android:id="@+id/blind_relative2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Agendar"
+                    android:id="@+id/textView42"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="false" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    android:layout_below="@id/textView42"/>
+                </RelativeLayout>
+
+
         </RelativeLayout>
     </RelativeLayout>
 
