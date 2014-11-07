@@ -1,6 +1,14 @@
 package com.example.badjoras.smarthome;
 
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,6 +19,9 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.example.badjoras.control.Home;
@@ -20,6 +31,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,6 +61,13 @@ public class MainActivity extends FragmentActivity {
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
     public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
+
+    //TODO: colocar aqui os ids dos AP mais perto de cada sala
+    public static final String BSSID_1 = "AP1";
+    public static final String BSSID_2 = "AP2";
+    public static final String BSSID_3 = "AP3";
+
+    public static String last_position;
 
     private Socket client;
     private ObjectOutputStream obj_os;
@@ -84,6 +103,22 @@ public class MainActivity extends FragmentActivity {
 
     private Timer timer;
 
+    private WifiManager mainWifiObj;
+    private WifiScanReceiver wifiReciever;
+    private ListView list;
+    private String wifis[];
+    private HashMap<String, ArrayList<Double>> results_map;
+
+    public double distance_to_ap1;
+    public double distance_to_ap2;
+    public double distance_to_ap3;
+
+    public boolean connected_to_server;
+
+    public int wifiScanCount;
+    private Handler handler;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,35 +131,51 @@ public class MainActivity extends FragmentActivity {
 
         //TODO: ver melhor esta cena de receber dados do servidor!!!!
         try {
-            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+            last_position = "";
+            client = null;
 
-            obj_os = new ObjectOutputStream(client.getOutputStream());
-            obj_is = new ObjectInputStream(client.getInputStream());
+            results_map = new HashMap<String, ArrayList<Double>>(30);
+            mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            wifiReciever = new WifiScanReceiver();
 
-            System.out.println("11111 - SOCKET IS BOUND??" + client.isBound());
-            System.out.println("11111 - SOCKET IS CLOSED??" + client.isClosed());
-            System.out.println("11111 - SOCKET IS CONNECTED??" + client.isConnected());
+            //            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+
+            establishConnection();
 
             house = new Home();
-            System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHEHE\n Counter:" + house.getCounter());
 
-            //fazemos um "fake send" para o server nos enviar o objeto que ele tem
-            sendObjectToServer(house, false);
+            //se conseguimos ligar ao servidor, obtem o estado actual do servidor
+            if(connected_to_server) {
+                obj_os = new ObjectOutputStream(client.getOutputStream());
+                obj_is = new ObjectInputStream(client.getInputStream());
 
-            System.out.println("22222 - SOCKET IS BOUND??" + client.isBound());
-            System.out.println("22222 - SOCKET IS CLOSED??" + client.isClosed());
-            System.out.println("22222 - SOCKET IS CONNECTED??" + client.isConnected());
 
-            System.out.println("***enviei obj para o server, espero pela resposta***");
+                System.out.println("11111 - SOCKET IS BOUND??" + client.isBound());
+                System.out.println("11111 - SOCKET IS CLOSED??" + client.isClosed());
+                System.out.println("11111 - SOCKET IS CONNECTED??" + client.isConnected());
 
-            //obtemos o estado do server, para o caso de reiniciarmos a aplicação
-            Home temp_house = getObjectFromServer();
-            if (temp_house != null)
-                house = temp_house;
 
-            obj_os.close();
-            obj_is.close();
-            client.close();
+                System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHEHE\n Counter:" + house.getCounter());
+
+                //fazemos um "fake send" para o server nos enviar o objeto que ele tem
+                sendObjectToServer(house, false);
+
+                System.out.println("22222 - SOCKET IS BOUND??" + client.isBound());
+                System.out.println("22222 - SOCKET IS CLOSED??" + client.isClosed());
+                System.out.println("22222 - SOCKET IS CONNECTED??" + client.isConnected());
+
+                System.out.println("***enviei obj para o server, espero pela resposta***");
+
+                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+                Home temp_house = getObjectFromServer();
+                if (temp_house != null)
+                    house = temp_house;
+
+                obj_os.close();
+                obj_is.close();
+                client.close();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,7 +197,12 @@ public class MainActivity extends FragmentActivity {
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
 //        timer = new Timer();
 //        timer.schedule(new AlertTask(), 0, //initial delay
-//                1 * 5000); //subsequent rate (in ms)
+//                1 * 3000); //subsequent rate (in ms)
+
+        //cena da posicao, comeca a correr ao fim de 2 segundos
+        handler = new Handler();
+        handler.postDelayed(runnable, 2000);
+
 
         //obtem a posição inicial do utilizador
         getUserPosition();
@@ -168,16 +224,46 @@ public class MainActivity extends FragmentActivity {
 //        getActionBar().setHomeButtonEnabled(true);
     }
 
+
     private void establishConnection() {
-        try {
-            if (client == null)
-                client = new Socket("10.171.240.101", 4444);  //ip de casa
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        int n_tries = 0;
+        Toast t;
+        while ((n_tries != 3) || (client == null)) {
+            t = Toast.makeText(getBaseContext(), "Estabelecendo ligação ao server", Toast.LENGTH_LONG);
+            t.show();
+            try {
+                client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
+                t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
+                t.show();
+                connected_to_server = true;
+            } catch (IOException e) {
+                n_tries++;
+            }
         }
+        t = Toast.makeText(getBaseContext(), "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG);
+        t.show();
     }
+
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            wifiScanCount = 0;
+            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
+            if (wifiScanCount % 3 == 2) {
+                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
+                mainWifiObj.startScan();
+            } else {
+                System.out.println("Vou fazer novo scan da rede!!!\n" +
+                        "Estou a fazer o scan " + (wifiScanCount + 1) % 3 + " de 3");
+                mainWifiObj.startScan();
+            }
+            wifiScanCount++;
+
+            //volta a chamar este handler, dizendo que vai executar ao fim de 3000ms
+            handler.postDelayed(this, 3000);
+        }
+    };
 
 
     //TODO: apenas para teste, remover!!
@@ -241,36 +327,31 @@ public class MainActivity extends FragmentActivity {
     public int sendObjectToServer(Home home, boolean closeConnection) {
         int result = 0;
         try {
-//            establishConnection();
-//            createOutputStream();
+            if(connected_to_server) {
+                if (closeConnection) {
+                    System.out.println("***************ANTES DE CRIAR O SOCKET*****************");
+                    client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+                    System.out.println("***************ANTES DE ABRIR O OUTPUTSTREAM*****************");
+                    obj_os = new ObjectOutputStream(client.getOutputStream());
+                    obj_is = new ObjectInputStream(client.getInputStream());
+                    System.out.println("***************TUDO ABERTO, PROSSIGA!*****************");
 
-            if (closeConnection) {
-                System.out.println("***************ANTES DE CRIAR O SOCKET*****************");
-                client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
-                System.out.println("***************ANTES DE ABRIR O OUTPUTSTREAM*****************");
-                obj_os = new ObjectOutputStream(client.getOutputStream());
-                obj_is = new ObjectInputStream(client.getInputStream());
-                System.out.println("***************TUDO ABERTO, PROSSIGA!*****************");
+                    System.out.println("44444 - SOCKET IS BOUND??" + client.isBound());
+                    System.out.println("44444 - SOCKET IS CLOSED??" + client.isClosed());
+                    System.out.println("44444 - SOCKET IS CONNECTED??" + client.isConnected());
+                }
 
-                System.out.println("44444 - SOCKET IS BOUND??" + client.isBound());
-                System.out.println("44444 - SOCKET IS CLOSED??" + client.isClosed());
-                System.out.println("44444 - SOCKET IS CONNECTED??" + client.isConnected());
+                obj_os.writeObject(home);
+                obj_os.flush();
+                home.incrementCounter();
+
+                if (closeConnection) {
+                    System.out.println("jejejeje vou fechar o socket :D :D");
+                    obj_is.close();
+                    obj_os.close();
+                    client.close();
+                }
             }
-
-//            obj_os = new ObjectOutputStream(client.getOutputStream());
-
-            obj_os.writeObject(home);
-            obj_os.flush();
-            home.incrementCounter();
-
-//            obj_os.close();
-            if (closeConnection) {
-                System.out.println("jejejeje vou fechar o socket :D :D");
-                obj_is.close();
-                obj_os.close();
-                client.close();
-            }
-
             result = 1;
             return result;
         } catch (IOException e) {
@@ -279,44 +360,28 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    protected void onResume() {
+        Toast.makeText(getBaseContext(), "resumeindo :D", Toast.LENGTH_LONG);
+        Log.v("ScanResults ONRESUME", "ON RESUME CARALHO");
+
+        registerReceiver(wifiReciever, new IntentFilter(
+                WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        super.onResume();
+    }
+
     @Override
     public void onPause() {
         try {
-            super.onPause();
+            Toast.makeText(getBaseContext(), "ESTOU A PARAAR!!! :D", Toast.LENGTH_LONG);
+            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
+
+            unregisterReceiver(wifiReciever);
             client.close();
+            super.onPause();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-//    //TODO: talvez nao seja preciso ser public!!
-//    //cria (ou devolve, caso ja exista) um outputstream para comunicar com o server
-//    public void createOutputStream() {
-//        try {
-//            if (obj_os == null)
-//                obj_os = new ObjectOutputStream(client.getOutputStream());
-//
-////            return obj_os;
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-////            return null;
-//        }
-//    }
-//
-//    //cria (ou devolve, caso ja exista) um inputstream para comunicar com o server
-//    public ObjectInputStream getInputStream() {
-//        try {
-//            if (obj_is == null)
-//                obj_is = new ObjectInputStream(client.getInputStream());
-//
-//            return obj_is;
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 
 
     @Override
@@ -472,19 +537,99 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    class AlertTask extends TimerTask {
-        int numWarningBeeps = 5;
+//    class AlertTask extends TimerTask {
+//
+//        public void run() {
+//            wifiScanCount = 0;
+//            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
+//            if (wifiScanCount % 3 == 2) {
+//                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
+//                mainWifiObj.startScan();
+//            }
+//            else {
+//                System.out.println("Vou fazer novo scan da rede!!!\n" +
+//                        "Estou a fazer o scan " + (wifiScanCount+1)%3 + " de 3");
+//                mainWifiObj.startScan();
+//            }
+//            wifiScanCount++;
+////            else {
+////                System.out.println("Já tenho tres scans");
+////                wifiScanCount
+////                timer.cancel(); //Not necessary because we call System.exit
+////                System.exit(0); //Stops the AWT thread (and everything else)
+////            }
+//        }
+//    }
 
-        public void run() {
-            if (numWarningBeeps > 0) {
-                Log.v("Beep-test", "Beep Beep!!");
-                numWarningBeeps--;
-            } else {
-                Log.v("Beep-test-last", "Last Beep Beep!!");
-                timer.cancel(); //Not necessary because we call System.exit
-//                System.exit(0); //Stops the AWT thread (and everything else)
+    class WifiScanReceiver extends BroadcastReceiver {
+        @SuppressLint("UseValueOf")
+        public void onReceive(Context c, Intent intent) {
+            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
+            wifis = new String[wifiScanList.size()];
+            double result;
+
+            for (ScanResult res : wifiScanList) {
+                if (res.BSSID.equalsIgnoreCase(BSSID_1) ||
+                        res.BSSID.equalsIgnoreCase(BSSID_2) ||
+                        res.BSSID.equalsIgnoreCase(BSSID_3)) {
+                    result = calculateDistance(res.level, res.frequency);
+                    ArrayList<Double> temp_list = results_map.get(res.BSSID);
+                    if (temp_list == null) {
+                        temp_list = new ArrayList<Double>();
+                        temp_list.add(result);
+                        results_map.put(res.BSSID, temp_list);
+                    } else
+                        temp_list.add(result);
+                }
+            }
+
+            if (wifiScanCount % 3 == 2) {
+                getClosestRoom();
+            }
+
+            Toast t = Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_LONG);
+            t.show();
+        }
+
+        //calcula a media das distancias e obtem a divisao onde o user se encontra
+        //chama depois os metodos responsaveis por redesenhar os fragmentos
+        public void getClosestRoom() {
+
+            String closest;
+
+            distance_to_ap1 = computeMean(results_map.get(BSSID_1));
+            distance_to_ap2 = computeMean(results_map.get(BSSID_2));
+            distance_to_ap3 = computeMean(results_map.get(BSSID_3));
+
+            if (distance_to_ap1 < distance_to_ap2 &&
+                    distance_to_ap1 < distance_to_ap3) {
+                closest = KITCHEN;
+            } else if (distance_to_ap2 < distance_to_ap3 &&
+                    distance_to_ap2 < distance_to_ap1) {
+                closest = BEDROOM;
+            } else
+                closest = LIVING_ROOM;
+
+            //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
+            if (!last_position.equalsIgnoreCase(closest)) {
+                last_position = closest;
+                setTitle(closest);
+                refreshTabs();
             }
         }
-    }
 
+
+        public double computeMean(ArrayList<Double> list) {
+            int sum = 0;
+            for (Double el : list) {
+                sum += el;
+            }
+            return sum / list.size();
+        }
+
+        public double calculateDistance(double levelInDb, double freqInMHz) {
+            double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
+            return Math.pow(10.0, exp);
+        }
+    }
 }
