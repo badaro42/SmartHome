@@ -232,7 +232,7 @@ public class MainActivity extends FragmentActivity {
             // Create your socket
             client = new Socket();
             // Connect with 3 s timeout
-            client.connect(sockaddr, 10000);
+            client.connect(sockaddr, 2000);
 
 //            client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
             t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
@@ -458,7 +458,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
+//            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             //Log.v("str_eq_bathroom", String.valueOf(m_title == BATHROOM));
             if (m_title != null) {
                 if (m_title.toString().equals(OUTSIDE_GENERAL)) {
@@ -467,7 +467,7 @@ public class MainActivity extends FragmentActivity {
                 } else if (m_title.toString().equals(BEDROOM)) {
                     return bedroom_features[position];
                 } else if (m_title.toString().equals(KITCHEN)) {
-                    System.out.println("KITCHEN KITCHEN KITCHEN");
+//                    System.out.println("KITCHEN KITCHEN KITCHEN");
                     return kitchen_features[position];
                 } else if (m_title.toString().equals(LIVING_ROOM)) {
                     return living_room_features[position];
@@ -479,7 +479,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public int getCount() {
-            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
+//            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             if (m_title != null) {
                 if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     return outside_general_features.length;
