@@ -22,7 +22,9 @@ import com.example.badjoras.control.Home;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,11 +50,12 @@ public class MainActivity extends FragmentActivity {
     public static final String LIVING_ROOM = "Sala de Estar";
 
     //USAR UM DESTES IPs
-   //public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
+    //public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
 //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
-//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
-    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
-    public static final int DEFAULT_PORT = 4444;
+//    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
+    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+//    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
+    public static final int DEFAULT_PORT = 44444;
 
     //TODO: colocar aqui os ids dos AP mais perto de cada sala
     public static final String BSSID_1 = "AP1";
@@ -86,17 +89,19 @@ public class MainActivity extends FragmentActivity {
             LIGHTS, BLINDS, AIR_CONDITIONER
     };
 
+    public static boolean firstTime = true;
+
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
     private MyPagerAdapter adapter;
     private FragmentManager app_fm;
 
-    private CharSequence m_title;
+    private static CharSequence m_title;
 
     private Timer timer;
 
     private WifiManager mainWifiObj;
-//    private WifiScanReceiver wifiReciever;
+    //    private WifiScanReceiver wifiReciever;
     private ListView list;
     private String wifis[];
     private HashMap<String, ArrayList<Double>> results_map;
@@ -119,9 +124,9 @@ public class MainActivity extends FragmentActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+
 //        house = new Home();
 
-        //TODO: ver melhor esta cena de receber dados do servidor!!!!
         try {
             last_position = "";
             client = null;
@@ -136,8 +141,11 @@ public class MainActivity extends FragmentActivity {
 
             house = new Home();
 
+            System.out.println("********* ESTOU LIGADO AO SERVER???? " + connected_to_server);
+            System.out.println(client.toString());
+
             //se conseguimos ligar ao servidor, obtem o estado actual do servidor
-            if(connected_to_server) {
+            if (connected_to_server) {
                 obj_os = new ObjectOutputStream(client.getOutputStream());
                 obj_is = new ObjectInputStream(client.getInputStream());
 
@@ -219,14 +227,19 @@ public class MainActivity extends FragmentActivity {
 
     private void establishConnection() {
         Toast t;
-        t = Toast.makeText(getBaseContext(), "Estabelecendo ligação ao server", Toast.LENGTH_LONG);
-        t.show();
         try {
-            client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
+            SocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
+            // Create your socket
+            client = new Socket();
+            // Connect with 3 s timeout
+            client.connect(sockaddr, 10000);
+
+//            client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
             t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
             t.show();
             connected_to_server = true;
         } catch (IOException e) {
+            e.printStackTrace();
             t = Toast.makeText(getBaseContext(), "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG);
             t.show();
         }
@@ -267,7 +280,10 @@ public class MainActivity extends FragmentActivity {
 
     //TODO placeholder!!! colocar aqui a obtenção da posição
     public void getUserPosition() {
-        setTitle(KITCHEN);
+        if(m_title == null)
+            setTitle(KITCHEN);
+        else
+            setTitle(m_title);
     }
 
     public Home getHouse() {
@@ -315,7 +331,7 @@ public class MainActivity extends FragmentActivity {
     public int sendObjectToServer(Home home, boolean closeConnection) {
         int result = 0;
         try {
-            if(connected_to_server) {
+            if (connected_to_server) {
                 if (closeConnection) {
                     System.out.println("***************ANTES DE CRIAR O SOCKET*****************");
                     client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
@@ -359,16 +375,16 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onPause() {
-        try {
+//        try {
 //            Toast.makeText(getBaseContext(), "ESTOU A PARAAR!!! :D", Toast.LENGTH_LONG);
 //            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
 
 //            unregisterReceiver(wifiReciever);
-            client.close();
+//            client.close();
             super.onPause();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
@@ -383,6 +399,8 @@ public class MainActivity extends FragmentActivity {
         for (Fragment frag : fragment_list) {
             getSupportFragmentManager().beginTransaction().remove(frag).commit();
         }
+
+        System.out.println("**********REFRESH DAS TABS**************");
 
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         pager = (ViewPager) findViewById(R.id.pager);
@@ -410,6 +428,9 @@ public class MainActivity extends FragmentActivity {
         if ((id == R.id.room_menu_bedroom) || (id == R.id.room_menu_outside_general) ||
                 (id == R.id.room_menu_kitchen) || (id == R.id.room_menu_living_room)) {
             setTitle(item.getTitle());
+
+            System.out.println("NOVO TITULO!!!!! - " + item.getTitle());
+
             refreshTabs();
         }
 
@@ -446,6 +467,7 @@ public class MainActivity extends FragmentActivity {
                 } else if (m_title.toString().equals(BEDROOM)) {
                     return bedroom_features[position];
                 } else if (m_title.toString().equals(KITCHEN)) {
+                    System.out.println("KITCHEN KITCHEN KITCHEN");
                     return kitchen_features[position];
                 } else if (m_title.toString().equals(LIVING_ROOM)) {
                     return living_room_features[position];
@@ -457,7 +479,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public int getCount() {
-            //Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
+            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             if (m_title != null) {
                 if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     return outside_general_features.length;
@@ -515,14 +537,11 @@ public class MainActivity extends FragmentActivity {
                 myfrag = LightsFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(BLINDS)) {
                 myfrag = BlindsFragment.newInstance(position, temp_arr[position], chosen_arr);
-
             } else if (feature.equals(COFFEE_MACHINE)) {
                 myfrag = CoffeeFragment.newInstance(position, temp_arr[position], chosen_arr);
-            }
-            else if(feature.equals(STOVE_OVEN)){
+            } else if (feature.equals(STOVE_OVEN)) {
                 myfrag = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
-            }
-            else {
+            } else {
                 myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
 

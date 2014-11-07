@@ -2,7 +2,7 @@
     <item
         android:id="@+id/item1"
         android:showAsAction="ifRoom|withText"
-        android:title="Change room...">
+        android:title="@string/choose_room">
         <menu>
             <item
                 android:id="@+id/room_menu_kitchen"

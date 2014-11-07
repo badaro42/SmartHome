@@ -2,14 +2,14 @@
 <resources>
 
     <string name="app_name">SmartHome</string>
-    <string name="kitchen">Kitchen</string>
-    <string name="outside_general">Outdoor/General</string>
-    <string name="living_room">Living Room</string>
-    <string name="bedroom">Bedroom</string>
-    <string name="choose_room">Change room...</string>
-    <string name="settings_str">Settings</string>
-    <string name="help_str">Help</string>
-    <string name="about_str">About</string>
+    <string name="kitchen">Cozinha</string>
+    <string name="outside_general">Exterior/Geral</string>
+    <string name="living_room">Sala de Estar</string>
+    <string name="bedroom">Quarto</string>
+    <string name="choose_room">Mudar de divisão...</string>
+    <string name="settings_str">Definições</string>
+    <string name="help_str">Ajuda</string>
+    <string name="about_str">Acerca</string>
 
 
     <!-- Content Description -->

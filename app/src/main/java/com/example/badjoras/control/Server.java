@@ -44,7 +44,7 @@ public class Server implements Serializable {
             while (true) {
                 System.out.println("À espera de novo cliente...");
                 clientSocket = serverSocket.accept();   //accept the client connection
-                System.out.println(clientSocket.toString());
+//                System.out.println(clientSocket.toString());
                 System.out.println("Cliente ligado com sucesso!");
 
                 //TODO: tratar caso em que inicialmente se envia o objecto para a app
