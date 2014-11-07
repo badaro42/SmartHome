@@ -104,7 +104,7 @@ public class MainActivity extends FragmentActivity {
     private Timer timer;
 
     private WifiManager mainWifiObj;
-    private WifiScanReceiver wifiReciever;
+//    private WifiScanReceiver wifiReciever;
     private ListView list;
     private String wifis[];
     private HashMap<String, ArrayList<Double>> results_map;
@@ -134,9 +134,9 @@ public class MainActivity extends FragmentActivity {
             last_position = "";
             client = null;
 
-            results_map = new HashMap<String, ArrayList<Double>>(30);
-            mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            wifiReciever = new WifiScanReceiver();
+//            results_map = new HashMap<String, ArrayList<Double>>(30);
+//            mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+//            wifiReciever = new WifiScanReceiver();
 
             //            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
 
@@ -200,8 +200,8 @@ public class MainActivity extends FragmentActivity {
 //                1 * 3000); //subsequent rate (in ms)
 
         //cena da posicao, comeca a correr ao fim de 2 segundos
-        handler = new Handler();
-        handler.postDelayed(runnable, 2000);
+//        handler = new Handler();
+//        handler.postDelayed(runnable, 2000);
 
 
         //obtem a posição inicial do utilizador
@@ -245,25 +245,25 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            wifiScanCount = 0;
-            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
-            if (wifiScanCount % 3 == 2) {
-                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
-                mainWifiObj.startScan();
-            } else {
-                System.out.println("Vou fazer novo scan da rede!!!\n" +
-                        "Estou a fazer o scan " + (wifiScanCount + 1) % 3 + " de 3");
-                mainWifiObj.startScan();
-            }
-            wifiScanCount++;
-
-            //volta a chamar este handler, dizendo que vai executar ao fim de 3000ms
-            handler.postDelayed(this, 3000);
-        }
-    };
+//    private Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            wifiScanCount = 0;
+//            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
+//            if (wifiScanCount % 3 == 2) {
+//                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
+//                mainWifiObj.startScan();
+//            } else {
+//                System.out.println("Vou fazer novo scan da rede!!!\n" +
+//                        "Estou a fazer o scan " + (wifiScanCount + 1) % 3 + " de 3");
+//                mainWifiObj.startScan();
+//            }
+//            wifiScanCount++;
+//
+//            //volta a chamar este handler, dizendo que vai executar ao fim de 3000ms
+//            handler.postDelayed(this, 3000);
+//        }
+//    };
 
 
     //TODO: apenas para teste, remover!!
@@ -361,21 +361,21 @@ public class MainActivity extends FragmentActivity {
     }
 
     protected void onResume() {
-        Toast.makeText(getBaseContext(), "resumeindo :D", Toast.LENGTH_LONG);
-        Log.v("ScanResults ONRESUME", "ON RESUME CARALHO");
-
-        registerReceiver(wifiReciever, new IntentFilter(
-                WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+//        Toast.makeText(getBaseContext(), "resumeindo :D", Toast.LENGTH_LONG);
+//        Log.v("ScanResults ONRESUME", "ON RESUME CARALHO");
+//
+//        registerReceiver(wifiReciever, new IntentFilter(
+//                WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         super.onResume();
     }
 
     @Override
     public void onPause() {
         try {
-            Toast.makeText(getBaseContext(), "ESTOU A PARAAR!!! :D", Toast.LENGTH_LONG);
-            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
+//            Toast.makeText(getBaseContext(), "ESTOU A PARAAR!!! :D", Toast.LENGTH_LONG);
+//            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
 
-            unregisterReceiver(wifiReciever);
+//            unregisterReceiver(wifiReciever);
             client.close();
             super.onPause();
         } catch (IOException e) {
@@ -561,75 +561,75 @@ public class MainActivity extends FragmentActivity {
 //        }
 //    }
 
-    class WifiScanReceiver extends BroadcastReceiver {
-        @SuppressLint("UseValueOf")
-        public void onReceive(Context c, Intent intent) {
-            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
-            wifis = new String[wifiScanList.size()];
-            double result;
-
-            for (ScanResult res : wifiScanList) {
-                if (res.BSSID.equalsIgnoreCase(BSSID_1) ||
-                        res.BSSID.equalsIgnoreCase(BSSID_2) ||
-                        res.BSSID.equalsIgnoreCase(BSSID_3)) {
-                    result = calculateDistance(res.level, res.frequency);
-                    ArrayList<Double> temp_list = results_map.get(res.BSSID);
-                    if (temp_list == null) {
-                        temp_list = new ArrayList<Double>();
-                        temp_list.add(result);
-                        results_map.put(res.BSSID, temp_list);
-                    } else
-                        temp_list.add(result);
-                }
-            }
-
-            if (wifiScanCount % 3 == 2) {
-                getClosestRoom();
-            }
-
-            Toast t = Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_LONG);
-            t.show();
-        }
-
-        //calcula a media das distancias e obtem a divisao onde o user se encontra
-        //chama depois os metodos responsaveis por redesenhar os fragmentos
-        public void getClosestRoom() {
-
-            String closest;
-
-            distance_to_ap1 = computeMean(results_map.get(BSSID_1));
-            distance_to_ap2 = computeMean(results_map.get(BSSID_2));
-            distance_to_ap3 = computeMean(results_map.get(BSSID_3));
-
-            if (distance_to_ap1 < distance_to_ap2 &&
-                    distance_to_ap1 < distance_to_ap3) {
-                closest = KITCHEN;
-            } else if (distance_to_ap2 < distance_to_ap3 &&
-                    distance_to_ap2 < distance_to_ap1) {
-                closest = BEDROOM;
-            } else
-                closest = LIVING_ROOM;
-
-            //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
-            if (!last_position.equalsIgnoreCase(closest)) {
-                last_position = closest;
-                setTitle(closest);
-                refreshTabs();
-            }
-        }
-
-
-        public double computeMean(ArrayList<Double> list) {
-            int sum = 0;
-            for (Double el : list) {
-                sum += el;
-            }
-            return sum / list.size();
-        }
-
-        public double calculateDistance(double levelInDb, double freqInMHz) {
-            double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
-            return Math.pow(10.0, exp);
-        }
-    }
+//    class WifiScanReceiver extends BroadcastReceiver {
+//        @SuppressLint("UseValueOf")
+//        public void onReceive(Context c, Intent intent) {
+//            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
+//            wifis = new String[wifiScanList.size()];
+//            double result;
+//
+//            for (ScanResult res : wifiScanList) {
+//                if (res.BSSID.equalsIgnoreCase(BSSID_1) ||
+//                        res.BSSID.equalsIgnoreCase(BSSID_2) ||
+//                        res.BSSID.equalsIgnoreCase(BSSID_3)) {
+//                    result = calculateDistance(res.level, res.frequency);
+//                    ArrayList<Double> temp_list = results_map.get(res.BSSID);
+//                    if (temp_list == null) {
+//                        temp_list = new ArrayList<Double>();
+//                        temp_list.add(result);
+//                        results_map.put(res.BSSID, temp_list);
+//                    } else
+//                        temp_list.add(result);
+//                }
+//            }
+//
+//            if (wifiScanCount % 3 == 2) {
+//                getClosestRoom();
+//            }
+//
+//            Toast t = Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_LONG);
+//            t.show();
+//        }
+//
+//        //calcula a media das distancias e obtem a divisao onde o user se encontra
+//        //chama depois os metodos responsaveis por redesenhar os fragmentos
+//        public void getClosestRoom() {
+//
+//            String closest;
+//
+//            distance_to_ap1 = computeMean(results_map.get(BSSID_1));
+//            distance_to_ap2 = computeMean(results_map.get(BSSID_2));
+//            distance_to_ap3 = computeMean(results_map.get(BSSID_3));
+//
+//            if (distance_to_ap1 < distance_to_ap2 &&
+//                    distance_to_ap1 < distance_to_ap3) {
+//                closest = KITCHEN;
+//            } else if (distance_to_ap2 < distance_to_ap3 &&
+//                    distance_to_ap2 < distance_to_ap1) {
+//                closest = BEDROOM;
+//            } else
+//                closest = LIVING_ROOM;
+//
+//            //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
+//            if (!last_position.equalsIgnoreCase(closest)) {
+//                last_position = closest;
+//                setTitle(closest);
+//                refreshTabs();
+//            }
+//        }
+//
+//
+//        public double computeMean(ArrayList<Double> list) {
+//            int sum = 0;
+//            for (Double el : list) {
+//                sum += el;
+//            }
+//            return sum / list.size();
+//        }
+//
+//        public double calculateDistance(double levelInDb, double freqInMHz) {
+//            double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
+//            return Math.pow(10.0, exp);
+//        }
+//    }
 }
