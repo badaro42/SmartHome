@@ -1,5 +1,6 @@
 package com.example.badjoras.smarthome;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -67,6 +68,7 @@ public class CoffeeFragment extends Fragment {
         bt = (Button) rootView.findViewById(R.id.coffee_button);
         tp = (TimePicker) rootView.findViewById(R.id.coffee_picker);
         tb = (ToggleButton) rootView.findViewById(R.id.coffee_toggle);
+        MainActivity.cafe = MediaPlayer.create(getActivity(), R.raw.cafe);
 
         tp.setIs24HourView(true);
 
@@ -74,8 +76,11 @@ public class CoffeeFragment extends Fragment {
             @Override
             public void onClick(View arg0) {
 
-                if(tb.isChecked())
+                if(tb.isChecked()) {
                     tp.setEnabled(false);
+                    Toast.makeText(getActivity(),
+                           ""+tp.getCurrentHour() + tp.getCurrentMinute()+"" , Toast.LENGTH_SHORT).show();
+                }
                 else
                     tp.setEnabled(true);
 
@@ -104,8 +109,7 @@ public class CoffeeFragment extends Fragment {
                                         progressBar.setVisibility(View.INVISIBLE);
                                         textView.setVisibility(View.INVISIBLE);
                                         bt.setEnabled(true);
-                                        Toast.makeText(getActivity(),
-                                                "O café está pronto", Toast.LENGTH_SHORT).show();
+                                        MainActivity.cafe.start();
                                     }
                                 }
                             });

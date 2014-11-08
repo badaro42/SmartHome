@@ -1,5 +1,6 @@
 package com.example.badjoras.smarthome;
 
+import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +44,7 @@ public class MainActivity extends FragmentActivity {
     public static final String COFFEE_MACHINE = "Máquina de Café";
     public static final String STOVE_OVEN = "Fogão/Forno";
     public static final String SPRINKLER = "Aspersores da Rega";
+    public static MediaPlayer cafe;
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
@@ -53,9 +55,11 @@ public class MainActivity extends FragmentActivity {
     //public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
 //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
-    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+  //  public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
-    public static final int DEFAULT_PORT = 44444;
+//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
+    public static final int DEFAULT_PORT = 4444;
 
     //TODO: colocar aqui os ids dos AP mais perto de cada sala
     public static final String BSSID_1 = "AP1";
