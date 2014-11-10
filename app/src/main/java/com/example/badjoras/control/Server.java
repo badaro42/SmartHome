@@ -22,15 +22,12 @@ public class Server implements Serializable {
     private static ObjectInputStream inputstream;
     private static ObjectOutputStream outputstream;
 
-    //    private static HashMap<String, Room> server_rooms;
     private static Home server_house;
 
     public static void main(String[] args) throws IOException {
 
         System.out.println("Servidor iniciado. Estou à espera de conexões na porta 4444");
 
-        //TODO: arranjar maneira de saber que o cliente morreu,
-        //TODO: e que da proxima vez vai obter o estado do servidor!!
         //cria um serversocket e fica à espera de novos clientes
         try {
             server_house = null;
@@ -44,10 +41,7 @@ public class Server implements Serializable {
             while (true) {
                 System.out.println("À espera de novo cliente...");
                 clientSocket = serverSocket.accept();   //accept the client connection
-//                System.out.println(clientSocket.toString());
                 System.out.println("Cliente ligado com sucesso!");
-
-                //TODO: tratar caso em que inicialmente se envia o objecto para a app
 
                 outputstream = new ObjectOutputStream(clientSocket.getOutputStream());
                 inputstream = new ObjectInputStream(clientSocket.getInputStream());
@@ -65,7 +59,6 @@ public class Server implements Serializable {
                 //TODO: VER MELHOR ESTA CENA DE ENVIAR CENAS PARA A APP
                 //verifica se se trata do "fake send", para assim enviar o estado actual do server
                 if (house.getCounter() == 0) {
-//                    if(server_house == null)
 
                     System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
                     System.out.println(server_house == null);
@@ -111,67 +104,5 @@ public class Server implements Serializable {
             serverSocket.close();
             e.printStackTrace();
         }
-
-        //enquanto o cliente estiver ligado, espera por novas mensagens
-//            while (true) {
-//                try {
-//                    //fica bloqueado no read à espera de novos objectos para ler
-//                    Home house = (Home) inputstream.readObject();
-//                    server_rooms = house.getMap();
-//
-//                    //TODO para efeitos de teste, remover mais tarde
-//                    System.out.println(server_rooms.size());
-//
-//                } catch (IOException ex) {
-//                    System.out.println("Problemas a ler a mensagem!");
-//                    serverSocket.close();
-//                    clientSocket.close();
-//                    inputstream.close();
-//                    break;
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }
     }
-
-
-//        while (true) {
-//            try {
-//                System.out.println("À espera de novo cliente...");
-//                InetAddress addr = InetAddress.getByName("192.168.1.78");
-//                serverSocket = new ServerSocket(4444, 50, addr);  //Server socket
-//                System.out.println("ServerSocket criado.");
-//
-//                clientSocket = serverSocket.accept();   //accept the client connection
-//                System.out.println("Cliente ligado com sucesso!");
-//
-//                inputstream = new ObjectInputStream(clientSocket.getInputStream());
-//                System.out.println("Consegui abrir um socket para o endereço" +
-//                                clientSocket.getInetAddress().toString());
-//
-//            } catch (IOException e) {
-//                System.out.println("Could not listen on port: 4444");
-//            }
-//
-//            //enquanto o cliente estiver ligado, espera por novas mensagens
-//            while (true) {
-//                try {
-//                    //fica bloqueado no read à espera de novos objectos para ler
-//                    Home house = (Home) inputstream.readObject();
-//                    server_rooms = house.getMap();
-//
-//                    //TODO para efeitos de teste, remover mais tarde
-//                    System.out.println(server_rooms.size());
-//
-//                } catch (IOException ex) {
-//                    System.out.println("Problemas a ler a mensagem!");
-//                    serverSocket.close();
-//                    clientSocket.close();
-//                    inputstream.close();
-//                    break;
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
 }

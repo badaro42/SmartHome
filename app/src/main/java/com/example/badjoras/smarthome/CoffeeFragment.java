@@ -35,8 +35,6 @@ public class CoffeeFragment extends Fragment {
     private String title;
     private int position;
 
-
-
     public static CoffeeFragment newInstance(int position, String function, String title) {
         CoffeeFragment f = new CoffeeFragment();
         Bundle b = new Bundle();
@@ -54,8 +52,6 @@ public class CoffeeFragment extends Fragment {
         title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
-
-
     }
 
     @Override
@@ -76,12 +72,11 @@ public class CoffeeFragment extends Fragment {
             @Override
             public void onClick(View arg0) {
 
-                if(tb.isChecked()) {
+                if (tb.isChecked()) {
                     tp.setEnabled(false);
                     Toast.makeText(getActivity(),
-                           ""+tp.getCurrentHour() + tp.getCurrentMinute()+"" , Toast.LENGTH_SHORT).show();
-                }
-                else
+                            "" + tp.getCurrentHour() + tp.getCurrentMinute() + "", Toast.LENGTH_SHORT).show();
+                } else
                     tp.setEnabled(true);
 
             }
@@ -103,9 +98,8 @@ public class CoffeeFragment extends Fragment {
                             handler.post(new Runnable() {
                                 public void run() {
                                     progressBar.setProgress(progressStatus);
-                                    textView.setText(progressStatus+"/"+progressBar.getMax());
-                                    if(progressStatus==100)
-                                    {
+                                    textView.setText(progressStatus + "/" + progressBar.getMax());
+                                    if (progressStatus == 100) {
                                         progressBar.setVisibility(View.INVISIBLE);
                                         textView.setVisibility(View.INVISIBLE);
                                         bt.setEnabled(true);
@@ -121,14 +115,11 @@ public class CoffeeFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         }
-                        progressStatus=0;
+                        progressStatus = 0;
                     }
                 }).start();
             }
         });
         return rootView;
     }
-
-
-
 }

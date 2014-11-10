@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 Andreas Stuetz <andreas.stuetz@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.badjoras.smarthome;
 
 import android.os.Bundle;
@@ -29,17 +13,20 @@ import android.widget.TextView;
 
 public class PageFragment extends Fragment {
 
-	private static final String ARG_POSITION = "position";
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
 
 	private int position;
     private String function;
+    private String title;
 
-	public static PageFragment newInstance(int position, String function) {
+	public static PageFragment newInstance(int position, String function, String title) {
 		PageFragment f = new PageFragment();
 		Bundle b = new Bundle();
 		b.putInt(ARG_POSITION, position);
         b.putString(ARG_FUNCTION, function);
+        b.putString(ARG_TITLE, title);
 		f.setArguments(b);
 		return f;
 	}
@@ -48,6 +35,7 @@ public class PageFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+        title = getArguments().getString(ARG_TITLE);
 		position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
 	}
@@ -69,7 +57,7 @@ public class PageFragment extends Fragment {
 		v.setLayoutParams(params);
 		v.setGravity(Gravity.CENTER);
 		v.setBackgroundResource(R.drawable.background_card);
-		v.setText("NÚMERO: " + (position + 1) + "\n" + "FUNCIONALIDADE: " + function);
+		v.setText("FUNCIONALIDADE AINDA NÃO IMPLEMENTADA!");
 
 		fl.addView(v);
 		return fl;

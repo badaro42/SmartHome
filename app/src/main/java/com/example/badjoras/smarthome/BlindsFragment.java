@@ -104,7 +104,4 @@ public class BlindsFragment extends Fragment {
         });
         return rootView;
     }
-
-
-
 }

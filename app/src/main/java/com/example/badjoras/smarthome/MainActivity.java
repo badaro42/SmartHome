@@ -92,7 +92,11 @@ public class MainActivity extends FragmentActivity {
             LIGHTS, BLINDS, AIR_CONDITIONER
     };
 
-    public static boolean firstTime = true;
+//    private String[] outside_general_features = new String[]{
+//            SPRINKLER, GARAGE_DOOR, SURVEILLANCE_CAMERAS, POWER_MONITORING, SCHEDULED_FUNCTIONS
+//    };
+
+//    public static boolean firstTime = true;
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
@@ -183,20 +187,6 @@ public class MainActivity extends FragmentActivity {
             e.printStackTrace();
         }
 
-        //establishConnection();
-
-        //TODO descomentar aqui para obter do servidor o estado inicial da casa
-//            obj_is = getInputStream();
-//            obj_os = getOutputStream();
-//            obj_os = getOutputStream();
-//            house = (Home)obj_is.readObject();
-//            obj_os.writeObject(house);
-
-//        catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
-
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
 //        timer = new Timer();
 //        timer.schedule(new AlertTask(), 0, //initial delay
@@ -219,12 +209,9 @@ public class MainActivity extends FragmentActivity {
 
         refreshTabs();
 
-        //m_title = getTitle();
-
         //activa o icon da barra e faz com que ele se comporte como um botão de toggle
         getActionBar().setDisplayShowTitleEnabled(true);
         getActionBar().setIcon(android.R.color.transparent);
-//        getActionBar().setHomeButtonEnabled(true);
     }
 
 
@@ -234,10 +221,9 @@ public class MainActivity extends FragmentActivity {
             SocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
             // Create your socket
             client = new Socket();
-            // Connect with 3 s timeout
+            // Connect with 2 s timeout
             client.connect(sockaddr, 2000);
 
-//            client = new Socket(IP_ADDRESS, DEFAULT_PORT);  //ip de casa
             t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
             t.show();
             connected_to_server = true;
@@ -301,13 +287,9 @@ public class MainActivity extends FragmentActivity {
     public Home getObjectFromServer() {
         Home res_house = null;
         try {
-
             System.out.println("33333 - SOCKET IS BOUND??" + client.isBound());
             System.out.println("33333 - SOCKET IS CLOSED??" + client.isClosed());
             System.out.println("33333 - SOCKET IS CONNECTED??" + client.isConnected());
-
-//            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
-//            obj_is = new ObjectInputStream(client.getInputStream());
 
             System.out.println("****criei o inputstream, fico à espera do server****");
 
@@ -316,9 +298,6 @@ public class MainActivity extends FragmentActivity {
             System.out.println("+++++++++++++++++++++++++++\n" +
                     "Objecto recebido do server!!!! Tamanho: " + res_house.getMap().size() +
                     "\n+++++++++++++++++++++++++++");
-
-//            obj_is.close();
-//            client.close();
 
             return res_house;
         } catch (IOException e) {
@@ -383,7 +362,6 @@ public class MainActivity extends FragmentActivity {
 //            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
 
 //            unregisterReceiver(wifiReciever);
-//            client.close();
             super.onPause();
 //        } catch (IOException e) {
 //            e.printStackTrace();
@@ -438,7 +416,6 @@ public class MainActivity extends FragmentActivity {
         }
 
         return true;
-        //return super.onOptionsItemSelected(item);
     }
 
 
@@ -451,7 +428,6 @@ public class MainActivity extends FragmentActivity {
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        //private final String[] TITLES = {"Ar Condicionado", "Stock da Dispensa", "Fogão", "Luzes", "Estores"};
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -461,11 +437,8 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-//            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
-            //Log.v("str_eq_bathroom", String.valueOf(m_title == BATHROOM));
             if (m_title != null) {
                 if (m_title.toString().equals(OUTSIDE_GENERAL)) {
-                    //Log.v("getpagetitle", "loli isto é uma casa de banho");
                     return outside_general_features[position];
                 } else if (m_title.toString().equals(BEDROOM)) {
                     return bedroom_features[position];
@@ -476,13 +449,11 @@ public class MainActivity extends FragmentActivity {
                     return living_room_features[position];
                 }
             }
-            //return kitchen_features[position];
             return null;
         }
 
         @Override
         public int getCount() {
-//            Log.v("getpagetitle", "TOU NO GET_PAGE_TITLE DO MY_PAGER_ADAPTER");
             if (m_title != null) {
                 if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     return outside_general_features.length;
@@ -495,7 +466,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             return 0;
-            //return kitchen_features.length;
         }
 
         @Override
@@ -522,10 +492,6 @@ public class MainActivity extends FragmentActivity {
                     feature = temp_arr[position];
                 }
             }
-//            else {
-//                temp_arr = kitchen_features;
-//                feature = temp_arr[position];
-//            }
 
             chosen_arr = m_title.toString();
 
@@ -545,7 +511,7 @@ public class MainActivity extends FragmentActivity {
             } else if (feature.equals(STOVE_OVEN)) {
                 myfrag = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
-                myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
+                myfrag = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
 
             fragment_list.add(myfrag);

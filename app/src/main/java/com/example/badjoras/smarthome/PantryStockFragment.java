@@ -25,8 +25,6 @@ import com.example.badjoras.control.PantryStock;
 import com.example.badjoras.control.Product;
 import com.example.badjoras.control.Room;
 
-import org.w3c.dom.Text;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -56,7 +54,6 @@ public class PantryStockFragment extends ListFragment {
     public static boolean orderStockAscending = false;
     public static boolean orderStockDescending = false;
 
-    //    private ArrayList<HashMap<String, String>> list;
     private Bundle bundle;
 
     public static PantryStockFragment newInstance(int position, String title, String function) {
@@ -87,8 +84,6 @@ public class PantryStockFragment extends ListFragment {
             @Override
             public void onBtnClick(int position) {
                 // Call your function which creates and shows the dialog here
-//                changeMoneda(position);
-//                addProductDialog();
                 Dialog dialog = removeProductDialog(position);
                 dialog.show();
             }
@@ -110,12 +105,6 @@ public class PantryStockFragment extends ListFragment {
         adapter.swapItems(stock.getProductList());
 
     }
-
-//    @Override
-//    public boolean onListItemTouch(View v, MotionEvent event) {
-//        v.getParent().requestDisallowInterceptTouchEvent(true);
-//        return false;
-//    }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -169,7 +158,6 @@ public class PantryStockFragment extends ListFragment {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
 
         add_product.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,7 +315,6 @@ public class PantryStockFragment extends ListFragment {
                 ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
                 onResume();
-//                        populateList();
             }
         })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -388,15 +375,5 @@ public class PantryStockFragment extends ListFragment {
 
         System.out.println("Primeiro elemento da lista dps da ordenação: " + products.get(0).getName());
         System.out.println("TAMANHO DA LISTA DE PRODUTOS - " + products.size());
-
-//        list = new ArrayList<HashMap<String, String>>();
-//        HashMap<String, String> temp;
-//
-//        for (Product prod : products) {
-//            temp = new HashMap<String, String>();
-//            temp.put(FIRST_COLUMN, prod.getName());
-//            temp.put(SECOND_COLUMN, String.valueOf(prod.getQuantity()));
-//            list.add(temp);
-//        }
     }
 }
