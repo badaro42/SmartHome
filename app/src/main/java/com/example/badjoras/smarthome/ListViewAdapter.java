@@ -64,7 +64,7 @@ public class ListViewAdapter extends BaseAdapter {
         ViewHolder holder;
         LayoutInflater inflater = frag.getLayoutInflater(b);
 
-        System.out.println("GET VIEW DO LIST_ADAPTER!!!!");
+//        System.out.println("GET VIEW DO LIST_ADAPTER!!!!");
 
         if (convertView == null) {
 
@@ -88,10 +88,14 @@ public class ListViewAdapter extends BaseAdapter {
 //        holder.txtThird.setText(map.get(THIRD_COLUMN));
 //        holder.txtFourth.setText(map.get(FOURTH_COLUMN));
 
-        if (position % 2 == 0)
-            convertView.setBackgroundColor(context.getResources().getColor(R.color.even_row));
-        else
-            convertView.setBackgroundColor(context.getResources().getColor(R.color.odd_row));
+        if (prod.getQuantity() == 0) {
+            convertView.setBackgroundColor(context.getResources().getColor(R.color.stock_low));
+        } else {
+            if (position % 2 == 0)
+                convertView.setBackgroundColor(context.getResources().getColor(R.color.even_row));
+            else
+                convertView.setBackgroundColor(context.getResources().getColor(R.color.odd_row));
+        }
 
         return convertView;
     }

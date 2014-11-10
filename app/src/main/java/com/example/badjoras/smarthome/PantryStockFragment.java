@@ -10,10 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.badjoras.control.Home;
@@ -21,6 +24,8 @@ import com.example.badjoras.control.PantryStock;
 import com.example.badjoras.control.Product;
 import com.example.badjoras.control.Room;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import static com.example.badjoras.smarthome.MainActivity.*;
@@ -41,6 +46,10 @@ public class PantryStockFragment extends ListFragment {
     private Dialog dialog;
     private LinkedList<Product> products;
     private ListViewAdapter adapter;
+
+    public static boolean orderAlphabetically = false;
+    public static boolean orderStockAscending = false;
+    public static boolean orderStockDescending = false;
 
     //    private ArrayList<HashMap<String, String>> list;
     private Bundle bundle;
@@ -79,7 +88,9 @@ public class PantryStockFragment extends ListFragment {
         PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
         System.out.println("STOCK DE TOMATE: " + stock.getProductList().get(0).getQuantity());
 
+        populateList();
         adapter.swapItems(stock.getProductList());
+
     }
 
 //    @Override
@@ -110,6 +121,40 @@ public class PantryStockFragment extends ListFragment {
                 false);
 
         Button add_product = (Button) rootView.findViewById(R.id.add_product);
+
+        Spinner spinner = (Spinner) rootView.findViewById(R.id.change_list_order);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.stock_list_ordering, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0) { //primeiro elemento da lista: ordem alfabetica
+                    orderAlphabetically = true;
+                    orderStockAscending = false;
+                    orderStockDescending = false;
+                } else if (i == 1) { //segundo elemento da lista: ordem crescente de stock
+                    orderAlphabetically = false;
+                    orderStockAscending = true;
+                    orderStockDescending = false;
+                } else if (i == 2) { //terceiro elemento da lista: ordem alfabetica
+                    orderAlphabetically = false;
+                    orderStockAscending = false;
+                    orderStockDescending = true;
+                }
+                onResume();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         add_product.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,8 +262,7 @@ public class PantryStockFragment extends ListFragment {
                     Toast.makeText(getActivity().getBaseContext(),
                             "Produto adicionado com sucesso!", Toast.LENGTH_LONG).show();
 //                    t.show();
-                }
-                else { //o produto ja existe. dá erro e não cria nada
+                } else { //o produto ja existe. dá erro e não cria nada
                     dialog.cancel();
                     Toast.makeText(getActivity().getBaseContext(),
                             "Já existe um produto com esse nome!", Toast.LENGTH_LONG).show();
@@ -305,6 +349,42 @@ public class PantryStockFragment extends ListFragment {
         PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
         products = stock.getProductList();
 
+        System.out.println("Primeiro elemento da lista original: " + products.get(0).getName());
+
+        if (orderAlphabetically) {
+            Collections.sort(products, new Comparator<Product>() {
+                @Override
+                public int compare(Product product, Product product2) {
+                    return product.getName().compareTo(product2.getName());
+                }
+            });
+        } else if (orderStockAscending) {
+            Collections.sort(products, new Comparator<Product>() {
+                @Override
+                public int compare(Product product, Product product2) {
+                    if (product.getQuantity() > product2.getQuantity())
+                        return 1;
+                    else if (product.getQuantity() < product2.getQuantity())
+                        return -1;
+                    else
+                        return 0;
+                }
+            });
+        } else if (orderStockDescending) {
+            Collections.sort(products, new Comparator<Product>() {
+                @Override
+                public int compare(Product product, Product product2) {
+                    if (product.getQuantity() > product2.getQuantity())
+                        return -1;
+                    else if (product.getQuantity() < product2.getQuantity())
+                        return 1;
+                    else
+                        return 0;
+                }
+            });
+        }
+
+        System.out.println("Primeiro elemento da lista dps da ordenação: " + products.get(0).getName());
         System.out.println("TAMANHO DA LISTA DE PRODUTOS - " + products.size());
 
 //        list = new ArrayList<HashMap<String, String>>();

@@ -10,6 +10,7 @@
     <color name="blue_sky">#00B2EE</color>
     <color name="even_row">#DDDDDD</color>
     <color name="odd_row">#EEEEEE</color>
+    <color name="stock_low">#e0ff0000</color>
 
     <!--<color name="counter_text_bg">#626262</color>-->
     <!--<color name="counter_text_color">#c5c4c4</color>-->

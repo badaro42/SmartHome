@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string-array name="stock_list_ordering">
+        <!--<item>Sem ordenação</item>-->
+        <item>Ordem alfabética</item>
+        <item>Ordem crescente de stock</item>
+        <item>Ordem decrescente de stock</item>
+    </string-array>
+
     <string name="app_name">SmartHome</string>
     <string name="kitchen">Cozinha</string>
     <string name="outside_general">Exterior/Geral</string>
@@ -13,6 +20,8 @@
 
     <string name="add_new_product">Adicionar novo produto...</string>
     <string name="new_prod_hint">Introduza o nome do producto</string>
+    <string name="text_info_change_order">Alterar ordenação da lista: </string>
+
 
 
     <!-- Content Description -->
