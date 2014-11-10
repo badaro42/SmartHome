@@ -33,12 +33,9 @@ public class PantryStock extends Feature implements Serializable {
 
     private void populateList() {
         products = new LinkedList<Product>();
-        Product prod;
         for(int i = 0; i < init_products_names.length; i++) {
             insertOrUpdateProduct(init_products_names[i],
                     init_products_quantities[i], true);
-//            prod = new Product(init_products_names[i], init_products_quantities[i]);
-//            products.add(prod);
         }
     }
 

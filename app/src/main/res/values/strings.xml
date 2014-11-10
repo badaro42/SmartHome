@@ -11,6 +11,9 @@
     <string name="help_str">Ajuda</string>
     <string name="about_str">Acerca</string>
 
+    <string name="add_new_product">Adicionar novo produto...</string>
+    <string name="new_prod_hint">Introduza o nome do producto</string>
+
 
     <!-- Content Description -->
     <!--nao sei para que serve mas fica-->

@@ -8,6 +8,9 @@
     <color name="app_margin_background">#DDDDDD</color>
     <color name="app_fragment_background">#FFFFFF</color>
     <color name="blue_sky">#00B2EE</color>
+    <color name="even_row">#DDDDDD</color>
+    <color name="odd_row">#EEEEEE</color>
+
     <!--<color name="counter_text_bg">#626262</color>-->
     <!--<color name="counter_text_color">#c5c4c4</color>-->
 </resources>

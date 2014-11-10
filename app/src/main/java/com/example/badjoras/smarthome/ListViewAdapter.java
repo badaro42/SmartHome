@@ -1,5 +1,6 @@
 package com.example.badjoras.smarthome;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,12 +26,14 @@ public class ListViewAdapter extends BaseAdapter {
     public LinkedList<Product> list;
     Fragment frag;
     Bundle b;
+    Context context;
 
-    public ListViewAdapter(Fragment frag, LinkedList<Product> list, Bundle b) {
+    public ListViewAdapter(Fragment frag, LinkedList<Product> list, Bundle b, Context context) {
         super();
         this.frag = frag;
         this.list = list;
         this.b = b;
+        this.context = context;
     }
 
     @Override
@@ -49,8 +52,8 @@ public class ListViewAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        TextView txtFirst;
-        TextView txtSecond;
+        TextView prodName;
+        TextView prodQuantity;
 //        TextView txtThird;
 //        TextView txtFourth;
     }
@@ -68,8 +71,8 @@ public class ListViewAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.colmn_row, null);
             holder = new ViewHolder();
 
-            holder.txtFirst = (TextView) convertView.findViewById(R.id.TextFirst);
-            holder.txtSecond = (TextView) convertView.findViewById(R.id.TextSecond);
+            holder.prodName = (TextView) convertView.findViewById(R.id.TextFirst);
+            holder.prodQuantity = (TextView) convertView.findViewById(R.id.TextSecond);
 //            holder.txtThird = (TextView) convertView.findViewById(R.id.TextThird);
 //            holder.txtFourth = (TextView) convertView.findViewById(R.id.TextFourth);
 
@@ -80,10 +83,15 @@ public class ListViewAdapter extends BaseAdapter {
         }
 
         Product prod = list.get(position);
-        holder.txtFirst.setText(prod.getName());
-        holder.txtSecond.setText(String.valueOf(prod.getQuantity()));
+        holder.prodName.setText(prod.getName());
+        holder.prodQuantity.setText(String.valueOf(prod.getQuantity()));
 //        holder.txtThird.setText(map.get(THIRD_COLUMN));
 //        holder.txtFourth.setText(map.get(FOURTH_COLUMN));
+
+        if (position % 2 == 0)
+            convertView.setBackgroundColor(context.getResources().getColor(R.color.even_row));
+        else
+            convertView.setBackgroundColor(context.getResources().getColor(R.color.odd_row));
 
         return convertView;
     }

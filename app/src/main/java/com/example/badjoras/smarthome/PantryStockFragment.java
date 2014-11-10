@@ -5,35 +5,23 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import com.example.badjoras.control.Home;
 import com.example.badjoras.control.PantryStock;
 import com.example.badjoras.control.Product;
 import com.example.badjoras.control.Room;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-
-import static com.example.badjoras.smarthome.ListViewAdapter.FIRST_COLUMN;
-import static com.example.badjoras.smarthome.ListViewAdapter.SECOND_COLUMN;
 
 import static com.example.badjoras.smarthome.MainActivity.*;
 
@@ -54,7 +42,7 @@ public class PantryStockFragment extends ListFragment {
     private LinkedList<Product> products;
     private ListViewAdapter adapter;
 
-//    private ArrayList<HashMap<String, String>> list;
+    //    private ArrayList<HashMap<String, String>> list;
     private Bundle bundle;
 
     public static PantryStockFragment newInstance(int position, String title, String function) {
@@ -77,7 +65,8 @@ public class PantryStockFragment extends ListFragment {
         function = getArguments().getString(ARG_FUNCTION);
 
         populateList();
-        adapter = new ListViewAdapter(this, products, savedInstanceState);
+        adapter = new ListViewAdapter(this, products, savedInstanceState,
+                getActivity().getApplicationContext());
         setListAdapter(adapter);
     }
 
@@ -110,7 +99,7 @@ public class PantryStockFragment extends ListFragment {
         PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
         Product prod = stock.getProductList().get(position);
 
-        Dialog dialog = onCreateDialog(this.getArguments(), prod);
+        Dialog dialog = editProductDialog(prod);
         dialog.show();
     }
 
@@ -119,6 +108,18 @@ public class PantryStockFragment extends ListFragment {
 
         View rootView = inflater.inflate(R.layout.pantry_stock_fragment, container,
                 false);
+
+        Button add_product = (Button) rootView.findViewById(R.id.add_product);
+
+        add_product.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v("badjoras", "carreguei no botao para adicionar elemento");
+
+                Dialog dialog = addProductDialog();
+                dialog.show();
+            }
+        });
 
 //        ListView listView = (ListView) rootView.findViewById(R.id.lis);
 //        dialog = new Dialog(getActivity());
@@ -177,19 +178,75 @@ public class PantryStockFragment extends ListFragment {
         return rootView;
     }
 
-    public Dialog onCreateDialog(Bundle savedInstanceState, final Product product) {
+    public Dialog addProductDialog() {
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        String new_title = "Adicionar novo produto";
+
+        View view = inflater.inflate(R.layout.add_product_dialog, null);
+
+//        final Toast t;
+        final EditText edit_text = (EditText) view.findViewById(R.id.add_prod_name_input);
+        final NumberPicker np = (NumberPicker) view.findViewById(R.id.numberPicker_pantrystock);
+
+        edit_text.setPadding(50, 25, 50, 25);
+
+        np.setPadding(50, 25, 50, 25);
+        np.setMinValue(0);
+        np.setMaxValue(50);
+        np.setWrapSelectorWheel(false);
+        np.setValue(0);
+
+        builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(KITCHEN);
+                PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
+
+                String prod_name = String.valueOf(edit_text.getText());
+                int index = pantry.getItemByName(prod_name);
+
+                //o elemento não existe. adicionamos à lista
+                if (index == -1) {
+                    pantry.insertOrUpdateProduct(
+                            prod_name, np.getValue(), true);
+                    ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                    onResume();
+                    Toast.makeText(getActivity().getBaseContext(),
+                            "Produto adicionado com sucesso!", Toast.LENGTH_LONG).show();
+//                    t.show();
+                }
+                else { //o produto ja existe. dá erro e não cria nada
+                    dialog.cancel();
+                    Toast.makeText(getActivity().getBaseContext(),
+                            "Já existe um produto com esse nome!", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        dialog.cancel();
+                    }
+                })
+                .setTitle(new_title)
+                .setView(view);
+
+        // Create the AlertDialog object and return it
+        return builder.create();
+    }
+
+    public Dialog editProductDialog(final Product product) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         String new_title = "Alterar stock de: " + product.getName();
 
-//        NumberPicker np = new NumberPicker(getActivity());
-//        String[] nums = new String[100];
-//        for(int i=0; i<nums.length; i++)
-//            nums[i] = Integer.toString(i);
-
-        View view = inflater.inflate(R.layout.pantry_stock_dialog, null);
+        View view = inflater.inflate(R.layout.edit_product_dialog, null);
 
         final NumberPicker np = (NumberPicker) view.findViewById(R.id.numberPicker_pantrystock);
 
@@ -200,37 +257,38 @@ public class PantryStockFragment extends ListFragment {
         np.setValue(product.getQuantity());
 
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
-                        //TODO: guardar para a BD a nova quantidade
+            public void onClick(DialogInterface dialog, int id) {
+                // FIRE ZE MISSILES!
+                //TODO: guardar para a BD a nova quantidade
 
-                        Home house = ((MainActivity) getActivity()).getHouse();
-                        Room room = (Room) house.getMap().get(KITCHEN);
-                        PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
-                        pantry.insertOrUpdateProduct(
-                                product.getName(), np.getValue(), false);
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(KITCHEN);
+                PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
+                pantry.insertOrUpdateProduct(
+                        product.getName(), np.getValue(), false);
 
-                        LinkedList<Product> prods = pantry.getProductList();
+                LinkedList<Product> prods = pantry.getProductList();
 
-                        String res = "";
-                        for(Product prod : prods) {
-                            res += prod.getName() + ": " + prod.getQuantity() + "\n";
-                        }
-                        System.out.print(res);
+                String res = "";
+                for (Product prod : prods) {
+                    res += prod.getName() + ": " + prod.getQuantity() + "\n";
+                }
+                System.out.print(res);
 
-                        //TODO: FALTA ACTUALIZAR A LISTA, O SERVIDOR JA TEM A INFO CORRECTA!!!
+                //TODO: FALTA ACTUALIZAR A LISTA, O SERVIDOR JA TEM A INFO CORRECTA!!!
 
 
-                        ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
-                        onResume();
+                onResume();
 //                        populateList();
-                    }
-                })
+            }
+        })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
                         //TODO: não faz nada apenas volta para a lista
+                        dialog.cancel();
                     }
                 })
                 .setTitle(new_title)
