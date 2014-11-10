@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.badjoras.control.Product;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 
 public class ListViewAdapter extends BaseAdapter {
@@ -19,11 +22,11 @@ public class ListViewAdapter extends BaseAdapter {
 //    public static final String THIRD_COLUMN = "Third";
 //    public static final String FOURTH_COLUMN = "Fourth";
 
-    public ArrayList<HashMap<String, String>> list;
+    public LinkedList<Product> list;
     Fragment frag;
     Bundle b;
 
-    public ListViewAdapter(Fragment frag, ArrayList<HashMap<String, String>> list, Bundle b) {
+    public ListViewAdapter(Fragment frag, LinkedList<Product> list, Bundle b) {
         super();
         this.frag = frag;
         this.list = list;
@@ -58,6 +61,8 @@ public class ListViewAdapter extends BaseAdapter {
         ViewHolder holder;
         LayoutInflater inflater = frag.getLayoutInflater(b);
 
+        System.out.println("GET VIEW DO LIST_ADAPTER!!!!");
+
         if (convertView == null) {
 
             convertView = inflater.inflate(R.layout.colmn_row, null);
@@ -74,13 +79,18 @@ public class ListViewAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        HashMap<String, String> map = list.get(position);
-        holder.txtFirst.setText(map.get(FIRST_COLUMN));
-        holder.txtSecond.setText(map.get(SECOND_COLUMN));
+        Product prod = list.get(position);
+        holder.txtFirst.setText(prod.getName());
+        holder.txtSecond.setText(String.valueOf(prod.getQuantity()));
 //        holder.txtThird.setText(map.get(THIRD_COLUMN));
 //        holder.txtFourth.setText(map.get(FOURTH_COLUMN));
 
         return convertView;
+    }
+
+    public void swapItems(LinkedList<Product> items) {
+        this.list = items;
+        notifyDataSetChanged();
     }
 
 }

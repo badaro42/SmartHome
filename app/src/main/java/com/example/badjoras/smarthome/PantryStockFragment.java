@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,7 +38,7 @@ import static com.example.badjoras.smarthome.ListViewAdapter.SECOND_COLUMN;
 import static com.example.badjoras.smarthome.MainActivity.*;
 
 
-public class PantryStockFragment extends Fragment {
+public class PantryStockFragment extends ListFragment {
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
@@ -47,15 +48,13 @@ public class PantryStockFragment extends Fragment {
     private String function;
     private String title;
 
-    private Socket client;
-    private PrintWriter printwriter;
-    private EditText textField;
     private Button button;
     private String messsage;
     private Dialog dialog;
     private LinkedList<Product> products;
+    private ListViewAdapter adapter;
 
-    private ArrayList<HashMap<String, String>> list;
+//    private ArrayList<HashMap<String, String>> list;
     private Bundle bundle;
 
     public static PantryStockFragment newInstance(int position, String title, String function) {
@@ -76,8 +75,44 @@ public class PantryStockFragment extends Fragment {
         title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
+
+        populateList();
+        adapter = new ListViewAdapter(this, products, savedInstanceState);
+        setListAdapter(adapter);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(KITCHEN);
+        PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
+        System.out.println("STOCK DE TOMATE: " + stock.getProductList().get(0).getQuantity());
+
+        adapter.swapItems(stock.getProductList());
+    }
+
+//    @Override
+//    public boolean onListItemTouch(View v, MotionEvent event) {
+//        v.getParent().requestDisallowInterceptTouchEvent(true);
+//        return false;
+//    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        Log.v("badjoras", "carreguei num elemento da lista");
+
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(KITCHEN);
+        PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
+        Product prod = stock.getProductList().get(position);
+
+        Dialog dialog = onCreateDialog(this.getArguments(), prod);
+        dialog.show();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -85,88 +120,57 @@ public class PantryStockFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.pantry_stock_fragment, container,
                 false);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listView1);
+//        ListView listView = (ListView) rootView.findViewById(R.id.lis);
 //        dialog = new Dialog(getActivity());
 
-        populateList();
-
-        ListViewAdapter adapter = new ListViewAdapter(this, list, bundle);
-        listView.setAdapter(adapter);
-
-        listView.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-
-        });
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.v("badjoras", "carreguei num elemento da lista");
-
-                Home house = ((MainActivity) getActivity()).getHouse();
-                Room room = (Room) house.getMap().get(KITCHEN);
-                PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
-                Product prod = stock.getProductList().get(i);
-
-                Dialog dialog = onCreateDialog(savedInstanceState, prod);
-                dialog.show();
-
-//                dialog.setTitle(String.valueOf(prod.getName()));
-//                dialog.setCancelable(true);
-
-                //TODO: completar esta cena da janela de dialogo para alterar o stock!!
-
-//                ObjectOutputStream outstream = ((MainActivity) getActivity()).getOutputStream();
-//                outstream.writeObject(house);
-//                outstream.close();
+//        populateList();
+//
+//        adapter = new ListViewAdapter(this, products, bundle);
+//        listView.setAdapter(adapter);
+//
+//        listView.setOnTouchListener(new View.OnTouchListener() {
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                v.getParent().requestDisallowInterceptTouchEvent(true);
+//                return false;
+//            }
+//
+//        });
+//
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Log.v("badjoras", "carreguei num elemento da lista");
+//
 //                Home house = ((MainActivity) getActivity()).getHouse();
-//                HashMap<String, Room> map = house.getMap();
-//                map.put("casa da peles", new Room(BEDROOM));
-//                house.modifyMap(map);
-//                Log.v("MAP_SIZE_1", String.valueOf(map.size()));
+//                Room room = (Room) house.getMap().get(KITCHEN);
+//                PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
+//                Product prod = stock.getProductList().get(i);
 //
-//                house = ((MainActivity) getActivity()).getHouse();
-//                map = house.getMap();
-//                Log.v("MAP_SIZE_2", String.valueOf(map.size()));
-
-//                ((MainActivity) getActivity()).sendObjectToServer(house);
-
-            }
-        });
-
-
-//        textField = (EditText) rootView.findViewById(R.id.editText_pantryStock); //reference to the text field
-//        button = (Button) rootView.findViewById(R.id.button_pantryStock);   //reference to the send button
+//                Dialog dialog = onCreateDialog(savedInstanceState, prod);
+//                dialog.show();
 //
-//        //Button press event listener
-//        button.setOnClickListener(new View.OnClickListener() {
+////                dialog.setTitle(String.valueOf(prod.getName()));
+////                dialog.setCancelable(true);
 //
-//            public void onClick(View v) {
+//                //TODO: completar esta cena da janela de dialogo para alterar o stock!!
 //
-//                messsage = textField.getText().toString(); //get the text message on the text field
-//                textField.setText("");      //Reset the text field to blank
+////                ObjectOutputStream outstream = ((MainActivity) getActivity()).getOutputStream();
+////                outstream.writeObject(house);
+////                outstream.close();
+////                Home house = ((MainActivity) getActivity()).getHouse();
+////                HashMap<String, Room> map = house.getMap();
+////                map.put("casa da peles", new Room(BEDROOM));
+////                house.modifyMap(map);
+////                Log.v("MAP_SIZE_1", String.valueOf(map.size()));
+////
+////                house = ((MainActivity) getActivity()).getHouse();
+////                map = house.getMap();
+////                Log.v("MAP_SIZE_2", String.valueOf(map.size()));
 //
-//                try {
-////                    client = new Socket("192.168.2.2", 4444);  //ip da rede eduroam
-//                    client = new Socket("192.168.1.78", 4444);  //ip de casa
-////                    client = new Socket("10.171.240.101", 4444);  //este ip é do hotspot BALELE
-//                    printwriter = new PrintWriter(client.getOutputStream(),true);
-//                    printwriter.write(messsage);  //write the message to output stream
+////                ((MainActivity) getActivity()).sendObjectToServer(house);
 //
-//                    printwriter.flush();
-//                    printwriter.close();
-//                    client.close();   //closing the connection
-//
-//                } catch (UnknownHostException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
 //            }
 //        });
 
@@ -219,7 +223,8 @@ public class PantryStockFragment extends Fragment {
 
                         ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
-                        populateList();
+                        onResume();
+//                        populateList();
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -242,14 +247,16 @@ public class PantryStockFragment extends Fragment {
         PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
         products = stock.getProductList();
 
-        list = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> temp;
+        System.out.println("TAMANHO DA LISTA DE PRODUTOS - " + products.size());
 
-        for (Product prod : products) {
-            temp = new HashMap<String, String>();
-            temp.put(FIRST_COLUMN, prod.getName());
-            temp.put(SECOND_COLUMN, String.valueOf(prod.getQuantity()));
-            list.add(temp);
-        }
+//        list = new ArrayList<HashMap<String, String>>();
+//        HashMap<String, String> temp;
+//
+//        for (Product prod : products) {
+//            temp = new HashMap<String, String>();
+//            temp.put(FIRST_COLUMN, prod.getName());
+//            temp.put(SECOND_COLUMN, String.valueOf(prod.getQuantity()));
+//            list.add(temp);
+//        }
     }
 }
