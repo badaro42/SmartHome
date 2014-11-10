@@ -17,12 +17,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.badjoras.control.Home;
 import com.example.badjoras.control.PantryStock;
 import com.example.badjoras.control.Product;
 import com.example.badjoras.control.Room;
+
+import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,6 +39,8 @@ public class PantryStockFragment extends ListFragment {
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
     private static final String ARG_TITLE = "title";
+
+    private static MainActivity mActivity = null;
 
     private int position;
     private String function;
@@ -69,13 +74,26 @@ public class PantryStockFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         bundle = savedInstanceState;
 
+        mActivity = (MainActivity)super.getActivity();
+
         title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
         function = getArguments().getString(ARG_FUNCTION);
 
         populateList();
         adapter = new ListViewAdapter(this, products, savedInstanceState,
-                getActivity().getApplicationContext());
+                getActivity().getApplicationContext(), new BtnClickListener() {
+
+            @Override
+            public void onBtnClick(int position) {
+                // Call your function which creates and shows the dialog here
+//                changeMoneda(position);
+//                addProductDialog();
+                Dialog dialog = removeProductDialog(position);
+                dialog.show();
+            }
+
+        });
         setListAdapter(adapter);
     }
 
@@ -123,12 +141,9 @@ public class PantryStockFragment extends ListFragment {
         Button add_product = (Button) rootView.findViewById(R.id.add_product);
 
         Spinner spinner = (Spinner) rootView.findViewById(R.id.change_list_order);
-        // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.stock_list_ordering, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -152,9 +167,9 @@ public class PantryStockFragment extends ListFragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
+
 
         add_product.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,62 +181,50 @@ public class PantryStockFragment extends ListFragment {
             }
         });
 
-//        ListView listView = (ListView) rootView.findViewById(R.id.lis);
-//        dialog = new Dialog(getActivity());
-
-//        populateList();
-//
-//        adapter = new ListViewAdapter(this, products, bundle);
-//        listView.setAdapter(adapter);
-//
-//        listView.setOnTouchListener(new View.OnTouchListener() {
-//
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                v.getParent().requestDisallowInterceptTouchEvent(true);
-//                return false;
-//            }
-//
-//        });
-//
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Log.v("badjoras", "carreguei num elemento da lista");
-//
-//                Home house = ((MainActivity) getActivity()).getHouse();
-//                Room room = (Room) house.getMap().get(KITCHEN);
-//                PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
-//                Product prod = stock.getProductList().get(i);
-//
-//                Dialog dialog = onCreateDialog(savedInstanceState, prod);
-//                dialog.show();
-//
-////                dialog.setTitle(String.valueOf(prod.getName()));
-////                dialog.setCancelable(true);
-//
-//                //TODO: completar esta cena da janela de dialogo para alterar o stock!!
-//
-////                ObjectOutputStream outstream = ((MainActivity) getActivity()).getOutputStream();
-////                outstream.writeObject(house);
-////                outstream.close();
-////                Home house = ((MainActivity) getActivity()).getHouse();
-////                HashMap<String, Room> map = house.getMap();
-////                map.put("casa da peles", new Room(BEDROOM));
-////                house.modifyMap(map);
-////                Log.v("MAP_SIZE_1", String.valueOf(map.size()));
-////
-////                house = ((MainActivity) getActivity()).getHouse();
-////                map = house.getMap();
-////                Log.v("MAP_SIZE_2", String.valueOf(map.size()));
-//
-////                ((MainActivity) getActivity()).sendObjectToServer(house);
-//
-//            }
-//        });
-
         return rootView;
     }
+
+    public Dialog removeProductDialog(final int position) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.remove_product_dialog, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle("Remover produto do stock");
+
+        TextView prod_name = (TextView) view.findViewById(R.id.remove_prod_name);
+        TextView prod_quantity = (TextView) view.findViewById(R.id.remove_prod_quantity);
+
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(KITCHEN);
+        final PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
+        Product prod = pantry.getProductList().get(position);
+
+        prod_name.append(prod.getName());
+        prod_quantity.append(String.valueOf(prod.getQuantity()));
+
+        System.out.println("******Remover produto******\nNome: " + prod.getName() +
+                ", Quantidade: " + prod.getQuantity());
+
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // FIRE ZE MISSILES!
+                pantry.removeProduct(position);
+                onResume();
+                Toast.makeText(getActivity().getBaseContext(),
+                        "Produto removido com sucesso!", Toast.LENGTH_LONG).show();
+            }
+        })
+                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        dialog.cancel();
+                    }
+                })
+                .setView(view);
+
+        return builder.create();
+    }
+
 
     public Dialog addProductDialog() {
         // Use the Builder class for convenient dialog construction
@@ -232,7 +235,6 @@ public class PantryStockFragment extends ListFragment {
 
         View view = inflater.inflate(R.layout.add_product_dialog, null);
 
-//        final Toast t;
         final EditText edit_text = (EditText) view.findViewById(R.id.add_prod_name_input);
         final NumberPicker np = (NumberPicker) view.findViewById(R.id.numberPicker_pantrystock);
 

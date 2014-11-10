@@ -39,6 +39,10 @@ public class PantryStock extends Feature implements Serializable {
         }
     }
 
+    public void removeProduct(int position) {
+        products.remove(position);
+    }
+
     public void insertOrUpdateProduct(String name, int quantity, boolean skipCheck) {
         int position = -1;
         if(!skipCheck)

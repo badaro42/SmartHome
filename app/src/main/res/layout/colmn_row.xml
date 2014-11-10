@@ -25,6 +25,15 @@
         android:text="Second"
         android:textSize="22sp" />
 
+    <Button
+        android:id="@+id/list_row_btn_delete"
+        android:layout_width="45dp"
+        android:layout_height="40dp"
+        android:background="@drawable/btn_delete"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
+
     <!--<TextView-->
     <!--android:id="@+id/TextThird"-->
     <!--android:layout_width="0dp"-->
