@@ -85,14 +85,14 @@ public class Server implements Serializable {
                     for (Product prod : prods) {
                         res += prod.getName() + ": " + prod.getQuantity() + "\n";
 
-                        if(prod.getName().equals("Tomate")){
-                            if(prod.getQuantity()<5) {
+                        if (prod.getName().equals("Tomate")) {
+                            if (prod.getQuantity() < 5) {
                                 System.out.println("Entrei aqui caralho!");
                                 prod.changeQuantity(10);
-                                 System.out.println("Tens o stock novamente SERGINHO MARICAS!");
-                                }
-                            System.out.println(prod.getQuantity() + " tomates do panao do Sergio");
+                                System.out.println("Tens o stock novamente SERGINHO MARICAS!");
                             }
+                            System.out.println(prod.getQuantity() + " tomates do panao do Sergio");
+                        }
 
                     }
                     System.out.print(res);

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.TypedValue;
@@ -71,9 +72,9 @@ public class MainActivity extends FragmentActivity {
     private ObjectOutputStream obj_os;
     private ObjectInputStream obj_is;
 
-    private Home house;
+    private Home house = new Home();
 
-    private List<Fragment> fragment_list;
+    public static List<Fragment> fragment_list;
 
     //TODO rever estas features mais tarde
     private String[] kitchen_features = new String[]{
@@ -98,12 +99,12 @@ public class MainActivity extends FragmentActivity {
 
 //    public static boolean firstTime = true;
 
-    private PagerSlidingTabStrip tabs;
-    private ViewPager pager;
-    private MyPagerAdapter adapter;
-    private FragmentManager app_fm;
+    public static PagerSlidingTabStrip tabs;
+    public static ViewPager pager;
+    public static MyPagerAdapter adapter;
+    public static FragmentManager app_fm;
 
-    private static CharSequence m_title;
+    public static CharSequence m_title;
 
     private Timer timer;
 
@@ -149,7 +150,7 @@ public class MainActivity extends FragmentActivity {
 
             establishConnection();
 
-            house = new Home();
+//            house = new Home();
 
             System.out.println("********* ESTOU LIGADO AO SERVER???? " + connected_to_server);
             System.out.println(client.toString());
@@ -350,16 +351,19 @@ public class MainActivity extends FragmentActivity {
     }
 
     protected void onResume() {
+        System.out.println("----------------ON_RESUME---------------");
 //        Toast.makeText(getBaseContext(), "resumeindo :D", Toast.LENGTH_LONG);
 //        Log.v("ScanResults ONRESUME", "ON RESUME CARALHO");
 //
 //        registerReceiver(wifiReciever, new IntentFilter(
 //                WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         super.onResume();
+//        refreshTabs();
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
+        System.out.println("----------------ON_PAUSE---------------");
 //        try {
 //            Toast.makeText(getBaseContext(), "ESTOU A PARAAR!!! :D", Toast.LENGTH_LONG);
 //            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
@@ -371,6 +375,11 @@ public class MainActivity extends FragmentActivity {
 //        }
     }
 
+    @Override
+    protected void onDestroy() {
+        System.out.println("----------------ON_DESTROY---------------");
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -380,9 +389,14 @@ public class MainActivity extends FragmentActivity {
 
     public void refreshTabs() {
 
+        System.out.println("**********FRAGMENT LIST SIZE: " + fragment_list.size() + "**************");
+
         for (Fragment frag : fragment_list) {
+            System.out.println("++++++++++++++FRAGMENT: " + frag.toString() + "+++++++++++++");
             getSupportFragmentManager().beginTransaction().remove(frag).commit();
         }
+
+        fragment_list = new ArrayList<Fragment>();
 
         System.out.println("**********REFRESH DAS TABS**************");
 
@@ -429,8 +443,7 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    public class MyPagerAdapter extends FragmentPagerAdapter {
-
+    public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -440,6 +453,7 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
+            Log.v("page_item:", "PAGE_ITEM PAGE_ITEM");
             if (m_title != null) {
                 if (m_title.toString().equals(OUTSIDE_GENERAL)) {
                     return outside_general_features[position];

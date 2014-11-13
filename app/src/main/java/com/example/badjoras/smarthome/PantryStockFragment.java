@@ -309,9 +309,6 @@ public class PantryStockFragment extends ListFragment {
                 }
                 System.out.print(res);
 
-                //TODO: FALTA ACTUALIZAR A LISTA, O SERVIDOR JA TEM A INFO CORRECTA!!!
-
-
                 ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
                 onResume();
@@ -334,6 +331,9 @@ public class PantryStockFragment extends ListFragment {
 
     private void populateList() {
         Home house = ((MainActivity) getActivity()).getHouse();
+
+        System.out.println("***************** HOUSE IS NULL??? " + (house == null) + " **********************");
+
         Room room = (Room) house.getMap().get(KITCHEN);
         PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
         products = stock.getProductList();
