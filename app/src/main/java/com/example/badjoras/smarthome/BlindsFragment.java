@@ -10,6 +10,12 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.badjoras.control.Blinds;
+import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Room;
+
+import static com.example.badjoras.smarthome.MainActivity.BLINDS;
+
 /**
  * Created by Diogo on 17/10/14.
  */
@@ -23,7 +29,7 @@ public class BlindsFragment extends Fragment {
     private String title;
     private int position;
 
-    private SeekBar sb;
+    private SeekBar seekBar;
     private Switch sw;
 
     public static BlindsFragment newInstance(int position, String function, String title) {
@@ -51,35 +57,47 @@ public class BlindsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.blinds_fragment, container,
                 false);
 
-        sb = (SeekBar) rootView.findViewById(R.id.blinds_interact);
+        seekBar = (SeekBar) rootView.findViewById(R.id.blinds_interact);
         sw = (Switch) rootView.findViewById(R.id.blindState);
 
-        if(sw.isChecked())
-            sb.setEnabled(true);
-        if(!sw.isChecked())
-            sb.setEnabled(false);
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(title);
+        Blinds blind = (Blinds) room.getMap().get(BLINDS);
+        boolean blindsUnlocked = blind.getUnlockingStatus();
+
+        sw.setChecked(blindsUnlocked);
+        seekBar.setEnabled(blindsUnlocked);
+
+//        if (sw.isChecked())
+//            seekBar.setEnabled(true);
+//        if (!sw.isChecked())
+//            seekBar.setEnabled(false);
 
         sw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if(sw.isChecked()) {
-                    sb.setEnabled(true);
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(title);
+                Blinds blind = (Blinds) room.getMap().get(BLINDS);
+
+                if (sw.isChecked()) {
+                    blind.changeUnlockingStatus(true);
+                    seekBar.setEnabled(true);
                     Toast.makeText(getActivity(),
                             "Ta ON", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    sb.setEnabled(false);
+                } else {
+                    blind.changeUnlockingStatus(false);
+                    seekBar.setEnabled(false);
                     Toast.makeText(getActivity(),
                             "Ta OFF", Toast.LENGTH_SHORT).show();
                 }
 
-
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
             }
         });
 
 
-        sb.setOnTouchListener(new View.OnTouchListener() {
+        seekBar.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -88,10 +106,15 @@ public class BlindsFragment extends Fragment {
             }
         });
 
-        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(title);
+                Blinds blind = (Blinds) room.getMap().get(BLINDS);
+                blind.changeOpening(progress);
 
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
             }
 
             @Override

@@ -60,8 +60,15 @@ public class LightsFragment extends Fragment {
         sb = (SeekBar) rootView.findViewById(R.id.seekBarLights);
         image = (ImageView) rootView.findViewById(R.id.imageLampView);
         text = (TextView) rootView.findViewById(R.id.luminosityTextView);
-        //text.setText("Luminosidade" + getLuminosidade() + "%");
-        text.setText("Luminosidade 0%");
+
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(title);
+        Light light = (Light) room.getMap().get(LIGHTS);
+        int intensity = light.getIntensity();
+
+        sb.setProgress(intensity);
+        text.setText("Luminosidade: " + intensity + "%");
+//        text.setText("Luminosidade 0%");
 
 
         sb.setOnTouchListener(new View.OnTouchListener() {
@@ -77,7 +84,7 @@ public class LightsFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
 
-               text.setText("Luminosidade " + progress + "%");
+               text.setText("Luminosidade: " + progress + "%");
                if(progress==0)
                    image.setImageResource(R.drawable.off_lamp_icon);
                 else if(progress>0 && progress<=50)
