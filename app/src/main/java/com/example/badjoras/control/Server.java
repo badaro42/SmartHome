@@ -21,8 +21,16 @@ public class Server implements Serializable {
     private static Socket clientSocket;
     private static ObjectInputStream inputstream;
     private static ObjectOutputStream outputstream;
+    private static int MANY_QUANTITY= 7;
+    private static int QUANTITY_TO_MANY=20;
+    private static int FEW_QUANTITY = 3;
+    private static int QUANTITY_TO_FEW = 5;
+    private static String[] products_names = new String[]{
+                "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
+                "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico"
+        };private static Home server_house;
 
-    private static Home server_house;
+
 
     public static void main(String[] args) throws IOException {
 
@@ -85,15 +93,29 @@ public class Server implements Serializable {
                     for (Product prod : prods) {
                         res += prod.getName() + ": " + prod.getQuantity() + "\n";
 
-                        if(prod.getName().equals("Tomate")){
-                            if(prod.getQuantity()<5) {
-                                System.out.println("Entrei aqui caralho!");
-                                prod.changeQuantity(10);
-                                 System.out.println("Tens o stock novamente SERGINHO MARICAS!");
-                                }
-                            System.out.println(prod.getQuantity() + " tomates do panao do Sergio");
-                            }
-
+                        if((prod.getQuantity() < FEW_QUANTITY) && (prod.getName().equals(products_names[3])
+                                ||prod.getName().equals(products_names[8])||prod.getName().equals(products_names[9])))
+                        {
+                            System.out.println("Entrei aqui caralho!");
+                            prod.changeQuantity(QUANTITY_TO_FEW);
+                            System.out.println("Tens o stock novamente SERGINHO MARICAS!");
+                            System.out.println(prod.getQuantity() +  prod.getName() + "do panao do Sergio");
+                        }
+                        else if((prod.getQuantity() < MANY_QUANTITY)&&(prod.getName().equals(products_names[0])
+                                ||prod.getName().equals(products_names[1])||prod.getName().equals(products_names[2])
+                                || prod.getName().equals(products_names[4])||prod.getName().equals(products_names[5])
+                                ||prod.getName().equals(products_names[6])||prod.getName().equals(products_names[7])
+                                ||prod.getName().equals(products_names[10])))
+                        {
+                            System.out.println("Entrei aqui caralho!");
+                            prod.changeQuantity(QUANTITY_TO_MANY);
+                            System.out.println("Tens o stock novamente SERGINHO MARICAS!");
+                            System.out.println(prod.getQuantity() +  prod.getName() + "do panao do Sergio");
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
                     System.out.print(res);
 
