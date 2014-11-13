@@ -38,7 +38,7 @@ public class PantryStockFragment extends ListFragment {
     private static final String ARG_FUNCTION = "function";
     private static final String ARG_TITLE = "title";
 
-    private static MainActivity mActivity = null;
+    public static MainActivity mActivity = null;
 
     private int position;
     private String function;

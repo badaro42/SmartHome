@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
+import com.devadvance.circularseekbar.CircularSeekBar;
+
 
 /**
  * Created by Diogo on 07/11/14.

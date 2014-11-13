@@ -125,6 +125,9 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        System.out.println("******ON_CREATE DA MAIN ACTIVITY!!!******");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
