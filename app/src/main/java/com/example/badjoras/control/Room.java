@@ -25,19 +25,19 @@ public class Room implements Serializable {
             features.put(PANTRY_STOCK, new PantryStock());
             features.put(AIR_CONDITIONER, new AirConditioner());
             features.put(LIGHTS, new Light());
-            features.put(BLINDS, new Feature());
+            features.put(BLINDS, new Blinds());
             features.put(COFFEE_MACHINE, new Feature());
             features.put(STOVE_OVEN, new Feature());
         }
         else if (room.equalsIgnoreCase(BEDROOM)) {
             features.put(AIR_CONDITIONER, new AirConditioner());
             features.put(LIGHTS, new Light());
-            features.put(BLINDS, new Feature());
+            features.put(BLINDS, new Blinds());
         }
         else if (room.equalsIgnoreCase(LIVING_ROOM)) {
             features.put(AIR_CONDITIONER, new AirConditioner());
             features.put(LIGHTS, new Light());
-            features.put(BLINDS, new Feature());
+            features.put(BLINDS, new Blinds());
         }
         else if (room.equalsIgnoreCase(OUTSIDE_GENERAL)) {
             features.put(SPRINKLER, new Feature());
