@@ -93,7 +93,6 @@ public class Server implements Serializable {
                     for (Product prod : prods) {
                         res += prod.getName() + ": " + prod.getQuantity() + "\n";
 
-<<<<<<< HEAD
                         if (prod.getName().equals("Tomate")) {
                             if (prod.getQuantity() < 5) {
                                 System.out.println("Entrei aqui caralho!");
@@ -103,7 +102,6 @@ public class Server implements Serializable {
                             System.out.println(prod.getQuantity() + " tomates do panao do Sergio");
                         }
 
-=======
                         if((prod.getQuantity() < FEW_QUANTITY) && (prod.getName().equals(products_names[3])
                                 ||prod.getName().equals(products_names[8])||prod.getName().equals(products_names[9])))
                         {
@@ -127,7 +125,6 @@ public class Server implements Serializable {
                         {
                             continue;
                         }
->>>>>>> origin/master
                     }
                     System.out.print(res);
 
