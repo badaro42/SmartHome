@@ -14,6 +14,12 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.badjoras.control.CoffeeMachine;
+import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Room;
+
+import static com.example.badjoras.smarthome.MainActivity.COFFEE_MACHINE;
+
 
 /**
  * Created by Diogo on 07/11/14.
@@ -24,11 +30,11 @@ public class CoffeeFragment extends Fragment {
     private static final String ARG_FUNCTION = "function";
 
     private ProgressBar progressBar;
-    private TimePicker tp;
-    private ToggleButton tb;
+    private TimePicker time_picker;
+    private ToggleButton toggle_btn;
     private int progressStatus = 0;
     private TextView textView;
-    private Button bt;
+    private Button btn_now;
     private Handler handler = new Handler();
 
     private String function;
@@ -59,32 +65,62 @@ public class CoffeeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.coffee_fragment, container,
                 false);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar1);
-        textView = (TextView) rootView.findViewById(R.id.textView1);
-        bt = (Button) rootView.findViewById(R.id.coffee_button);
-        tp = (TimePicker) rootView.findViewById(R.id.coffee_picker);
-        tb = (ToggleButton) rootView.findViewById(R.id.coffee_toggle);
+
         MainActivity.cafe = MediaPlayer.create(getActivity(), R.raw.cafe);
 
-        tp.setIs24HourView(true);
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(title);
+        CoffeeMachine coffee = (CoffeeMachine) room.getMap().get(COFFEE_MACHINE);
+        boolean coffeeScheduled = coffee.isScheduled();
 
-        tb.setOnClickListener(new View.OnClickListener() {
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar1);
+        textView = (TextView) rootView.findViewById(R.id.textView1);
+        btn_now = (Button) rootView.findViewById(R.id.coffee_button);
+        time_picker = (TimePicker) rootView.findViewById(R.id.coffee_picker);
+        toggle_btn = (ToggleButton) rootView.findViewById(R.id.coffee_toggle);
+
+        toggle_btn.setTextOff("Agendar");
+        toggle_btn.setTextOn("Eliminar agendamento");
+
+        time_picker.setIs24HourView(true);
+        toggle_btn.setChecked(coffeeScheduled);
+        if (coffeeScheduled) { //já há um agendamento, colocamos a hora do agendamento
+            time_picker.setCurrentHour(coffee.getScheduledHour());
+            time_picker.setCurrentMinute(coffee.getScheduledMinute());
+            time_picker.setEnabled(false);
+        } else {
+            time_picker.setEnabled(true);
+        }
+
+        toggle_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(title);
+                CoffeeMachine coffee = (CoffeeMachine) room.getMap().get(COFFEE_MACHINE);
 
-                if (tb.isChecked()) {
-                    tp.setEnabled(false);
-                    Toast.makeText(getActivity(),
-                            "" + tp.getCurrentHour() + tp.getCurrentMinute() + "", Toast.LENGTH_SHORT).show();
-                } else
-                    tp.setEnabled(true);
+                if (toggle_btn.isChecked()) {
+                    coffee.setSchedule(time_picker.getCurrentHour(), time_picker.getCurrentMinute());
+                    time_picker.setEnabled(false);
+                    Toast.makeText(getActivity(), "Café agendado para as " +
+                                    time_picker.getCurrentHour() + ":" + time_picker.getCurrentMinute(),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    coffee.resetSchedule();
+                    toggle_btn.setEnabled(true);
+                    time_picker.setEnabled(true);
+                    Toast.makeText(getActivity(), "Agendamento cancelado",
+                            Toast.LENGTH_SHORT).show();
+                }
 
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
             }
         });
-        bt.setOnClickListener(new View.OnClickListener() {
+
+        btn_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                bt.setEnabled(false);
+                btn_now.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
                 textView.setVisibility(View.VISIBLE);
                 // Start long running operation in a background thread
@@ -99,10 +135,11 @@ public class CoffeeFragment extends Fragment {
                                 public void run() {
                                     progressBar.setProgress(progressStatus);
                                     textView.setText(progressStatus + "/" + progressBar.getMax());
+
                                     if (progressStatus == 100) {
                                         progressBar.setVisibility(View.INVISIBLE);
                                         textView.setVisibility(View.INVISIBLE);
-                                        bt.setEnabled(true);
+                                        btn_now.setEnabled(true);
                                         MainActivity.cafe.start();
                                     }
                                 }
