@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
 //import com.devadvance.circularseekbar.CircularSeekBar.OnCircularSeekBarChangeListener;
 //import com.devadvance.circularseekbar.CircularSeekBar;
-//import com.triggertrap.seekarc.SeekArc;
+import com.triggertrap.seekarc.SeekArc;
+import com.triggertrap.seekarc.SeekArc.OnSeekArcChangeListener;
 
 
 /**
@@ -54,33 +56,39 @@ public class StoveFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.stove_fragment, container,
                 false);
 
+        final TextView tv = (TextView) rootView.findViewById(R.id.textView42_badjoras);
+        SeekArc seekArc = (SeekArc) rootView.findViewById(R.id.seekArc);
+        seekArc.setClockwise(true);
+        seekArc.setStartAngle(30);
+        seekArc.setSweepAngle(300);
+        seekArc.setArcRotation(180);
 
-//        CircularSeekBar arc = (CircularSeekBar) rootView.findViewById(R.id.circularSeekBar1);
-//
-//        arc.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent motionEvent) {
-//                view.getParent().requestDisallowInterceptTouchEvent(true);
-//                return false;
-//            }
-//        });
-//
-//        arc.setOnSeekBarChangeListener(new OnCircularSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(CircularSeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(CircularSeekBar seekBar) {
-//
-//            }
-//        });
+
+        seekArc.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                view.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
+        seekArc.setOnSeekArcChangeListener(new OnSeekArcChangeListener() {
+            @Override
+            public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
+                //TODO: alterar aqui o texto que mostra a temperatura actual
+                tv.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekArc seekArc) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekArc seekArc) {
+
+            }
+        });
 
         return rootView;
     }

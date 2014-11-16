@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="CircularSeekBar">
-        <attr name="progress" format="integer"></attr>
-        <attr name="max" format="integer"></attr>
-        <attr name="move_outside_circle" format="boolean"></attr>
-        <attr name="maintain_equal_circle" format="boolean"></attr>
-        <attr name="use_custom_radii" format="boolean"></attr>
-        <attr name="lock_enabled" format="boolean"></attr>
-        <attr name="circle_x_radius" format="float" />
-        <attr name="circle_y_radius" format="float" />
-        <attr name="circle_stroke_width" format="float" />
-        <attr name="pointer_radius" format="float" />
-        <attr name="pointer_halo_width" format="float" />
-        <attr name="pointer_halo_border_width" format="float"></attr>
-        <attr name="circle_color" format="string"></attr>
-        <attr name="circle_progress_color" format="string"></attr>
-        <attr name="pointer_color" format="string"></attr>
-        <attr name="pointer_halo_color" format="string"></attr>
-        <attr name="pointer_halo_color_ontouch" format="string"></attr>
-        <attr name="pointer_alpha_ontouch" format="integer"></attr>
-        <attr name="start_angle" format="float"></attr>
-        <attr name="end_angle" format="float"></attr>
-        <attr name="circle_fill" format="string"></attr>
+    <declare-styleable name="SeekArc">
+        <attr name="thumb" format="reference" />
+        <attr name="thumbOffset" format="dimension" />
+        <attr name="max" format="integer" />
+        <attr name="progressWidth" format="dimension" />
+        <attr name="arcWidth" format="dimension" />
+        <attr name="progress" format="integer" />
+        <attr name="rotation" format="integer" />
+        <attr name="startAngle" format="integer" />
+        <attr name="sweepAngle" format="integer" />
+        <attr name="arcColor" format="color" />
+        <attr name="progressColor" format="color" />
+        <attr name="roundEdges" format="boolean" />
+        <attr name="touchInside" format="boolean" />
+        <attr name="clockwise" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SeekArcTheme">
+        <attr name="seekArcStyle" format="reference"></attr>
     </declare-styleable>
 
 </resources>
