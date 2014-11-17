@@ -29,6 +29,8 @@ public class StoveFragment extends Fragment {
     private static final String ARG_POSITION = "position";
     private static final String ARG_FUNCTION = "function";
 
+    private static int previous_progress = 0;
+
     private String function;
     private String title;
     private int position;
@@ -123,13 +125,13 @@ public class StoveFragment extends Fragment {
         seekArc.setOnSeekArcChangeListener(new OnSeekArcChangeListener() {
             @Override
             public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
-                if (progress == 0) {
-                    tv.setText("0 ºC");
+                if ((progress == 0) && (previous_progress != 0)) {
                     number_pick.setEnabled(false);
                     number_pick.setValue(0);
-                } else {
-                    tv.setText(String.valueOf(progress) + " ºC");
 
+                    Toast.makeText(getActivity(),
+                            "O forno está desligado", Toast.LENGTH_SHORT).show();
+                } else if ((progress == 1) && (previous_progress == 0)) {
                     number_pick.setEnabled(true);
 
                     Home house = ((MainActivity) getActivity()).getHouse();
@@ -138,7 +140,20 @@ public class StoveFragment extends Fragment {
                     stove.setTemperature(progress);
 
                     ((MainActivity) getActivity()).sendObjectToServer(house, true);
+
+                    Toast.makeText(getActivity(),
+                            "O forno está ligado", Toast.LENGTH_SHORT).show();
+                } else {
+                    Home house = ((MainActivity) getActivity()).getHouse();
+                    Room room = (Room) house.getMap().get(KITCHEN);
+                    StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+                    stove.setTemperature(progress);
+
+                    ((MainActivity) getActivity()).sendObjectToServer(house, true);
                 }
+
+                tv.setText(String.valueOf(progress) + " ºC");
+                previous_progress = progress;
             }
 
             @Override
@@ -151,34 +166,6 @@ public class StoveFragment extends Fragment {
 
             }
         });
-
-
-//        stove_switch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View arg0) {
-//                Home house = ((MainActivity) getActivity()).getHouse();
-//                Room room = (Room) house.getMap().get(title);
-//                StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
-//
-//                if (stove_switch.isChecked()) {
-//                    stove.turnOnStove();
-//
-//                    number_pick.setEnabled(true);
-//                    seekArc.setEnabled(true);
-//                    Toast.makeText(getActivity(),
-//                            "O forno está ligado", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    stove.turnOffStove();
-//
-//                    number_pick.setEnabled(false);
-//                    seekArc.setEnabled(false);
-//                    Toast.makeText(getActivity(),
-//                            "O forno está desligado!", Toast.LENGTH_SHORT).show();
-//                }
-//
-//                ((MainActivity) getActivity()).sendObjectToServer(house, true);
-//            }
-//        });
 
         return rootView;
     }
