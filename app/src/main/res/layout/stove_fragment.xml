@@ -20,7 +20,7 @@
             android:background="@color/app_fragment_background">
 
             <RelativeLayout
-                android:id="@+id/relativeLayout"
+                android:id="@+id/stove_separator_portrait"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -44,16 +44,33 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/layout_stove_now"
+                android:id="@+id/stove_switch_portrait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/stove_separator_portrait"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="30dp">
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textOff="Desligado"
+                    android:textOn="Ligado" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/stove_circ_seekbar_portrait"
                 android:layout_width="450dp"
                 android:layout_height="300dp"
+                android:layout_below="@id/stove_switch_portrait"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="80dp">
+                android:layout_marginTop="20dp">
 
                 <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="50dp"
                     android:layout_weight="1">
 
                     <com.triggertrap.seekarc.SeekArc
@@ -73,6 +90,15 @@
 
                 </FrameLayout>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/stove_circ_seekbar_portrait"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp">
+
                 <NumberPicker
                     android:id="@+id/timepicker_stove_now"
                     android:layout_width="wrap_content"
@@ -88,19 +114,6 @@
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/layout_stove_now">
-
-                <Switch
-                    android:textOn="Ligado"
-                    android:textOff="Desligado"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
 
             <!--<Button-->
             <!--android:id="@+id/button_hot"-->

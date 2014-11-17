@@ -20,34 +20,62 @@
             android:background="@color/app_fragment_background"
             android:id="@+id/lights2">
 
-            <SeekBar
-                android:scaleY="1.5"
-                android:scaleX="1.5"
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:id="@+id/lights_separator_portrait"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/seekBarLights"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="180dp"
-                android:layout_marginRight="180dp"
-                android:max="100"/>
+                android:orientation="horizontal"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:paddingTop="50dp">
+
+                <TextView
+                    android:id="@+id/textViewBlinds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Alterar intensidade"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/textViewBlinds"
+                    android:background="@android:color/darker_gray" />
+            </RelativeLayout>
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageLampView"
-                android:layout_above="@+id/seekBarLights"
+                android:layout_below="@+id/lights_separator_portrait"
+                android:layout_marginTop="50dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="124dp"
                 android:src="@drawable/off_lamp_icon"/>
 
             <TextView
+                android:id="@+id/luminosityTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_alignLeft="@+id/seekBarLights"
-                android:id="@+id/luminosityTextView"
-                android:layout_above="@+id/seekBarLights"
+                android:layout_below="@id/imageLampView"
                 android:layout_centerHorizontal="true" />
+
+            <SeekBar
+                android:scaleY="1.5"
+                android:scaleX="1.5"
+                android:layout_below="@id/luminosityTextView"
+                android:layout_width="300dp"
+                android:layout_marginTop="15dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBarLights"
+                android:layout_centerHorizontal="true"
+                android:max="100"/>
+
+
+
+
 
         </RelativeLayout>
     </RelativeLayout>

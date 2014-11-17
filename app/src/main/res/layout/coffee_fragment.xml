@@ -33,7 +33,7 @@
                     android:id="@+id/textViewBlinds"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tirar Café"
+                    android:text="Tirar café"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <View
@@ -88,11 +88,11 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/blind_relative"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
-                android:paddingTop="50dp">
+                android:paddingTop="30dp">
 
                 <TextView
                     android:id="@+id/textView42"
@@ -100,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="false"
                     android:layout_centerHorizontal="true"
-                    android:text="Agendar"
+                    android:text="Agendar operação"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <View
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/blind_relative2"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
                 android:orientation="horizontal"
                 android:layout_centerHorizontal="true">
 
@@ -124,8 +124,8 @@
                     android:id="@+id/coffee_toggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="41dp"
-                    android:layout_marginRight="30dp" />
+                    android:layout_gravity="center"
+                    android:layout_marginRight="30dp"/>
 
                 <TimePicker
                     android:id="@+id/coffee_picker"
