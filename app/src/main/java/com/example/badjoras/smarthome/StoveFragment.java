@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 //import com.devadvance.circularseekbar.CircularSeekBar.OnCircularSeekBarChangeListener;
 //import com.devadvance.circularseekbar.CircularSeekBar;
@@ -56,12 +58,37 @@ public class StoveFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.stove_fragment, container,
                 false);
 
-        final TextView tv = (TextView) rootView.findViewById(R.id.textView42_badjoras);
-        SeekArc seekArc = (SeekArc) rootView.findViewById(R.id.seekArc);
+        final TextView tv = (TextView) rootView.findViewById(R.id.textview_seekArcProgress);
+        NumberPicker time = (NumberPicker) rootView.findViewById(R.id.timepicker_stove_now);
+        SeekArc seekArc = (SeekArc) rootView.findViewById(R.id.seekarc_stove);
+
         seekArc.setClockwise(true);
         seekArc.setStartAngle(30);
         seekArc.setSweepAngle(300);
         seekArc.setArcRotation(180);
+        seekArc.setTouchInSide(true);
+
+        final String[] time_values = new String[24];
+
+        System.out.println("*********CONTEUDO DO ARRAY***********");
+        for (int i = 0; i < time_values.length; i++) {
+            String number = Integer.toString((i + 1) * 5);
+            time_values[i] = number.length() < 2 ? "0" + number : number;
+            System.out.println("i: " + i + "; number: " + number + "; time_values[i]: " + time_values[i]);
+        }
+        System.out.println("*********FIM DO ARRAY***********");
+
+        time.setMaxValue(time_values.length-1);
+        time.setMinValue(0);
+        time.setDisplayedValues(time_values);
+
+        time.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
+                int new_value = Integer.parseInt(time_values[newVal]);
+                System.out.println("********FORNO - TEMPO: " + new_value + "**********");
+            }
+        });
 
 
         seekArc.setOnTouchListener(new View.OnTouchListener() {
@@ -76,7 +103,7 @@ public class StoveFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
                 //TODO: alterar aqui o texto que mostra a temperatura actual
-                tv.setText(String.valueOf(progress));
+                tv.setText(String.valueOf(progress) + " ºC");
             }
 
             @Override

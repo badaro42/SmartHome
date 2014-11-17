@@ -6,16 +6,15 @@
     android:fillViewport="true">
 
     <RelativeLayout
-        android:id="@+id/blinds_layout"
+        android:id="@+id/stove_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/red"
+        android:background="@color/app_margin_background"
         android:clickable="false"
         android:longClickable="false"
         android:padding="8dp">
 
         <RelativeLayout
-            android:id="@+id/blinds2"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:background="@color/app_fragment_background">
@@ -33,7 +32,7 @@
                     android:id="@+id/textViewBlinds"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Estado"
+                    android:text="Definir temperatura e tempo"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <View
@@ -44,75 +43,145 @@
                     android:background="@android:color/darker_gray" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_below="@+id/relativeLayout"
-                android:layout_height="fill_parent">
+            <LinearLayout
+                android:id="@+id/layout_stove_now"
+                android:layout_width="450dp"
+                android:layout_height="300dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="80dp">
 
-                <com.triggertrap.seekarc.SeekArc
-                    android:id="@+id/seekArc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="30dp" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="50dp"
+                    android:layout_weight="1">
 
-            </RelativeLayout>
+                    <com.triggertrap.seekarc.SeekArc
+                        android:id="@+id/seekarc_stove"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="30dp" />
 
-            <RelativeLayout
-                android:id="@+id/stove_relative"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                    <TextView
+                        android:id="@+id/textview_seekArcProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="0 ºC"
+                        android:textSize="35sp" />
 
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
+                </FrameLayout>
 
-                <Switch
-                    android:id="@+id/blindState"
+                <NumberPicker
+                    android:id="@+id/timepicker_stove_now"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relativeLayout2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/stove_relative"
-                android:background="@color/red"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingRight="50dp"
-                android:paddingTop="50dp">
-
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/blind_relative2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/blind_relative"
-                android:layout_marginTop="300dp"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingRight="50dp"
-                android:paddingTop="50dp">
+                    android:layout_gravity="center" />
 
                 <TextView
-                    android:id="@+id/textView42_badjoras"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="false"
-                    android:layout_centerHorizontal="true"
-                    android:text="Agendar"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:text="minutos"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/textView42"
-                    android:background="@android:color/darker_gray" />
-            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/layout_stove_now">
+
+                <Switch
+                    android:textOn="Ligado"
+                    android:textOff="Desligado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <!--<Button-->
+            <!--android:id="@+id/button_hot"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginRight="75dp"-->
+            <!--android:background="@drawable/new_button"-->
+            <!--android:drawableStart="@drawable/sunny" />-->
+
+            <!--<Button-->
+            <!--android:id="@+id/button_cold"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/new_button"-->
+            <!--android:drawableStart="@drawable/snowflake1" />-->
+
+
+            <!--<RelativeLayout-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_below="@+id/relativeLayout"-->
+            <!--android:layout_height="wrap">-->
+
+            <!---->
+
+            <!--</RelativeLayout>-->
+
+            <!--<RelativeLayout-->
+            <!--android:id="@+id/stove_relative"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--<Switch-->
+            <!--android:id="@+id/blindState"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerHorizontal="true" />-->
+            <!--</RelativeLayout>-->
+
+            <!--<RelativeLayout-->
+            <!--android:id="@+id/relativeLayout2"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/stove_relative"-->
+            <!--android:background="@color/red"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:paddingLeft="50dp"-->
+            <!--android:paddingRight="50dp"-->
+            <!--android:paddingTop="50dp">-->
+
+
+            <!--</RelativeLayout>-->
+
+            <!--<RelativeLayout-->
+            <!--android:id="@+id/blind_relative2"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/blind_relative"-->
+            <!--android:layout_marginTop="300dp"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:paddingLeft="50dp"-->
+            <!--android:paddingRight="50dp"-->
+            <!--android:paddingTop="50dp">-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/textView42_badjoras"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentTop="false"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:text="Agendar"-->
+            <!--android:textAppearance="?android:attr/textAppearanceLarge" />-->
+
+            <!--<View-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:layout_below="@id/textView42"-->
+            <!--android:background="@android:color/darker_gray" />-->
+            <!--</RelativeLayout>-->
 
 
         </RelativeLayout>
