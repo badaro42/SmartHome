@@ -10,10 +10,13 @@ import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
+import android.widget.Toast;
 
-//import com.devadvance.circularseekbar.CircularSeekBar.OnCircularSeekBarChangeListener;
-//import com.devadvance.circularseekbar.CircularSeekBar;
+import static com.example.badjoras.smarthome.MainActivity.*;
+
+import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Room;
+import com.example.badjoras.control.StoveOven;
 import com.triggertrap.seekarc.SeekArc;
 import com.triggertrap.seekarc.SeekArc.OnSeekArcChangeListener;
 
@@ -58,35 +61,53 @@ public class StoveFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.stove_fragment, container,
                 false);
 
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(KITCHEN);
+        StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+
+//        final Switch stove_switch = (Switch) rootView.findViewById(R.id.stove_switch_button);
         final TextView tv = (TextView) rootView.findViewById(R.id.textview_seekArcProgress);
-        NumberPicker time = (NumberPicker) rootView.findViewById(R.id.timepicker_stove_now);
-        SeekArc seekArc = (SeekArc) rootView.findViewById(R.id.seekarc_stove);
+        final NumberPicker number_pick = (NumberPicker) rootView.findViewById(R.id.timepicker_stove_now);
+        final SeekArc seekArc = (SeekArc) rootView.findViewById(R.id.seekarc_stove);
 
         seekArc.setClockwise(true);
         seekArc.setStartAngle(30);
         seekArc.setSweepAngle(300);
         seekArc.setArcRotation(180);
-        seekArc.setTouchInSide(true);
+//        seekArc.setTouchInSide(true);
 
-        final String[] time_values = new String[24];
+        final String[] time_values = new String[25];
 
         System.out.println("*********CONTEUDO DO ARRAY***********");
         for (int i = 0; i < time_values.length; i++) {
-            String number = Integer.toString((i + 1) * 5);
+            String number = Integer.toString(i * 5);
             time_values[i] = number.length() < 2 ? "0" + number : number;
             System.out.println("i: " + i + "; number: " + number + "; time_values[i]: " + time_values[i]);
         }
         System.out.println("*********FIM DO ARRAY***********");
 
-        time.setMaxValue(time_values.length-1);
-        time.setMinValue(0);
-        time.setDisplayedValues(time_values);
+        number_pick.setMaxValue(time_values.length - 1);
+        number_pick.setMinValue(0);
+        number_pick.setDisplayedValues(time_values);
 
-        time.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+        final int curr_temp = stove.getTemperature();
+        if (curr_temp == 0) {
+            number_pick.setEnabled(false);
+            number_pick.setValue(0);
+        }
+
+        number_pick.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
                 int new_value = Integer.parseInt(time_values[newVal]);
                 System.out.println("********FORNO - TEMPO: " + new_value + "**********");
+
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(KITCHEN);
+                StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+                stove.changeMinutesToGo(new_value);
+
+                ((MainActivity) getActivity()).sendObjectToServer(house, true);
             }
         });
 
@@ -102,8 +123,22 @@ public class StoveFragment extends Fragment {
         seekArc.setOnSeekArcChangeListener(new OnSeekArcChangeListener() {
             @Override
             public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
-                //TODO: alterar aqui o texto que mostra a temperatura actual
-                tv.setText(String.valueOf(progress) + " ºC");
+                if (progress == 0) {
+                    tv.setText("0 ºC");
+                    number_pick.setEnabled(false);
+                    number_pick.setValue(0);
+                } else {
+                    tv.setText(String.valueOf(progress) + " ºC");
+
+                    number_pick.setEnabled(true);
+
+                    Home house = ((MainActivity) getActivity()).getHouse();
+                    Room room = (Room) house.getMap().get(KITCHEN);
+                    StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+                    stove.setTemperature(progress);
+
+                    ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                }
             }
 
             @Override
@@ -116,6 +151,34 @@ public class StoveFragment extends Fragment {
 
             }
         });
+
+
+//        stove_switch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View arg0) {
+//                Home house = ((MainActivity) getActivity()).getHouse();
+//                Room room = (Room) house.getMap().get(title);
+//                StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+//
+//                if (stove_switch.isChecked()) {
+//                    stove.turnOnStove();
+//
+//                    number_pick.setEnabled(true);
+//                    seekArc.setEnabled(true);
+//                    Toast.makeText(getActivity(),
+//                            "O forno está ligado", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    stove.turnOffStove();
+//
+//                    number_pick.setEnabled(false);
+//                    seekArc.setEnabled(false);
+//                    Toast.makeText(getActivity(),
+//                            "O forno está desligado!", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+//            }
+//        });
 
         return rootView;
     }

@@ -43,28 +43,29 @@
                     android:background="@android:color/darker_gray" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:id="@+id/stove_switch_portrait"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/stove_separator_portrait"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="30dp">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/stove_switch_portrait"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@id/stove_separator_portrait"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_marginBottom="10dp"-->
+                <!--android:layout_marginTop="30dp">-->
 
-                <Switch
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textOff="Desligado"
-                    android:textOn="Ligado" />
+                <!--<Switch-->
+                    <!--android:id="@+id/stove_switch_button"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textOff="Desligado"-->
+                    <!--android:textOn="Ligado" />-->
 
-            </LinearLayout>
+            <!--</LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/stove_circ_seekbar_portrait"
                 android:layout_width="450dp"
                 android:layout_height="300dp"
-                android:layout_below="@id/stove_switch_portrait"
+                android:layout_below="@id/stove_separator_portrait"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp">
 

@@ -27,7 +27,7 @@ public class Room implements Serializable {
             features.put(LIGHTS, new Light());
             features.put(BLINDS, new Blinds());
             features.put(COFFEE_MACHINE, new CoffeeMachine());
-            features.put(STOVE_OVEN, new Feature());
+            features.put(STOVE_OVEN, new StoveOven());
         }
         else if (room.equalsIgnoreCase(BEDROOM)) {
             features.put(AIR_CONDITIONER, new AirConditioner());

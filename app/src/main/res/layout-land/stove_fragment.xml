@@ -43,29 +43,30 @@
                     android:background="@android:color/darker_gray" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:id="@+id/switch_stove"
-                android:layout_below="@id/stove_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="15dp">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/switch_stove"-->
+                <!--android:layout_below="@id/stove_separator"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_marginTop="25dp"-->
+                <!--android:layout_marginBottom="15dp">-->
 
-                <Switch
-                    android:textOn="Ligado"
-                    android:textOff="Desligado"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                <!--<Switch-->
+                    <!--android:id="@+id/stove_switch_button"-->
+                    <!--android:textOn="Ligado"-->
+                    <!--android:textOff="Desligado"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content" />-->
 
-            </LinearLayout>
+            <!--</LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/layout_stove_now"
                 android:layout_width="600dp"
                 android:layout_height="300dp"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/switch_stove"
+                android:layout_below="@id/stove_separator"
                 android:layout_marginTop="20dp"
                 android:paddingRight="30dp">
 
