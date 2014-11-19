@@ -41,6 +41,8 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
+        System.out.println("Tou dentro desta classe de merda:" +position);
+
         return list.get(position);
     }
 
@@ -56,10 +58,12 @@ public class ListViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder;
         LayoutInflater inflater = frag.getLayoutInflater(b);
+
+        System.out.println("TODO LA DENTRO " + position);
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.colmn_row, parent, false);
@@ -83,7 +87,9 @@ public class ListViewAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if(mClickListener != null)
-                    mClickListener.onBtnClick((Integer) v.getTag());
+                    {
+                    System.out.println("O GUI E PANAO: " + position);
+                    mClickListener.onBtnClick((Integer) v.getTag());}
             }
         });
 

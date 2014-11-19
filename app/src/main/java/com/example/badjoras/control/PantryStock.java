@@ -19,6 +19,10 @@ public class PantryStock extends Feature implements Serializable {
             5, 2, 0, 3, 7, 25, 1, 2, 1, 2, 30
     };
 
+    private String[] init_products_category = new String[]{"Legumes","Legumes", "Enlatados", "Massas",
+            "Legumes", "Legumes", "Legumes", "Enlatados", "Massas", "Café", "Higiene"
+    };
+
 
     public PantryStock() {
         super();
@@ -35,7 +39,7 @@ public class PantryStock extends Feature implements Serializable {
         products = new LinkedList<Product>();
         for(int i = 0; i < init_products_names.length; i++) {
             insertOrUpdateProduct(init_products_names[i],
-                    init_products_quantities[i], true);
+                    init_products_quantities[i], init_products_category[i],true);
         }
     }
 
@@ -43,13 +47,16 @@ public class PantryStock extends Feature implements Serializable {
         products.remove(position);
     }
 
-    public void insertOrUpdateProduct(String name, int quantity, boolean skipCheck) {
+    public void insertOrUpdateProduct(String name, int quantity, String category, boolean skipCheck) {
         int position = -1;
-        if(!skipCheck)
+        if(!skipCheck) {
+            System.out.println("Entrou entrou entrou aqui!!");
             position = getItemByName(name);
+        }
 
         if(position == -1) {
-            Product prod = new Product(name, quantity);
+            System.out.println("Nao devia entrar aqui agora");
+            Product prod = new Product(name, quantity, category);
             products.add(prod);
         }
         else {

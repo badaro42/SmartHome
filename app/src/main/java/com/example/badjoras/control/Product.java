@@ -9,10 +9,12 @@ public class Product implements Serializable {
 
     private int quantity;
     private String name;
+    private String category;
 
-    public Product(String name, int quantity) {
+    public Product(String name, int quantity, String category) {
         this.quantity = quantity;
         this.name = name;
+        this.category = category;
     }
 
     public String getName() {
@@ -30,4 +32,6 @@ public class Product implements Serializable {
     public void changeName(String new_name) {
         name = new_name;
     }
+
+    public String getCategoty(){return category;}
 }

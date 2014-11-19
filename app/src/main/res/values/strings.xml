@@ -8,6 +8,15 @@
         <item>Ordem decrescente de stock</item>
     </string-array>
 
+    <string-array name="products_category">
+        <item>Legumes</item>
+        <item>Café</item>
+        <item>Massas</item>
+        <item>Higiene</item>
+        <item>Enlatados</item>
+        <item>Frutas</item>
+    </string-array>
+
     <string name="app_name">SmartHome</string>
     <string name="kitchen">Cozinha</string>
     <string name="outside_general">Exterior/Geral</string>
