@@ -12,15 +12,17 @@ public class PantryStock extends Feature implements Serializable {
 
     private String[] init_products_names = new String[]{
             "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
-            "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico"
+            "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico",
+            "Alho", "Banana", "Pêssego"
     };
 
     private Integer[] init_products_quantities = new Integer[]{
-            5, 2, 0, 3, 7, 25, 1, 2, 1, 2, 30
+            5, 2, 0, 3, 7, 25, 1, 2, 1, 2, 30, 5, 13, 7
     };
 
     private String[] init_products_category = new String[]{"Legumes","Legumes", "Enlatados", "Massas",
-            "Legumes", "Legumes", "Legumes", "Enlatados", "Massas", "Café", "Higiene"
+            "Legumes", "Legumes", "Legumes", "Enlatados", "Massas", "Café", "Higiene", "Legumes",
+            "Frutas", "Frutas"
     };
 
 

@@ -41,7 +41,7 @@ public class ListViewAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        System.out.println("Tou dentro desta classe de merda:" +position);
+        System.out.println("Tou dentro desta classe de merda:" + position);
 
         return list.get(position);
     }
@@ -63,7 +63,7 @@ public class ListViewAdapter extends BaseAdapter {
         ViewHolder holder;
         LayoutInflater inflater = frag.getLayoutInflater(b);
 
-        System.out.println("TODO LA DENTRO " + position);
+//        System.out.println("TODO LA DENTRO " + position);
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.colmn_row, parent, false);
@@ -86,20 +86,17 @@ public class ListViewAdapter extends BaseAdapter {
         holder.btn_delete_row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mClickListener != null)
-                    {
+                if (mClickListener != null) {
                     System.out.println("O GUI E PANAO: " + position);
-                    mClickListener.onBtnClick((Integer) v.getTag());}
+                    System.out.println("v.getTag(): " + v.getTag());
+                    mClickListener.onBtnClick(position);
+                }
             }
         });
 
         if (prod.getQuantity() == 0)
-
-        {
             convertView.setBackgroundColor(context.getResources().getColor(R.color.stock_low));
-        } else
-
-        {
+        else {
             if (position % 2 == 0)
                 convertView.setBackgroundColor(context.getResources().getColor(R.color.even_row));
             else

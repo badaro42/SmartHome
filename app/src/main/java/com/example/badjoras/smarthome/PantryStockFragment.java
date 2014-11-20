@@ -1,6 +1,5 @@
 package com.example.badjoras.smarthome;
 
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -30,7 +29,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 
 import static com.example.badjoras.smarthome.MainActivity.*;
-
 
 public class PantryStockFragment extends ListFragment {
 
@@ -73,7 +71,7 @@ public class PantryStockFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         bundle = savedInstanceState;
 
-        mActivity = (MainActivity)super.getActivity();
+        mActivity = (MainActivity) super.getActivity();
 
         title = getArguments().getString(ARG_TITLE);
         position = getArguments().getInt(ARG_POSITION);
@@ -87,7 +85,7 @@ public class PantryStockFragment extends ListFragment {
             @Override
             public void onBtnClick(int position) {
 
-                System.out.print("AQUI AQUI AQUI:" + position +" de" + products.size()+ "\n");
+                System.out.print("AQUI AQUI AQUI:" + position + " de " + products.size() + "\n");
                 // Call your function which creates and shows the dialog here
                 Dialog dialog = removeProductDialog(position);
 
@@ -113,9 +111,7 @@ public class PantryStockFragment extends ListFragment {
 
         populateList();
         adapter.swapItems(stock.getProductList());
-
     }
-
 
 
     @Override
@@ -129,7 +125,7 @@ public class PantryStockFragment extends ListFragment {
         PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
         Product prod = stock.getProductList().get(position);
 
-        Log.v("EDIT EDIT", position + "");
+//        Log.v("EDIT EDIT", position + "");
 
         Dialog dialog = editProductDialog(prod);
         dialog.show();
@@ -203,8 +199,7 @@ public class PantryStockFragment extends ListFragment {
         System.out.println("POSIÇAO CARALHO: " + position);
         Product prod = pantry.getProductList().get(position);
 
-        for(int i =0; i < pantry.getProductList().size(); i++)
-        {
+        for (int i = 0; i < pantry.getProductList().size(); i++) {
             System.out.println("Produtos da lista:" + pantry.getProductList().get(i).getName());
         }
         Log.v("Remover", prod.getName() + " a remover");
@@ -260,9 +255,10 @@ public class PantryStockFragment extends ListFragment {
                                                int arg2, long arg3) {
                         int position = spnr.getSelectedItemPosition();
                         System.out.print("CARALHO:" + spnr.getSelectedItem().toString());
-                        Toast.makeText(getActivity().getBaseContext(),"You have selected "+ spnr.getSelectedItem().toString(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getBaseContext(), "You have selected " + spnr.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
                         // TODO Auto-generated method stub
                     }
+
                     @Override
                     public void onNothingSelected(AdapterView<?> arg0) {
                         // TODO Auto-generated method stub
@@ -292,11 +288,10 @@ public class PantryStockFragment extends ListFragment {
                 int index = pantry.getItemByName(prod_name);
 
 
-
                 //o elemento não existe. adicionamos à lista
                 if (index == -1) {
                     pantry.insertOrUpdateProduct(
-                            prod_name, np.getValue(),spnr.getSelectedItem().toString(), true);
+                            prod_name, np.getValue(), spnr.getSelectedItem().toString(), true);
                     ((MainActivity) getActivity()).sendObjectToServer(house, true);
                     onResume();
                     Toast.makeText(getActivity().getBaseContext(),
@@ -349,7 +344,7 @@ public class PantryStockFragment extends ListFragment {
                 Room room = (Room) house.getMap().get(KITCHEN);
                 PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
                 System.out.println("FODASSEEEEE");
-                System.out.println("CARALHO PA ISTO: "+  " ISTO TA NULL" + product.getCategoty());
+                System.out.println("CARALHO PA ISTO: " + " ISTO TA NULL" + product.getCategoty());
                 pantry.insertOrUpdateProduct(
                         product.getName(), np.getValue(), product.getCategoty(),
                         false);
@@ -393,7 +388,7 @@ public class PantryStockFragment extends ListFragment {
 
         System.out.println("Primeiro elemento da lista original: " + products.get(0).getName());
         System.out.println("Tamanho da lista:" + products.size());
-        System.out.println("Ultimo elemento da lista:" + products.get(13).getName());
+//        System.out.println("Ultimo elemento da lista:" + products.get(13).getName());
 
         if (orderAlphabetically) {
             Collections.sort(products, new Comparator<Product>() {
