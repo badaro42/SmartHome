@@ -33,5 +33,7 @@ public class Product implements Serializable {
         name = new_name;
     }
 
-    public String getCategoty(){return category;}
+    public String getCategoty() {
+        return category;
+    }
 }

@@ -37,6 +37,7 @@ public class PantryStockFragment extends ListFragment {
     private static final String ARG_TITLE = "title";
 
     public static MainActivity mActivity = null;
+    public static String selected_category_to_sort = ""; //"" -> Todos os elementos
 
     private int position;
     private String function;
@@ -110,7 +111,7 @@ public class PantryStockFragment extends ListFragment {
         System.out.println("Estou aqui estou aqui no onresume");
 
         populateList();
-        adapter.swapItems(stock.getProductList());
+        adapter.swapItems(products);
     }
 
 
@@ -145,6 +146,12 @@ public class PantryStockFragment extends ListFragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        Spinner spinner_categories = (Spinner) rootView.findViewById(R.id.sort_by_category);
+        final ArrayAdapter<CharSequence> adapter_2 = ArrayAdapter.createFromResource(getActivity(),
+                R.array.products_category_to_sort, android.R.layout.simple_spinner_item);
+        adapter_2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_categories.setAdapter(adapter_2);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -161,6 +168,22 @@ public class PantryStockFragment extends ListFragment {
                     orderStockAscending = false;
                     orderStockDescending = true;
                 }
+                onResume();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        spinner_categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0)
+                    selected_category_to_sort = "";
+                else
+                    selected_category_to_sort = String.valueOf(adapter_2.getItem(i));
+
                 onResume();
             }
 
@@ -387,8 +410,8 @@ public class PantryStockFragment extends ListFragment {
         products = stock.getProductList();
 
         System.out.println("Primeiro elemento da lista original: " + products.get(0).getName());
-        System.out.println("Tamanho da lista:" + products.size());
-//        System.out.println("Ultimo elemento da lista:" + products.get(13).getName());
+        System.out.println("Tamanho da lista: " + products.size());
+        System.out.println("Categoria seleccionada: " + selected_category_to_sort);
 
         if (orderAlphabetically) {
             Collections.sort(products, new Comparator<Product>() {
@@ -421,6 +444,12 @@ public class PantryStockFragment extends ListFragment {
                         return 0;
                 }
             });
+        }
+
+        //se quisermos todos os produtos, salta à frente disto
+        if (selected_category_to_sort.length() > 0) {
+            LinkedList<Product> temp_prods = products;
+            products = stock.sortByCategory(temp_prods, selected_category_to_sort);
         }
 
         System.out.println("Primeiro elemento da lista dps da ordenação: " + products.get(0).getName());

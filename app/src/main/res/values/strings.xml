@@ -8,7 +8,20 @@
         <item>Ordem decrescente de stock</item>
     </string-array>
 
+    <!--ESTES DOIS ARRAYS ESTÃO REPETIDOS!!!-->
+    <!--QUANDO SE ADICIONA UMA NOVA CATEGORIA, ADICIONAR AOS DOIS ARRAYS!-->
+
     <string-array name="products_category">
+        <item>Legumes</item>
+        <item>Café</item>
+        <item>Massas</item>
+        <item>Higiene</item>
+        <item>Enlatados</item>
+        <item>Frutas</item>
+    </string-array>
+
+    <string-array name="products_category_to_sort">
+        <item>Todos</item>
         <item>Legumes</item>
         <item>Café</item>
         <item>Massas</item>

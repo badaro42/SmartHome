@@ -49,6 +49,15 @@ public class PantryStock extends Feature implements Serializable {
         products.remove(position);
     }
 
+    public LinkedList<Product> sortByCategory(LinkedList<Product> prods, String category) {
+        LinkedList<Product> to_return = new LinkedList<Product>();
+        for(Product prod : prods) {
+            if(prod.getCategoty().equalsIgnoreCase(category))
+                to_return.add(prod);
+        }
+        return to_return;
+    }
+
     public void insertOrUpdateProduct(String name, int quantity, String category, boolean skipCheck) {
         int position = -1;
         if(!skipCheck) {
