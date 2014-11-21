@@ -8,7 +8,6 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -324,6 +323,7 @@ public class MainActivity extends FragmentActivity {
             if (connected_to_server) {
                 if (closeConnection) {
                     System.out.println("***************ANTES DE CRIAR O SOCKET*****************");
+
                     client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
                     System.out.println("***************ANTES DE ABRIR O OUTPUTSTREAM*****************");
                     obj_os = new ObjectOutputStream(client.getOutputStream());
