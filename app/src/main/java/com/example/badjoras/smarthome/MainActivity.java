@@ -54,9 +54,9 @@ public class MainActivity extends FragmentActivity {
 
     //USAR UM DESTES IPs
     public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
-//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+    //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
- //   public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
+    //   public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
@@ -103,6 +103,8 @@ public class MainActivity extends FragmentActivity {
     public static ViewPager pager;
     public static MyPagerAdapter adapter;
     public static FragmentManager app_fm;
+
+    public static Thread input_thread;
 
     public static CharSequence m_title;
 
@@ -180,14 +182,39 @@ public class MainActivity extends FragmentActivity {
 
                 System.out.println("***enviei obj para o server, espero pela resposta***");
 
-                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
-                Home temp_house = getObjectFromServer();
-                if (temp_house != null)
-                    house = temp_house;
 
-                obj_os.close();
-                obj_is.close();
-                client.close();
+                input_thread = new Thread() {
+                    public void run() {
+                        try {
+                            while (true) {
+                                System.out.println("INPUT INPUT Estamos à espera de novas conexoes do server");
+
+//                                Thread.sleep(1000);
+
+                                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+                                Home temp_house = getObjectFromServer();
+                                if (temp_house != null)
+                                    house = temp_house;
+
+                                System.out.println("INPUT INPUT Recebi objecto do server!");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                input_thread.start();
+
+
+//                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+//                Home temp_house = getObjectFromServer();
+//                if (temp_house != null)
+//                    house = temp_house;
+
+//                obj_os.close();
+//                obj_is.close();
+//                client.close();
             }
 
         } catch (IOException e) {
@@ -276,7 +303,7 @@ public class MainActivity extends FragmentActivity {
 
     //TODO placeholder!!! colocar aqui a obtenção da posição
     public void getUserPosition() {
-        if(m_title == null)
+        if (m_title == null)
             setTitle(KITCHEN);
         else
             setTitle(m_title);
@@ -373,7 +400,7 @@ public class MainActivity extends FragmentActivity {
 //            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
 
 //            unregisterReceiver(wifiReciever);
-            super.onPause();
+        super.onPause();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

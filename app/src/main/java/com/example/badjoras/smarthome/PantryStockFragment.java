@@ -315,7 +315,7 @@ public class PantryStockFragment extends ListFragment {
                 if (index == -1) {
                     pantry.insertOrUpdateProduct(
                             prod_name, np.getValue(), spnr.getSelectedItem().toString(), true);
-                    ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                    ((MainActivity) getActivity()).sendObjectToServer(house, false);
                     onResume();
                     Toast.makeText(getActivity().getBaseContext(),
                             "Produto adicionado com sucesso!", Toast.LENGTH_LONG).show();
@@ -380,7 +380,7 @@ public class PantryStockFragment extends ListFragment {
                 }
                 System.out.print(res);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house, false);
 
                 onResume();
             }
