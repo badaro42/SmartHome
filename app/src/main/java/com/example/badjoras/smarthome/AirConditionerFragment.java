@@ -73,7 +73,8 @@ public class AirConditionerFragment extends Fragment {
         sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
         text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
 
-        sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN); //TODO alterar para o valor que recebemos do servidor
+        //TODO alterar para o valor que recebemos do servidor
+        sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN);
         text_to_show.setText(String.valueOf(sb.getProgress() + SEEKBAR_DESIRED_MIN) + "ºC");
 
         cold.setEnabled(false);
@@ -85,25 +86,15 @@ public class AirConditionerFragment extends Fragment {
                 hot.setEnabled(false);
                 cold.setEnabled(true);
                 Toast.makeText(getActivity(),
-                        "Sun is clicked!", Toast.LENGTH_SHORT).show();
+                        "Modo Quente escolhido", Toast.LENGTH_SHORT).show();
 
                 Home house = ((MainActivity) getActivity()).getHouse();
                 Room room = (Room) house.getMap().get(title);
                 AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
                 ac.changeMode(HOT);
 
-                //TODO: é preciso actualizar o objecto Home???
-                //((MainActivity) getActivity()).setHouse(house);
-
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
-
-                //TODO: apenas para efeitos de teste, remover!!
-                boolean out_open = ((MainActivity) getActivity()).isOutputStreamOpen();
-                boolean client_open = ((MainActivity) getActivity()).isClientSocketOpen();
-
-                System.out.println("HOT - Output stream open? " + out_open);
-                System.out.println("HOT - Client socket open? " + client_open);
-
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
         });
 
@@ -113,24 +104,15 @@ public class AirConditionerFragment extends Fragment {
                 hot.setEnabled(true);
                 cold.setEnabled(false);
                 Toast.makeText(getActivity(),
-                        "Frozen is clicked!", Toast.LENGTH_SHORT).show();
+                        "Modo Frio escolhido", Toast.LENGTH_SHORT).show();
 
                 Home house = ((MainActivity) getActivity()).getHouse();
                 Room room = (Room) house.getMap().get(title);
                 AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
                 ac.changeMode(COLD);
 
-                //TODO: é preciso actualizar o objecto Home???
-                //((MainActivity) getActivity()).setHouse(house);
-
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
-
-                //TODO: apenas para efeitos de teste, remover!!
-                boolean out_open = ((MainActivity) getActivity()).isOutputStreamOpen();
-                boolean client_open = ((MainActivity) getActivity()).isClientSocketOpen();
-
-                System.out.println("COLD - Output stream open? " + out_open);
-                System.out.println("COLD - Client socket open? " + client_open);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
         });
 
@@ -151,8 +133,6 @@ public class AirConditionerFragment extends Fragment {
                 text_to_show.setText(String.valueOf(correctedValue) + " ºC");
 
                 //TODO somar o offset ao valor (SEEKBAR_DESIRED_MIN) que passamos ao servidor
-
-                //Log.v("seekbar_val", String.valueOf(correctedValue));
                 System.out.println("Ar condicionado: temperatura - " + correctedValue);
 
                 Home house = ((MainActivity) getActivity()).getHouse();
@@ -160,10 +140,8 @@ public class AirConditionerFragment extends Fragment {
                 AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
                 ac.changeTemperature(correctedValue);
 
-                //TODO: é preciso actualizar o objecto Home???
-                //((MainActivity) getActivity()).setHouse(house);
-
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
 
             @Override

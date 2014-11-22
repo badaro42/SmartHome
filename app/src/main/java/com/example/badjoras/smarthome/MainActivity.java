@@ -21,12 +21,13 @@ import android.widget.Toast;
 import com.astuetz.PagerSlidingTabStrip;
 import com.example.badjoras.control.Home;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +54,10 @@ public class MainActivity extends FragmentActivity {
     public static final String LIVING_ROOM = "Sala de Estar";
 
     //USAR UM DESTES IPs
-    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
+//    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
     //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
+    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
     //   public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
@@ -68,7 +70,7 @@ public class MainActivity extends FragmentActivity {
 
     public static String last_position;
 
-    private Socket client;
+    private Socket client_socket;
     private ObjectOutputStream obj_os;
     private ObjectInputStream obj_is;
 
@@ -120,7 +122,7 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap2;
     public double distance_to_ap3;
 
-    public boolean connected_to_server;
+    public boolean offline_mode;
 
     public int wifiScanCount;
     private Handler handler;
@@ -141,70 +143,63 @@ public class MainActivity extends FragmentActivity {
         StrictMode.setThreadPolicy(policy);
 
 
-//        house = new Home();
-
-        try {
-            last_position = "";
-            client = null;
+        last_position = "";
+        client_socket = null;
 
 //            results_map = new HashMap<String, ArrayList<Double>>(30);
 //            mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 //            wifiReciever = new WifiScanReceiver();
 
-            //            client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
+        //tentamos criar o socket para o servidor logo ao iniciar a app
+        //para determinar se a app funcionara em modo online ou offline
+        //se nao conseguir ligar ao server fica sempre em modo offline, pelo que as alterações
+        //nao sao permanentes. Se estiver em modo online e nalguma das comunicaçoes perder
+        //a ligação, passa a funcionar em moddo offline até ser reiniciada.
+        establishConnection(true);
 
-            establishConnection();
+        System.out.println("********* ESTOU LIGADO AO SERVER???? " + !offline_mode);
+        System.out.println(client_socket.toString());
 
-//            house = new Home();
+        //se conseguimos ligar ao servidor, obtem o estado actual do servidor
+        if (!offline_mode) {
+            System.out.println("MODO ONLINE!!! VAMOS COMUNICAR COM O SERVER!");
+            System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHE\n Counter:" + house.getCounter());
 
-            System.out.println("********* ESTOU LIGADO AO SERVER???? " + connected_to_server);
-            System.out.println(client.toString());
+            //fazemos um "fake send" para o server nos enviar o objeto que ele tem
+            sendObjectToServer(house);
 
-            //se conseguimos ligar ao servidor, obtem o estado actual do servidor
-            if (connected_to_server) {
-                obj_os = new ObjectOutputStream(client.getOutputStream());
-                obj_is = new ObjectInputStream(client.getInputStream());
+            System.out.println("***já enviei o objecto inicial para o server e correu tudo bem!***");
 
+            input_thread = new Thread() {
+                public void run() {
+                    try {
+                        boolean firstTime = true;
 
-                System.out.println("11111 - SOCKET IS BOUND??" + client.isBound());
-                System.out.println("11111 - SOCKET IS CLOSED??" + client.isClosed());
-                System.out.println("11111 - SOCKET IS CONNECTED??" + client.isConnected());
+                        while (true) {
+                            System.out.println("INPUT INPUT Estamos à espera de novas conexoes do server");
 
-
-                System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHEHE\n Counter:" + house.getCounter());
-
-                //fazemos um "fake send" para o server nos enviar o objeto que ele tem
-                sendObjectToServer(house, false);
-
-                System.out.println("22222 - SOCKET IS BOUND??" + client.isBound());
-                System.out.println("22222 - SOCKET IS CLOSED??" + client.isClosed());
-                System.out.println("22222 - SOCKET IS CONNECTED??" + client.isConnected());
-
-                System.out.println("***enviei obj para o server, espero pela resposta***");
-
-
-                input_thread = new Thread() {
-                    public void run() {
-                        try {
-                            while (true) {
-                                System.out.println("INPUT INPUT Estamos à espera de novas conexoes do server");
-
-//                                Thread.sleep(1000);
-
-                                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
-                                Home temp_house = getObjectFromServer();
-                                if (temp_house != null)
-                                    house = temp_house;
-
-                                System.out.println("INPUT INPUT Recebi objecto do server!");
+                            //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+                            Home temp_house = getObjectFromServer();
+                            if (temp_house != null)
+                                house = temp_house;
+                            if (firstTime) {
+                                Thread.sleep(5000);
+                                firstTime = false;
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
+                            else
+                                Thread.sleep(2000);
 
-                input_thread.start();
+                            System.out.println("INPUT INPUT Recebi objecto do server!");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            input_thread.start();
+
+            System.out.println("ISTO É DEPOIS DA THREAD!!!!");
 
 
 //                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
@@ -214,12 +209,9 @@ public class MainActivity extends FragmentActivity {
 
 //                obj_os.close();
 //                obj_is.close();
-//                client.close();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+//                client_socket.close();
         }
+
 
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
 //        timer = new Timer();
@@ -249,22 +241,27 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    private void establishConnection() {
+    private void establishConnection(boolean display_toast) {
         Toast t;
         try {
-            SocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
-            // Create your socket
-            client = new Socket();
-            // Connect with 2 s timeout
-            client.connect(sockaddr, 2000);
+            InetSocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
+            client_socket = new Socket();
+            client_socket.connect(sockaddr, 2000);
 
-            t = Toast.makeText(getBaseContext(), "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG);
-            t.show();
-            connected_to_server = true;
+            obj_os = new ObjectOutputStream(client_socket.getOutputStream());
+            obj_is = new ObjectInputStream(client_socket.getInputStream());
+
+            if(display_toast)
+                Toast.makeText(getApplicationContext(),
+                        "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG).show();
+
+            offline_mode = false;
         } catch (IOException e) {
             e.printStackTrace();
-            t = Toast.makeText(getBaseContext(), "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG);
-            t.show();
+
+            offline_mode = true;
+            Toast.makeText(getBaseContext(),
+                    "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -290,15 +287,15 @@ public class MainActivity extends FragmentActivity {
 //    };
 
 
-    //TODO: apenas para teste, remover!!
-    public boolean isOutputStreamOpen() {
-        return obj_os == null;
-    }
-
-    //TODO: apenas para teste, remover!!
-    public boolean isClientSocketOpen() {
-        return client == null;
-    }
+//    //TODO: apenas para teste, remover!!
+//    public boolean isOutputStreamOpen() {
+//        return obj_os == null;
+//    }
+//
+//    //TODO: apenas para teste, remover!!
+//    public boolean isClientSocketOpen() {
+//        return client_socket == null;
+//    }
 
 
     //TODO placeholder!!! colocar aqui a obtenção da posição
@@ -318,67 +315,48 @@ public class MainActivity extends FragmentActivity {
     }
 
     //cria o output stream e envia um objecto com o estado da aplicação para o servidor
+    //se estiver em modo offline nao faz nada.
+    //se estiver em modo online, abre o socket e recebe um objecto do server
     public Home getObjectFromServer() {
         Home res_house = null;
         try {
-            System.out.println("33333 - SOCKET IS BOUND??" + client.isBound());
-            System.out.println("33333 - SOCKET IS CLOSED??" + client.isClosed());
-            System.out.println("33333 - SOCKET IS CONNECTED??" + client.isConnected());
-
-            System.out.println("****criei o inputstream, fico à espera do server****");
-
-            res_house = (Home) obj_is.readObject();
-
-            System.out.println("+++++++++++++++++++++++++++\n" +
-                    "Objecto recebido do server!!!! Tamanho: " + res_house.getMap().size() +
-                    "\n+++++++++++++++++++++++++++");
-
+            if (!offline_mode) {
+                res_house = (Home) obj_is.readObject();
+                System.out.println("+++++++++++++++++++++++++++\n" +
+                        "Objecto recebido do server!!!! Tamanho: " + res_house.getMap().size() +
+                        "\n+++++++++++++++++++++++++++");
+            }
             return res_house;
+        } catch (EOFException e) {
+            System.out.println("SocketTimeout do lado do servidor. Vamos abrir novamente!");
+            establishConnection(false);
+        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+            System.out.println("CLASS NOT FOUND EXCEPTION!!!");
+        } catch (OptionalDataException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-            return res_house;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return res_house;
         }
+        return res_house;
     }
 
     //cria o output stream e envia um objecto com o estado da aplicação para o servidor
-    public int sendObjectToServer(Home home, boolean closeConnection) {
-        int result = 0;
-        try {
-            if (connected_to_server) {
-                if (closeConnection) {
-                    System.out.println("***************ANTES DE CRIAR O SOCKET*****************");
-
-                    client = new Socket(IP_ADDRESS, DEFAULT_PORT); //ip casa
-                    System.out.println("***************ANTES DE ABRIR O OUTPUTSTREAM*****************");
-                    obj_os = new ObjectOutputStream(client.getOutputStream());
-                    obj_is = new ObjectInputStream(client.getInputStream());
-                    System.out.println("***************TUDO ABERTO, PROSSIGA!*****************");
-
-                    System.out.println("44444 - SOCKET IS BOUND??" + client.isBound());
-                    System.out.println("44444 - SOCKET IS CLOSED??" + client.isClosed());
-                    System.out.println("44444 - SOCKET IS CONNECTED??" + client.isConnected());
-                }
-
+    //se estiver em modo offline nao faz nada.
+    //se estiver em modo online, abre o socket e envia um objecto para o server
+    public int sendObjectToServer(Home home) {
+        if (!offline_mode) {
+            try {
                 obj_os.writeObject(home);
                 obj_os.flush();
                 home.incrementCounter();
 
-                if (closeConnection) {
-                    System.out.println("jejejeje vou fechar o socket :D :D");
-                    obj_is.close();
-                    obj_os.close();
-                    client.close();
-                }
+                return 1;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            result = 1;
-            return result;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return result;
         }
+        return 0;
     }
 
     protected void onResume() {

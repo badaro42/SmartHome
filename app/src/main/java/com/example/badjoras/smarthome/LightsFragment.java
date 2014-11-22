@@ -68,7 +68,6 @@ public class LightsFragment extends Fragment {
 
         sb.setProgress(intensity);
         text.setText("Luminosidade: " + intensity + "%");
-//        text.setText("Luminosidade 0%");
 
 
         sb.setOnTouchListener(new View.OnTouchListener() {
@@ -99,7 +98,8 @@ public class LightsFragment extends Fragment {
 
                 System.out.println("Luzes: Intensidade - " + progress);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
 
             @Override

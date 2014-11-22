@@ -67,7 +67,6 @@ public class StoveFragment extends Fragment {
         Room room = (Room) house.getMap().get(KITCHEN);
         StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
 
-//        final Switch stove_switch = (Switch) rootView.findViewById(R.id.stove_switch_button);
         final TextView tv = (TextView) rootView.findViewById(R.id.textview_seekArcProgress);
         final NumberPicker number_pick = (NumberPicker) rootView.findViewById(R.id.timepicker_stove_now);
         final SeekArc seekArc = (SeekArc) rootView.findViewById(R.id.seekarc_stove);
@@ -79,14 +78,10 @@ public class StoveFragment extends Fragment {
 //        seekArc.setTouchInSide(true);
 
         final String[] time_values = new String[25];
-
-        System.out.println("*********CONTEUDO DO ARRAY***********");
         for (int i = 0; i < time_values.length; i++) {
             String number = Integer.toString(i * 5);
             time_values[i] = number.length() < 2 ? "0" + number : number;
-            System.out.println("i: " + i + "; number: " + number + "; time_values[i]: " + time_values[i]);
         }
-        System.out.println("*********FIM DO ARRAY***********");
 
         number_pick.setMaxValue(time_values.length - 1);
         number_pick.setMinValue(0);
@@ -109,7 +104,8 @@ public class StoveFragment extends Fragment {
                 StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
                 stove.changeMinutesToGo(new_value);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
         });
 
@@ -125,32 +121,27 @@ public class StoveFragment extends Fragment {
         seekArc.setOnSeekArcChangeListener(new OnSeekArcChangeListener() {
             @Override
             public void onProgressChanged(SeekArc seekArc, int progress, boolean fromUser) {
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(KITCHEN);
+                StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+
                 if ((progress == 0) && (previous_progress != 0)) {
                     number_pick.setEnabled(false);
                     number_pick.setValue(0);
 
                     Toast.makeText(getActivity(),
-                            "O forno está desligado", Toast.LENGTH_SHORT).show();
+                            "O forno está agora desligado", Toast.LENGTH_SHORT).show();
                 } else if ((progress == 1) && (previous_progress == 0)) {
                     number_pick.setEnabled(true);
-
-                    Home house = ((MainActivity) getActivity()).getHouse();
-                    Room room = (Room) house.getMap().get(KITCHEN);
-                    StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
                     stove.setTemperature(progress);
-
-                    ((MainActivity) getActivity()).sendObjectToServer(house, true);
 
                     Toast.makeText(getActivity(),
-                            "O forno está ligado", Toast.LENGTH_SHORT).show();
-                } else {
-                    Home house = ((MainActivity) getActivity()).getHouse();
-                    Room room = (Room) house.getMap().get(KITCHEN);
-                    StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
+                            "O forno está agora ligado", Toast.LENGTH_SHORT).show();
+                } else
                     stove.setTemperature(progress);
 
-                    ((MainActivity) getActivity()).sendObjectToServer(house, true);
-                }
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
 
                 tv.setText(String.valueOf(progress) + " ºC");
                 previous_progress = progress;
@@ -158,17 +149,13 @@ public class StoveFragment extends Fragment {
 
             @Override
             public void onStartTrackingTouch(SeekArc seekArc) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekArc seekArc) {
-
             }
         });
 
         return rootView;
     }
-
-
 }

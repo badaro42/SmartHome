@@ -84,7 +84,9 @@ public class CoffeeFragment extends Fragment {
 
         time_picker.setIs24HourView(true);
         toggle_btn.setChecked(coffeeScheduled);
-        if (coffeeScheduled) { //já há um agendamento, colocamos a hora do agendamento
+
+        //já há um agendamento, colocamos a hora do agendamento
+        if (coffeeScheduled) {
             time_picker.setCurrentHour(coffee.getScheduledHour());
             time_picker.setCurrentMinute(coffee.getScheduledMinute());
             time_picker.setEnabled(false);
@@ -113,7 +115,8 @@ public class CoffeeFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                 }
 
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
         });
 

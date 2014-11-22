@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 
 import static com.example.badjoras.smarthome.MainActivity.DEFAULT_PORT;
@@ -21,15 +22,15 @@ public class Server implements Serializable {
     private static Socket clientSocket;
     private static ObjectInputStream inputstream;
     private static ObjectOutputStream outputstream;
-    private static int MANY_QUANTITY= 7;
-    private static int QUANTITY_TO_MANY=20;
+    private static int MANY_QUANTITY = 7;
+    private static int QUANTITY_TO_MANY = 20;
     private static int FEW_QUANTITY = 3;
     private static int QUANTITY_TO_FEW = 5;
     private static String[] products_names = new String[]{
-                "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
-                "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico"
-        };private static Home server_house;
-
+            "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
+            "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico"
+    };
+    private static Home server_house;
 
 
     public static void main(String[] args) throws IOException {
@@ -46,95 +47,80 @@ public class Server implements Serializable {
             serverSocket = new ServerSocket(DEFAULT_PORT, 50, addr);  //Server socket
             System.out.println("ServerSocket criado.");
 
+            //fica infinitamente à espera de conexões
             while (true) {
                 System.out.println("À espera de novo cliente...");
                 clientSocket = serverSocket.accept();   //accept the client connection
+
+                //se ao fim de 20s o cliente não enviar nada, dá timeout e volta a ligar
+                clientSocket.setSoTimeout(20000);
                 System.out.println("Cliente ligado com sucesso!");
 
                 outputstream = new ObjectOutputStream(clientSocket.getOutputStream());
                 inputstream = new ObjectInputStream(clientSocket.getInputStream());
 
-                System.out.println("Consegui abrir um socket para o endereço" +
+                System.out.println("Consegui criar sockets para o endereço" +
                         clientSocket.getInetAddress().toString());
 
-                //fica bloqueado no read à espera de novos objectos para ler
-                System.out.println("Estou à espera de mensagens do cliente...");
-                Home house = (Home) inputstream.readObject();
+                //apos ter uma conexao para o cliente, fica infinitamente à espera de mensagens,
+                //até o socket dar timeout
+                while (true) {
+                    try {
+                        //fica bloqueado no read à espera de novos objectos para ler
+                        System.out.println("Estou à espera de mensagens do cliente...");
+                        Home house = (Home) inputstream.readObject();
 
-                System.out.println("****************\n" + "Counter: " + house.getCounter() +
-                        "\n****************");
+                        System.out.println("****************\n" + "Counter: " + house.getCounter() +
+                                "\n****************");
 
-                //TODO: VER MELHOR ESTA CENA DE ENVIAR CENAS PARA A APP
-                //verifica se se trata do "fake send", para assim enviar o estado actual do server
-                if (house.getCounter() == 0) {
+                        //verifica se se trata do "fake send", para assim enviar o estado actual do server
+                        if (house.getCounter() == 0) {
 
-                    System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
-                    System.out.println(server_house == null);
-                    System.out.println("**************************************************");
+                            System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
+                            System.out.println("server_house is null? " + server_house == null);
+                            System.out.println("**************************************************");
 
-                    if (server_house == null) {
-                        server_house = new Home();
-                    }
-
-                    //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
-                    server_house.setCounter(1);
-                    outputstream.writeObject(server_house);
-                    outputstream.flush();
-
-                } else {
-                    server_house = house;
-
-                    //TODO: para efeitos de teste, remover!!!
-                    Room room = (Room) server_house.getMap().get(KITCHEN);
-                    PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
-                    LinkedList<Product> prods = pantry.getProductList();
-
-                    String res = "";
-                    for (Product prod : prods) {
-                        res += prod.getName() + ": " + prod.getQuantity() + "\n";
-
-                        if (prod.getName().equals("Tomate")) {
-                            if (prod.getQuantity() < 5) {
-                                System.out.println("Entrei aqui caralho!");
-                                prod.changeQuantity(10);
-                                System.out.println("Tens o stock novamente SERGINHO MARICAS!");
+                            if (server_house == null) {
+                                server_house = new Home();
                             }
-                            System.out.println(prod.getQuantity() + " tomates do panao do Sergio");
-                        }
 
-                        if((prod.getQuantity() < FEW_QUANTITY) && (prod.getName().equals(products_names[3])
-                                ||prod.getName().equals(products_names[8])||prod.getName().equals(products_names[9])))
-                        {
-                            System.out.println("Entrei aqui caralho!");
-                            prod.changeQuantity(QUANTITY_TO_FEW);
-                            System.out.println("Tens o stock novamente SERGINHO MARICAS!");
-                            System.out.println(prod.getQuantity() +  prod.getName() + "do panao do Sergio");
+                            //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
+                            server_house.setCounter(1);
+                            outputstream.writeObject(server_house);
+                            outputstream.flush();
+
+                        } else {
+                            server_house = house;
+
+                            Room room = (Room) server_house.getMap().get(KITCHEN);
+                            PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
+                            LinkedList<Product> prods = pantry.getProductList();
+
+                            String res = "";
+                            for (Product prod : prods) {
+                                res += prod.getName() + ": " + prod.getQuantity() + "\n";
+                            }
+                            System.out.print(res);
+
+                            //TODO para efeitos de teste, remover mais tarde
+                            System.out.println(server_house.getMap().size());
                         }
-                        else if((prod.getQuantity() < MANY_QUANTITY)&&(prod.getName().equals(products_names[0])
-                                ||prod.getName().equals(products_names[1])||prod.getName().equals(products_names[2])
-                                || prod.getName().equals(products_names[4])||prod.getName().equals(products_names[5])
-                                ||prod.getName().equals(products_names[6])||prod.getName().equals(products_names[7])
-                                ||prod.getName().equals(products_names[10])))
-                        {
-                            System.out.println("Entrei aqui caralho!");
-                            prod.changeQuantity(QUANTITY_TO_MANY);
-                            System.out.println("Tens o stock novamente SERGINHO MARICAS!");
-                            System.out.println(prod.getQuantity() +  prod.getName() + "do panao do Sergio");
-                        }
-                        else
-                        {
-                            continue;
-                        }
+                    } catch (SocketTimeoutException e) {
+                        System.out.println("SocketTimeout. vamos fechar o socket e abrir de novo");
+
+                        outputstream.close();
+                        inputstream.close();
+                        clientSocket.close();
+
+//                        e.printStackTrace();
+
+                        break;
                     }
-                    System.out.print(res);
-
-                    //TODO para efeitos de teste, remover mais tarde
-                    System.out.println(server_house.getMap().size());
                 }
 
-                outputstream.close();
-                inputstream.close();
-                clientSocket.close();
+//                outputstream.close();
+//                inputstream.close();
+//                clientSocket.close();
             }
 
         } catch (IOException e) {

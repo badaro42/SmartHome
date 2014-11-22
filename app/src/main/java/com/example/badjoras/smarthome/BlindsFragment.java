@@ -68,11 +68,6 @@ public class BlindsFragment extends Fragment {
         sw.setChecked(blindsUnlocked);
         seekBar.setEnabled(blindsUnlocked);
 
-//        if (sw.isChecked())
-//            seekBar.setEnabled(true);
-//        if (!sw.isChecked())
-//            seekBar.setEnabled(false);
-
         sw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -84,15 +79,16 @@ public class BlindsFragment extends Fragment {
                     blind.changeUnlockingStatus(true);
                     seekBar.setEnabled(true);
                     Toast.makeText(getActivity(),
-                            "Ta ON", Toast.LENGTH_SHORT).show();
+                            "Estores activados", Toast.LENGTH_SHORT).show();
                 } else {
                     blind.changeUnlockingStatus(false);
                     seekBar.setEnabled(false);
                     Toast.makeText(getActivity(),
-                            "Ta OFF", Toast.LENGTH_SHORT).show();
+                            "Estores desactivados", Toast.LENGTH_SHORT).show();
                 }
 
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
         });
 
@@ -114,7 +110,8 @@ public class BlindsFragment extends Fragment {
                 Blinds blind = (Blinds) room.getMap().get(BLINDS);
                 blind.changeOpening(progress);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house, true);
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).modifyHouse(house);
             }
 
             @Override

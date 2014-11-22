@@ -61,12 +61,11 @@ public class PantryStock extends Feature implements Serializable {
     public void insertOrUpdateProduct(String name, int quantity, String category, boolean skipCheck) {
         int position = -1;
         if(!skipCheck) {
-            System.out.println("Entrou entrou entrou aqui!!");
             position = getItemByName(name);
         }
 
         if(position == -1) {
-            System.out.println("Nao devia entrar aqui agora");
+            System.out.println("NOVO PRODUTO NO STOCK DA DESPENSA!!!!");
             Product prod = new Product(name, quantity, category);
             products.add(prod);
         }
