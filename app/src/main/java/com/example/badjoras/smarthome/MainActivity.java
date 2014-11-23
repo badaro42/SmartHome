@@ -47,6 +47,7 @@ public class MainActivity extends FragmentActivity {
     public static final String STOVE_OVEN = "Fogão/Forno";
     public static final String SPRINKLER = "Aspersores da Rega";
     public static MediaPlayer cafe;
+    public static Toast toast;
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
@@ -170,26 +171,25 @@ public class MainActivity extends FragmentActivity {
 
             System.out.println("***já enviei o objecto inicial para o server e correu tudo bem!***");
 
+            //thread que fica à espera de mensagens do servidor
+            //usar isto para a parte da inteligencia em que o server precisa de enviar cenas para a app
             input_thread = new Thread() {
                 public void run() {
                     try {
                         boolean firstTime = true;
 
                         while (true) {
-                            System.out.println("INPUT INPUT Estamos à espera de novas conexoes do server");
-
                             //obtemos o estado do server, para o caso de reiniciarmos a aplicação
                             Home temp_house = getObjectFromServer();
+                            System.out.println("THREAD THREAD house is null???" + temp_house == null);
                             if (temp_house != null)
                                 house = temp_house;
                             if (firstTime) {
                                 Thread.sleep(5000);
                                 firstTime = false;
-                            }
-                            else
+                            } else
                                 Thread.sleep(2000);
 
-                            System.out.println("INPUT INPUT Recebi objecto do server!");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -251,7 +251,7 @@ public class MainActivity extends FragmentActivity {
             obj_os = new ObjectOutputStream(client_socket.getOutputStream());
             obj_is = new ObjectInputStream(client_socket.getInputStream());
 
-            if(display_toast)
+            if (display_toast)
                 Toast.makeText(getApplicationContext(),
                         "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG).show();
 
@@ -310,8 +310,8 @@ public class MainActivity extends FragmentActivity {
         return house;
     }
 
-    public void modifyHouse(Home home) {
-        this.house = home;
+    public void incrementHouseCounter() {
+        this.house.incrementCounter();
     }
 
     //cria o output stream e envia um objecto com o estado da aplicação para o servidor
@@ -321,6 +321,7 @@ public class MainActivity extends FragmentActivity {
         Home res_house = null;
         try {
             if (!offline_mode) {
+                System.out.println("INPUT INPUT Estamos à espera de novas conexoes do server");
                 res_house = (Home) obj_is.readObject();
                 System.out.println("+++++++++++++++++++++++++++\n" +
                         "Objecto recebido do server!!!! Tamanho: " + res_house.getMap().size() +
@@ -347,9 +348,11 @@ public class MainActivity extends FragmentActivity {
     public int sendObjectToServer(Home home) {
         if (!offline_mode) {
             try {
+                System.out.println("COUNTER COUNTER COUNTER COUNTER COUNTER DA CASA: " + home.getCounter());
+
                 obj_os.writeObject(home);
                 obj_os.flush();
-                home.incrementCounter();
+                obj_os.reset();
 
                 return 1;
             } catch (IOException e) {

@@ -116,13 +116,17 @@ public class CoffeeFragment extends Fragment {
                 }
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
         });
 
         btn_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(title);
+                final CoffeeMachine coffee = (CoffeeMachine) room.getMap().get(COFFEE_MACHINE);
+
                 btn_now.setEnabled(false);
                 progressBar.setVisibility(View.VISIBLE);
                 textView.setVisibility(View.VISIBLE);
@@ -130,10 +134,10 @@ public class CoffeeFragment extends Fragment {
                 new Thread(new Runnable() {
                     public void run() {
                         while (progressStatus < 100) {
-                            progressStatus += 1;
-                            // Update the progress bar and display the
-                            //current value in the text view
+                            progressStatus++;
 
+                            //Update the progress bar and display the
+                            //current value in the text view
                             handler.post(new Runnable() {
                                 public void run() {
                                     progressBar.setProgress(progressStatus);
@@ -143,7 +147,14 @@ public class CoffeeFragment extends Fragment {
                                         progressBar.setVisibility(View.INVISIBLE);
                                         textView.setVisibility(View.INVISIBLE);
                                         btn_now.setEnabled(true);
+
+                                        coffee.incrementCoffeesTaken();
+
                                         MainActivity.cafe.start();
+                                        MainActivity.toast.makeText(
+                                                getActivity().getApplicationContext(),
+                                                "O seu café está pronto :-)",
+                                                Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });

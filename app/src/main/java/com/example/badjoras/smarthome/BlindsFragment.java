@@ -67,6 +67,7 @@ public class BlindsFragment extends Fragment {
 
         sw.setChecked(blindsUnlocked);
         seekBar.setEnabled(blindsUnlocked);
+        seekBar.setProgress(blind.getOpening());
 
         sw.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +89,7 @@ public class BlindsFragment extends Fragment {
                 }
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
         });
 
@@ -111,7 +112,7 @@ public class BlindsFragment extends Fragment {
                 blind.changeOpening(progress);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
 
             @Override

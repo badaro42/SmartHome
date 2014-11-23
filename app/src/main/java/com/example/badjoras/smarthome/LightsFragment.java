@@ -99,7 +99,7 @@ public class LightsFragment extends Fragment {
                 System.out.println("Luzes: Intensidade - " + progress);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
 
             @Override

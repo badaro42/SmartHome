@@ -1,5 +1,6 @@
 package com.example.badjoras.control;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -92,18 +93,18 @@ public class Server implements Serializable {
                         } else {
                             server_house = house;
 
+                            System.out.println("JÁ NÃO É A PRIMEIRA VEZ!!!\nCounter = " +
+                                    server_house.getCounter());
+
                             Room room = (Room) server_house.getMap().get(KITCHEN);
                             PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
                             LinkedList<Product> prods = pantry.getProductList();
 
-                            String res = "";
+                            String res = "LISTA DE PRODUTOS!!!\n";
                             for (Product prod : prods) {
                                 res += prod.getName() + ": " + prod.getQuantity() + "\n";
                             }
                             System.out.print(res);
-
-                            //TODO para efeitos de teste, remover mais tarde
-                            System.out.println(server_house.getMap().size());
                         }
                     } catch (SocketTimeoutException e) {
                         System.out.println("SocketTimeout. vamos fechar o socket e abrir de novo");
@@ -112,7 +113,13 @@ public class Server implements Serializable {
                         inputstream.close();
                         clientSocket.close();
 
-//                        e.printStackTrace();
+                        break;
+                    } catch (EOFException e) {
+                        System.out.println("EOFException! O cliente fechou, vamos criar novo socket");
+
+                        outputstream.close();
+                        inputstream.close();
+                        clientSocket.close();
 
                         break;
                     }

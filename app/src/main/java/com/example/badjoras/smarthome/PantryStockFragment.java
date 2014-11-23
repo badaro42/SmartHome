@@ -220,7 +220,7 @@ public class PantryStockFragment extends ListFragment {
                 System.out.println("TAMANHO DO STOCK DEPOIS DA REMOÇAO: " + pantry.getProductList().size());
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
 
                 onResume();
                 Toast.makeText(getActivity().getBaseContext(),
@@ -280,7 +280,7 @@ public class PantryStockFragment extends ListFragment {
                             prod_name, np.getValue(), spnr.getSelectedItem().toString(), true);
 
                     ((MainActivity) getActivity()).sendObjectToServer(house);
-                    ((MainActivity) getActivity()).modifyHouse(house);
+                    ((MainActivity) getActivity()).incrementHouseCounter();
 
                     onResume();
                     Toast.makeText(getActivity().getBaseContext(),
@@ -343,7 +343,7 @@ public class PantryStockFragment extends ListFragment {
                 System.out.print(res);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
 
                 Toast.makeText(getActivity().getBaseContext(),
                         "Produto alterado com sucesso!", Toast.LENGTH_SHORT).show();

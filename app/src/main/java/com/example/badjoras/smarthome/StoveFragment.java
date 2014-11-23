@@ -105,7 +105,7 @@ public class StoveFragment extends Fragment {
                 stove.changeMinutesToGo(new_value);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
         });
 
@@ -141,7 +141,7 @@ public class StoveFragment extends Fragment {
                     stove.setTemperature(progress);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
 
                 tv.setText(String.valueOf(progress) + " ºC");
                 previous_progress = progress;

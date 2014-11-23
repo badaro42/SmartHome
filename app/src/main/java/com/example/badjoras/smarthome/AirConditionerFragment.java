@@ -2,7 +2,6 @@ package com.example.badjoras.smarthome;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.badjoras.control.AirConditioner;
-import com.example.badjoras.control.Feature;
 import com.example.badjoras.control.Home;
 import com.example.badjoras.control.Room;
 
@@ -94,7 +92,7 @@ public class AirConditionerFragment extends Fragment {
                 ac.changeMode(HOT);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
         });
 
@@ -112,7 +110,7 @@ public class AirConditionerFragment extends Fragment {
                 ac.changeMode(COLD);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
         });
 
@@ -141,7 +139,7 @@ public class AirConditionerFragment extends Fragment {
                 ac.changeTemperature(correctedValue);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).modifyHouse(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
             }
 
             @Override
