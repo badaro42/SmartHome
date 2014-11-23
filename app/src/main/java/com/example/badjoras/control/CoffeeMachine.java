@@ -10,10 +10,12 @@ public class CoffeeMachine extends Feature implements Serializable {
     private int scheduled_hour;
     private int scheduled_minute;
     private boolean isScheduled;
+    private int coffeesTaken;
 
     public CoffeeMachine() {
         super();
         resetSchedule();
+        this.coffeesTaken = 0;
     }
 
     public void setSchedule(int hour, int minute) {
@@ -27,6 +29,14 @@ public class CoffeeMachine extends Feature implements Serializable {
         this.scheduled_hour = -1;
         this.scheduled_minute = -1;
         this.isScheduled = false;
+    }
+
+    public void incrementCoffeesTaken() {
+        this.coffeesTaken++;
+    }
+
+    public int getCoffeesTaken() {
+        return this.coffeesTaken;
     }
 
     public boolean isScheduled() {

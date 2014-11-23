@@ -123,7 +123,7 @@ public class CoffeeFragment extends Fragment {
         btn_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Home house = ((MainActivity) getActivity()).getHouse();
+                final Home house = ((MainActivity) getActivity()).getHouse();
                 Room room = (Room) house.getMap().get(title);
                 final CoffeeMachine coffee = (CoffeeMachine) room.getMap().get(COFFEE_MACHINE);
 
@@ -155,6 +155,9 @@ public class CoffeeFragment extends Fragment {
                                                 getActivity().getApplicationContext(),
                                                 "O seu café está pronto :-)",
                                                 Toast.LENGTH_LONG).show();
+
+                                        ((MainActivity) getActivity()).sendObjectToServer(house);
+                                        ((MainActivity) getActivity()).incrementHouseCounter();
                                     }
                                 }
                             });
