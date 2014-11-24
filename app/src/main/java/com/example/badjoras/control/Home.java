@@ -7,6 +7,8 @@ import static com.example.badjoras.smarthome.MainActivity.BEDROOM;
 import static com.example.badjoras.smarthome.MainActivity.OUTSIDE_GENERAL;
 import static com.example.badjoras.smarthome.MainActivity.KITCHEN;
 import static com.example.badjoras.smarthome.MainActivity.LIVING_ROOM;
+import static com.example.badjoras.smarthome.MainActivity.DAY;
+import static com.example.badjoras.smarthome.MainActivity.NIGHT;
 
 /**
  * Created by Rafael on 24/10/2014.
@@ -15,10 +17,12 @@ public class Home implements Serializable {
 
     private HashMap<String, Room> rooms;
     private int counter;
+    private int current_time_of_day;
 
     public Home() {
         populateMap();
         counter = 0;
+        current_time_of_day = 1; //começa de dia!
     }
 
     public void setCounter(int new_count) {
@@ -47,5 +51,13 @@ public class Home implements Serializable {
 
     public void modifyMap(HashMap<String, Room> new_map) {
         this.rooms = new_map;
+    }
+
+    public void changeTimeOfDay(int new_time) {
+        current_time_of_day = new_time;
+    }
+
+    public int getCurrentTimeOfDay() {
+        return current_time_of_day;
     }
 }

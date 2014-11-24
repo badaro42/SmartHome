@@ -23,6 +23,7 @@ import com.example.badjoras.control.Home;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
@@ -54,6 +55,9 @@ public class MainActivity extends FragmentActivity {
     public static final String KITCHEN = "Cozinha";
     public static final String BEDROOM = "Quarto";
     public static final String LIVING_ROOM = "Sala de Estar";
+
+    public static final int DAY = 1;
+    public static final int NIGHT = 0;
 
     //USAR UM DESTES IPs
 //    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
@@ -189,7 +193,7 @@ public class MainActivity extends FragmentActivity {
 //                                            Toast.LENGTH_LONG).show();
 //                                }
 //                            });
-                            System.out.println("THREAD THREAD house is null??? " + (temp_house == null));
+                            System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " + temp_house.getCurrentTimeOfDay());
 
                             if (firstTime) {
                                 if (temp_house != null)
@@ -329,6 +333,9 @@ public class MainActivity extends FragmentActivity {
                         "\n+++++++++++++++++++++++++++");
             }
             return res_house;
+        } catch (InterruptedIOException e) {
+            System.out.println("O servidor crashou!");
+            establishConnection(false);
         } catch (EOFException e) {
             System.out.println("SocketTimeout do lado do servidor. Vamos abrir novamente!");
             establishConnection(false);

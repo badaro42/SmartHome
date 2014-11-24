@@ -15,6 +15,8 @@ import static com.example.badjoras.smarthome.MainActivity.DEFAULT_PORT;
 import static com.example.badjoras.smarthome.MainActivity.IP_ADDRESS;
 import static com.example.badjoras.smarthome.MainActivity.KITCHEN;
 import static com.example.badjoras.smarthome.MainActivity.PANTRY_STOCK;
+import static com.example.badjoras.smarthome.MainActivity.DAY;
+import static com.example.badjoras.smarthome.MainActivity.NIGHT;
 
 
 public class Server implements Serializable {
@@ -32,6 +34,8 @@ public class Server implements Serializable {
     private static Home server_house;
     private static boolean createThread;
 
+    private static int current_time_of_day;
+
 
     public static void main(String[] args) throws IOException {
 
@@ -40,6 +44,7 @@ public class Server implements Serializable {
         //cria um serversocket e fica à espera de novos clientes
         try {
             server_house = null;
+            current_time_of_day = DAY;
 
             String aux = IP_ADDRESS;
             System.out.println("Server IP: " + aux);
@@ -56,7 +61,7 @@ public class Server implements Serializable {
                 createThread = true;
 
                 //se ao fim de 30s o cliente não enviar nada, dá timeout e volta a ligar
-                clientSocket.setSoTimeout(30000);
+//                clientSocket.setSoTimeout(30000);
                 System.out.println("Cliente ligado com sucesso!");
 
                 outputstream = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -66,7 +71,7 @@ public class Server implements Serializable {
                         clientSocket.getInetAddress().toString());
 
                 //apos ter uma conexao para o cliente, fica infinitamente à espera de mensagens,
-                //até o socket dar timeout
+                //até o server detectar que o cliente que estava a servir crashou
                 while (true) {
                     try {
                         //fica bloqueado no read à espera de novos objectos para ler
@@ -89,12 +94,12 @@ public class Server implements Serializable {
                             }
 
                             //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
-                            server_house.setCounter(1);
-                            outputstream.writeObject(server_house);
-                            outputstream.flush();
+//                            server_house.setCounter(1);
+//                            outputstream.writeObject(server_house);
+//                            outputstream.flush();
 
                             //cria nova thread para enviar cenas para a aplicação
-//                            makeNewThread();
+                            makeNewThread();
                             createThread = false;
 
                         }
@@ -118,9 +123,9 @@ public class Server implements Serializable {
                             //se o socket tiver dado timeout e a aplicação continuar a correr,
                             //abrimos novo socket e continuamos à espera de cenas do cliente e
                             //temos que criar nova thread para lhe enviar coisas (ciclo dia e noite)
-                            if(createThread) {
+                            if (createThread) {
                                 //cria nova thread para enviar cenas para a aplicação
-//                                makeNewThread();
+                                makeNewThread();
                                 createThread = false;
                             }
                         }
@@ -128,7 +133,7 @@ public class Server implements Serializable {
                         System.out.println("SocketTimeout!!\nO cliente já não envia mensagens " +
                                 "à algum tempo, pode ter crashado. Criamos novo socket.");
 
-//                        output_thread.interrupt();
+                        output_thread.interrupt();
 
                         outputstream.close();
                         inputstream.close();
@@ -139,7 +144,7 @@ public class Server implements Serializable {
                         System.out.println("EOFException!!\nO cliente terminou, " +
                                 "criamos novo socket.");
 
-//                        output_thread.interrupt();
+                        output_thread.interrupt();
 
                         outputstream.close();
                         inputstream.close();
@@ -178,7 +183,10 @@ public class Server implements Serializable {
 
                     while (true) {
                         if (firstTime) {
-                            System.out.println("Vou enviar obj para o cliente");
+                            System.out.println("Primeiro envio: para a app ficar consistente com o server");
+
+                            //actualizamos a altura do dia em que estamos apenas do objecto do server!!
+                            server_house.changeTimeOfDay(current_time_of_day);
 
                             //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
                             server_house.setCounter(1);
@@ -186,23 +194,27 @@ public class Server implements Serializable {
                             outputstream.flush();
                             outputstream.reset();
 
-                            System.out.println("Enviei obj para o cliente. Vou dormir 15s");
+                            System.out.println("Enviei obj para o cliente. Vou dormir 30s");
 
-                            Thread.sleep(15000);
+                            Thread.sleep(30000);
                             firstTime = false;
                         } else {
                             System.out.println("Novo envio, desta vez é daqueles periodicos");
+
+                            //actualizamos a altura do dia do server e enviamos para a aplicação
+                            changeTimeOfDay();
+                            server_house.changeTimeOfDay(current_time_of_day);
 
                             outputstream.writeObject(server_house);
                             outputstream.flush();
                             outputstream.reset();
 
-                            System.out.println("Já enviei, agr volto a dormir 15s, espero eu");
+                            System.out.println("Já enviei, agr volto a dormir 30s.");
 
-                            Thread.sleep(15000);
+                            Thread.sleep(30000);
                         }
                     }
-                } catch(InterruptedException e){
+                } catch (InterruptedException e) {
                     System.out.println("THREAD THREAD THREAD estou a finalizar, acho que é assim hehe");
                     Thread.currentThread().interrupt(); //propagate interrupt
                 } catch (IOException e) {
@@ -211,5 +223,16 @@ public class Server implements Serializable {
             }
         };
         output_thread.start();
+    }
+
+    //quando é de DIA:
+    //current_time_of_day = 1; next = 0
+    //next = (1 + 1) % 2 <=> 2 % 2 = 0
+    //quando é de NOITE:
+    //current_time_of_day = 0; next = 1
+    //next = (0 + 1) % 2 <=> 1 % 2 = 1
+    private static void changeTimeOfDay() {
+        current_time_of_day = (current_time_of_day + 1) % 2;
+        System.out.println("MUDOU A ALTURA DO DIA!!!\nActual: " + ((current_time_of_day == 1) ? "Dia" : "Noite"));
     }
 }
