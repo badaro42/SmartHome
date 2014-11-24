@@ -77,6 +77,11 @@ public class StoveFragment extends Fragment {
         seekArc.setArcRotation(180);
 //        seekArc.setTouchInSide(true);
 
+        final int curr_temp = stove.getTemperature();
+
+        seekArc.setProgress(curr_temp);
+        tv.setText(String.valueOf(curr_temp) + " ºC");
+
         final String[] time_values = new String[25];
         for (int i = 0; i < time_values.length; i++) {
             String number = Integer.toString(i * 5);
@@ -86,8 +91,8 @@ public class StoveFragment extends Fragment {
         number_pick.setMaxValue(time_values.length - 1);
         number_pick.setMinValue(0);
         number_pick.setDisplayedValues(time_values);
+        number_pick.setValue(stove.getIndexMinutesToGo());
 
-        final int curr_temp = stove.getTemperature();
         if (curr_temp == 0) {
             number_pick.setEnabled(false);
             number_pick.setValue(0);
@@ -102,7 +107,7 @@ public class StoveFragment extends Fragment {
                 Home house = ((MainActivity) getActivity()).getHouse();
                 Room room = (Room) house.getMap().get(KITCHEN);
                 StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
-                stove.changeMinutesToGo(new_value);
+                stove.changeMinutesToGo(newVal);
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
                 ((MainActivity) getActivity()).incrementHouseCounter();
@@ -125,7 +130,7 @@ public class StoveFragment extends Fragment {
                 Room room = (Room) house.getMap().get(KITCHEN);
                 StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
 
-                if ((progress == 0) && (previous_progress != 0)) {
+                if (progress == 0) {
                     number_pick.setEnabled(false);
                     number_pick.setValue(0);
 
@@ -137,8 +142,10 @@ public class StoveFragment extends Fragment {
 
                     Toast.makeText(getActivity(),
                             "O forno está agora ligado", Toast.LENGTH_SHORT).show();
-                } else
+                } else {
+                    number_pick.setEnabled(true);
                     stove.setTemperature(progress);
+                }
 
                 ((MainActivity) getActivity()).sendObjectToServer(house);
                 ((MainActivity) getActivity()).incrementHouseCounter();
