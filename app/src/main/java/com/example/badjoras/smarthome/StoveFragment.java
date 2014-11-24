@@ -30,6 +30,7 @@ public class StoveFragment extends Fragment {
     private static final String ARG_FUNCTION = "function";
 
     private static int previous_progress = 0;
+    private static boolean pressed_zero_again = false;
 
     private String function;
     private String title;
@@ -130,19 +131,22 @@ public class StoveFragment extends Fragment {
                 Room room = (Room) house.getMap().get(KITCHEN);
                 StoveOven stove = (StoveOven) room.getMap().get(STOVE_OVEN);
 
-                if (progress == 0) {
+                if ((progress == 0) && !(pressed_zero_again)) {
+                    pressed_zero_again = true;
                     number_pick.setEnabled(false);
                     number_pick.setValue(0);
 
                     Toast.makeText(getActivity(),
                             "O forno está agora desligado", Toast.LENGTH_SHORT).show();
-                } else if ((progress == 1) && (previous_progress == 0)) {
+                } else if ((progress > 0) && (previous_progress == 0)) {
+                    pressed_zero_again = false;
                     number_pick.setEnabled(true);
                     stove.setTemperature(progress);
 
                     Toast.makeText(getActivity(),
                             "O forno está agora ligado", Toast.LENGTH_SHORT).show();
                 } else {
+                    pressed_zero_again = false;
                     number_pick.setEnabled(true);
                     stove.setTemperature(progress);
                 }

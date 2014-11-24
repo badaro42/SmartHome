@@ -124,6 +124,7 @@ public class PantryStockFragment extends ListFragment {
                 false);
 
         Button add_product = (Button) rootView.findViewById(R.id.add_product);
+        Button clear_updated = (Button) rootView.findViewById(R.id.clear_updated_products);
 
         Spinner spinner = (Spinner) rootView.findViewById(R.id.change_list_order);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -186,6 +187,24 @@ public class PantryStockFragment extends ListFragment {
                 dialog.show();
             }
         });
+
+        clear_updated.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.v("badjoras", "carreguei para limpar a indicação que foram actualizados");
+
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(KITCHEN);
+                PantryStock stock = (PantryStock) room.getMap().get(PANTRY_STOCK);
+
+                Toast.makeText(getActivity().getBaseContext(),
+                        "Produtos actualizados limpos", Toast.LENGTH_SHORT).show();
+
+                stock.resetUpdatedProducts();
+                onResume();
+            }
+        });
+
         return rootView;
     }
 

@@ -10,11 +10,13 @@ public class Product implements Serializable {
     private int quantity;
     private String name;
     private String category;
+    private boolean recently_updated;
 
     public Product(String name, int quantity, String category) {
         this.quantity = quantity;
         this.name = name;
         this.category = category;
+        this.recently_updated = false;
     }
 
     public String getName() {
@@ -27,6 +29,15 @@ public class Product implements Serializable {
 
     public void changeQuantity(int new_quantity) {
         quantity = new_quantity;
+        recently_updated = true;
+    }
+
+    public boolean wasUpdatedRecently() {
+        return recently_updated;
+    }
+
+    public void resetCurrentlyUpdated() {
+        recently_updated = false;
     }
 
     public void changeName(String new_name) {

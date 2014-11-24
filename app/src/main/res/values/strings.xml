@@ -41,6 +41,7 @@
     <string name="about_str">Acerca</string>
 
     <string name="add_new_product">Adicionar novo produto...</string>
+    <string name="clear_updated_products">Limpar produtos actualizados</string>
     <string name="new_prod_hint">Introduza o nome do producto</string>
     <string name="text_info_change_order">Alterar ordenação da lista: </string>
     <string name="text_info_remove">Tem a certeza que pretende remover o produto: </string>

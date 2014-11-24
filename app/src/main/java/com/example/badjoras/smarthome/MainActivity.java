@@ -47,17 +47,26 @@ public class MainActivity extends FragmentActivity {
     public static final String COFFEE_MACHINE = "Máquina de Café";
     public static final String STOVE_OVEN = "Fogão/Forno";
     public static final String SPRINKLER = "Aspersores da Rega";
-    public static MediaPlayer cafe;
-    public static Toast toast;
-    public static Toast thread_toast;
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
     public static final String BEDROOM = "Quarto";
     public static final String LIVING_ROOM = "Sala de Estar";
 
+    public static final String CAT_LEGUMES = "Legumes";
+    public static final String CAT_ENLATADOS = "Enlatados";
+    public static final String CAT_MASSAS = "Massas";
+    public static final String CAT_CAFE = "Café";
+    public static final String CAT_HIGIENE = "Higiene";
+    public static final String CAT_FRUTAS = "Frutas";
+
     public static final int DAY = 1;
     public static final int NIGHT = 0;
+
+    public static MediaPlayer cafe;
+    public static Toast toast;
+    public static Toast thread_toast;
+
 
     //USAR UM DESTES IPs
 //    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro

@@ -11,6 +11,12 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 
+import static com.example.badjoras.smarthome.MainActivity.CAT_CAFE;
+import static com.example.badjoras.smarthome.MainActivity.CAT_ENLATADOS;
+import static com.example.badjoras.smarthome.MainActivity.CAT_FRUTAS;
+import static com.example.badjoras.smarthome.MainActivity.CAT_HIGIENE;
+import static com.example.badjoras.smarthome.MainActivity.CAT_LEGUMES;
+import static com.example.badjoras.smarthome.MainActivity.CAT_MASSAS;
 import static com.example.badjoras.smarthome.MainActivity.DEFAULT_PORT;
 import static com.example.badjoras.smarthome.MainActivity.IP_ADDRESS;
 import static com.example.badjoras.smarthome.MainActivity.KITCHEN;
@@ -21,11 +27,28 @@ import static com.example.badjoras.smarthome.MainActivity.NIGHT;
 
 public class Server implements Serializable {
 
+    //quando for criada nova categoria, adicionar aqui as respectivas constantes
+    public static final int CAT_LEGUMES_MINIMUM = 2;
+    public static final int CAT_LEGUMES_TO_ORDER = 3;
+    public static final int CAT_ENLATADOS_MINIMUM = 3;
+    public static final int CAT_ENLATADOS_TO_ORDER = 8;
+    public static final int CAT_MASSAS_MINIMUM = 2;
+    public static final int CAT_MASSAS_TO_ORDER = 6;
+    public static final int CAT_CAFE_MINIMUM = 5;
+    public static final int CAT_CAFE_TO_ORDER = 15;
+    public static final int CAT_HIGIENE_MINIMUM = 4;
+    public static final int CAT_HIGIENE_TO_ORDER = 4;
+    public static final int CAT_FRUTAS_MINIMUM = 2;
+    public static final int CAT_FRUTAS_TO_ORDER = 4;
+
     private static ServerSocket serverSocket;
     private static Socket clientSocket;
     private static ObjectInputStream inputstream;
     private static ObjectOutputStream outputstream;
     private static Thread output_thread;
+
+    //TODO: para ser mais facil de testar este valor fica em 30000 (30s). no fim alterar para 60000
+    private static final int MILISSECONDS_TO_SLEEP = 30000;
 
     private static String[] products_names = new String[]{
             "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
@@ -35,9 +58,10 @@ public class Server implements Serializable {
     private static boolean createThread;
 
     private static int current_time_of_day;
+    private static int day_night_cicles;
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         System.out.println("Servidor iniciado. Estou à espera de conexões na porta 4444");
 
@@ -45,6 +69,7 @@ public class Server implements Serializable {
         try {
             server_house = null;
             current_time_of_day = DAY;
+            day_night_cicles = 0;
 
             String aux = IP_ADDRESS;
             System.out.println("Server IP: " + aux);
@@ -153,10 +178,6 @@ public class Server implements Serializable {
                         break;
                     }
                 }
-
-//                outputstream.close();
-//                inputstream.close();
-//                clientSocket.close();
             }
 
         } catch (IOException e) {
@@ -185,6 +206,8 @@ public class Server implements Serializable {
                         if (firstTime) {
                             System.out.println("Primeiro envio: para a app ficar consistente com o server");
 
+//                            updatePantryStock();
+
                             //actualizamos a altura do dia em que estamos apenas do objecto do server!!
                             server_house.changeTimeOfDay(current_time_of_day);
 
@@ -194,12 +217,19 @@ public class Server implements Serializable {
                             outputstream.flush();
                             outputstream.reset();
 
-                            System.out.println("Enviei obj para o cliente. Vou dormir 30s");
+                            System.out.println("Enviei obj para o cliente. Vou dormir " +
+                                    (MILISSECONDS_TO_SLEEP / 1000) + "s.");
 
-                            Thread.sleep(30000);
+                            //dorme por 1 minuto -> simula o ciclo dia e noite (1m = 1 dia)
+                            Thread.sleep(MILISSECONDS_TO_SLEEP);
                             firstTime = false;
                         } else {
-                            System.out.println("Novo envio, desta vez é daqueles periodicos");
+                            System.out.println("Novo envio, desta vez é daqueles periódicos");
+
+                            //TODO: nao precisamos de calcular o stock por cada alteração dia/noite
+                            //TODO usando o contador day_night_cycles podemos calcular o stock apenas
+                            //TODO quando day_night_cycles % 4 == 0, por exemplo (de 2 em 2 dias)
+//                            updatePantryStock();
 
                             //actualizamos a altura do dia do server e enviamos para a aplicação
                             changeTimeOfDay();
@@ -209,10 +239,14 @@ public class Server implements Serializable {
                             outputstream.flush();
                             outputstream.reset();
 
-                            System.out.println("Já enviei, agr volto a dormir 30s.");
+                            System.out.println("Já enviei, agr volto a dormir " +
+                                    (MILISSECONDS_TO_SLEEP / 1000) + "s.");
 
-                            Thread.sleep(30000);
+                            //dorme por 1 minuto -> simula o ciclo dia e noite (1m = 1 dia)
+                            Thread.sleep(MILISSECONDS_TO_SLEEP);
                         }
+                        //por cada alteração, dia -> noite e vice-versa, este contador é incrementado
+                        day_night_cicles++;
                     }
                 } catch (InterruptedException e) {
                     System.out.println("THREAD THREAD THREAD estou a finalizar, acho que é assim hehe");
@@ -227,12 +261,63 @@ public class Server implements Serializable {
 
     //quando é de DIA:
     //current_time_of_day = 1; next = 0
-    //next = (1 + 1) % 2 <=> 2 % 2 = 0
+    //next = (1 + 1) % 2 <=> 2 % 2 = 0 jeje
     //quando é de NOITE:
     //current_time_of_day = 0; next = 1
-    //next = (0 + 1) % 2 <=> 1 % 2 = 1
+    //next = (0 + 1) % 2 <=> 1 % 2 = 1 jaja
     private static void changeTimeOfDay() {
         current_time_of_day = (current_time_of_day + 1) % 2;
         System.out.println("MUDOU A ALTURA DO DIA!!!\nActual: " + ((current_time_of_day == 1) ? "Dia" : "Noite"));
+    }
+
+
+    private static boolean updatePantryStock() {
+        Room room = (Room) server_house.getMap().get(KITCHEN);
+        PantryStock pantry = (PantryStock) room.getMap().get(PANTRY_STOCK);
+        LinkedList<Product> prods = pantry.getProductList();
+
+        int current_quantity;
+        boolean any_product_updated = false;
+        for (Product p : prods) {
+            current_quantity = p.getQuantity();
+            if (p.getCategoty().equals(CAT_LEGUMES)) {
+                if (current_quantity < CAT_LEGUMES_MINIMUM) { //abaixo do minimo, actualiza!
+                    current_quantity += CAT_LEGUMES_TO_ORDER;
+                    p.changeQuantity(current_quantity);
+                    any_product_updated = true;
+                }
+            } else if (p.getCategoty().equals(CAT_ENLATADOS)) {
+                if (current_quantity < CAT_ENLATADOS_MINIMUM) {
+                    current_quantity += CAT_ENLATADOS_TO_ORDER;
+                    p.changeQuantity(current_quantity);
+                    any_product_updated = true;
+                }
+            } else if (p.getCategoty().equals(CAT_MASSAS)) {
+                if (current_quantity < CAT_MASSAS_MINIMUM) {
+                    current_quantity += CAT_MASSAS_TO_ORDER;
+                    p.changeQuantity(current_quantity);
+                    any_product_updated = true;
+                }
+            } else if (p.getCategoty().equals(CAT_CAFE)) {
+                if (current_quantity < CAT_CAFE_MINIMUM) {
+                    current_quantity += CAT_CAFE_TO_ORDER;
+                    p.changeQuantity(current_quantity);
+                    any_product_updated = true;
+                }
+            } else if (p.getCategoty().equals(CAT_FRUTAS)) {
+                if (current_quantity < CAT_FRUTAS_MINIMUM) {
+                    current_quantity += CAT_FRUTAS_TO_ORDER;
+                    p.changeQuantity(current_quantity);
+                    any_product_updated = true;
+                }
+            } else if (p.getCategoty().equals(CAT_HIGIENE)) {
+                if (current_quantity < CAT_HIGIENE_MINIMUM) {
+                    current_quantity += CAT_HIGIENE_TO_ORDER;
+                    p.changeQuantity(current_quantity);
+                    any_product_updated = true;
+                }
+            }
+        }
+        return any_product_updated;
     }
 }

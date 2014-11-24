@@ -96,6 +96,8 @@ public class ListViewAdapter extends BaseAdapter {
 
         if (prod.getQuantity() == 0)
             convertView.setBackgroundColor(context.getResources().getColor(R.color.stock_low));
+        else if (prod.wasUpdatedRecently())
+            convertView.setBackgroundColor(context.getResources().getColor(R.color.updated_recently));
         else {
             if (position % 2 == 0)
                 convertView.setBackgroundColor(context.getResources().getColor(R.color.even_row));

@@ -81,6 +81,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="@string/add_new_product" />
+
+                    <Button
+                        android:id="@+id/clear_updated_products"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/clear_updated_products" />
                 </LinearLayout>
 
             </RelativeLayout>

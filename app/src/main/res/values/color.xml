@@ -11,6 +11,7 @@
     <color name="even_row">#DDDDDD</color>
     <color name="odd_row">#EEEEEE</color>
     <color name="stock_low">#e0ff0000</color>
+    <color name="updated_recently">#ff0ab204</color>
 
     <color name="progress_gray">#FFD8D8D8</color>
     <color name="progress_gray_dark">#FF383838</color>
