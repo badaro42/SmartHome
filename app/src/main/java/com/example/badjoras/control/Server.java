@@ -23,15 +23,14 @@ public class Server implements Serializable {
     private static Socket clientSocket;
     private static ObjectInputStream inputstream;
     private static ObjectOutputStream outputstream;
-    private static int MANY_QUANTITY = 7;
-    private static int QUANTITY_TO_MANY = 20;
-    private static int FEW_QUANTITY = 3;
-    private static int QUANTITY_TO_FEW = 5;
+    private static Thread output_thread;
+
     private static String[] products_names = new String[]{
             "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
             "Alho francês", "Lata de Salsichas", "Arroz Agulha", "Café", "Papel Higiénico"
     };
     private static Home server_house;
+    private static boolean createThread;
 
 
     public static void main(String[] args) throws IOException {
@@ -53,8 +52,11 @@ public class Server implements Serializable {
                 System.out.println("À espera de novo cliente...");
                 clientSocket = serverSocket.accept();   //accept the client connection
 
-                //se ao fim de 20s o cliente não enviar nada, dá timeout e volta a ligar
-                clientSocket.setSoTimeout(20000);
+                //aceitámos nova conexao do cliente, criamos nova output_thread
+                createThread = true;
+
+                //se ao fim de 30s o cliente não enviar nada, dá timeout e volta a ligar
+                clientSocket.setSoTimeout(30000);
                 System.out.println("Cliente ligado com sucesso!");
 
                 outputstream = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -75,6 +77,7 @@ public class Server implements Serializable {
                                 "\n****************");
 
                         //verifica se se trata do "fake send", para assim enviar o estado actual do server
+                        //isto só corre UMA vez, quando a aplicação inicia (assim que reiniciar corre outra vez)
                         if (house.getCounter() == 0) {
 
                             System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
@@ -90,7 +93,13 @@ public class Server implements Serializable {
                             outputstream.writeObject(server_house);
                             outputstream.flush();
 
-                        } else {
+                            //cria nova thread para enviar cenas para a aplicação
+//                            makeNewThread();
+                            createThread = false;
+
+                        }
+                        //nas restantes vezes vem parar aqui!
+                        else {
                             server_house = house;
 
                             System.out.println("JÁ NÃO É A PRIMEIRA VEZ!!!\nCounter = " +
@@ -105,9 +114,21 @@ public class Server implements Serializable {
                                 res += prod.getName() + ": " + prod.getQuantity() + "\n";
                             }
                             System.out.print(res);
+
+                            //se o socket tiver dado timeout e a aplicação continuar a correr,
+                            //abrimos novo socket e continuamos à espera de cenas do cliente e
+                            //temos que criar nova thread para lhe enviar coisas (ciclo dia e noite)
+                            if(createThread) {
+                                //cria nova thread para enviar cenas para a aplicação
+//                                makeNewThread();
+                                createThread = false;
+                            }
                         }
                     } catch (SocketTimeoutException e) {
-                        System.out.println("SocketTimeout. vamos fechar o socket e abrir de novo");
+                        System.out.println("SocketTimeout!!\nO cliente já não envia mensagens " +
+                                "à algum tempo, pode ter crashado. Criamos novo socket.");
+
+//                        output_thread.interrupt();
 
                         outputstream.close();
                         inputstream.close();
@@ -115,7 +136,10 @@ public class Server implements Serializable {
 
                         break;
                     } catch (EOFException e) {
-                        System.out.println("EOFException! O cliente fechou, vamos criar novo socket");
+                        System.out.println("EOFException!!\nO cliente terminou, " +
+                                "criamos novo socket.");
+
+//                        output_thread.interrupt();
 
                         outputstream.close();
                         inputstream.close();
@@ -134,9 +158,58 @@ public class Server implements Serializable {
             System.out.println("Could not listen on port: 4444");
             e.printStackTrace();
             serverSocket.close();
+            System.exit(0);
         } catch (ClassNotFoundException e) {
             serverSocket.close();
             e.printStackTrace();
+            System.exit(0);
         }
+    }
+
+    //thread responsavel por enviar cenas para a aplicação.
+    //envia para a aplicação, logo ao inicio, o objecto que contem o estado do servidor
+    //nas restantes vezes, envia periodicamente um objecto que servirá para
+    //simular o ciclo de dia e noite
+    public static void makeNewThread() {
+        output_thread = new Thread() {
+            public void run() {
+                try {
+                    boolean firstTime = true;
+
+                    while (true) {
+                        if (firstTime) {
+                            System.out.println("Vou enviar obj para o cliente");
+
+                            //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
+                            server_house.setCounter(1);
+                            outputstream.writeObject(server_house);
+                            outputstream.flush();
+                            outputstream.reset();
+
+                            System.out.println("Enviei obj para o cliente. Vou dormir 15s");
+
+                            Thread.sleep(15000);
+                            firstTime = false;
+                        } else {
+                            System.out.println("Novo envio, desta vez é daqueles periodicos");
+
+                            outputstream.writeObject(server_house);
+                            outputstream.flush();
+                            outputstream.reset();
+
+                            System.out.println("Já enviei, agr volto a dormir 15s, espero eu");
+
+                            Thread.sleep(15000);
+                        }
+                    }
+                } catch(InterruptedException e){
+                    System.out.println("THREAD THREAD THREAD estou a finalizar, acho que é assim hehe");
+                    Thread.currentThread().interrupt(); //propagate interrupt
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        output_thread.start();
     }
 }

@@ -66,17 +66,40 @@ public class AirConditionerFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.air_conditioner_fragment, container, false);
 
+        Home house = ((MainActivity) getActivity()).getHouse();
+        Room room = (Room) house.getMap().get(title);
+        AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
+
         hot = (Button) rootView.findViewById(R.id.button_hot);
         cold = (Button) rootView.findViewById(R.id.button_cold);
         sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
         text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
 
         //TODO alterar para o valor que recebemos do servidor
-        sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN);
-        text_to_show.setText(String.valueOf(sb.getProgress() + SEEKBAR_DESIRED_MIN) + "ºC");
+        sb.setProgress(ac.getTemperature()-SEEKBAR_DESIRED_MIN);
+        text_to_show.setText(String.valueOf(ac.getTemperature()) + " ºC");
+//        sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN);
 
-        cold.setEnabled(false);
+        hot.setBackground(getResources().getDrawable(R.drawable.new_button));
         cold.setBackground(getResources().getDrawable(R.drawable.new_button));
+
+        System.out.println("AR CONDICIONADO: modo actual -> " + ac.getMode());
+
+
+
+//        hot.setEnabled(true);
+//        cold.setEnabled(true);
+
+        //está seleccionado o modo QUENTE
+        if(ac.getMode().equals(HOT)) {
+            hot.setEnabled(false);
+            hot.setBackground(getResources().getDrawable(R.drawable.new_button));
+        }
+        else { //está seleccionado o modo FRIO
+            cold.setEnabled(false);
+            cold.setBackground(getResources().getDrawable(R.drawable.new_button));
+        }
+
 
         hot.setOnClickListener(new View.OnClickListener() {
             @Override

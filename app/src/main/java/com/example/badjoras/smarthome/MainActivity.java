@@ -48,6 +48,7 @@ public class MainActivity extends FragmentActivity {
     public static final String SPRINKLER = "Aspersores da Rega";
     public static MediaPlayer cafe;
     public static Toast toast;
+    public static Toast thread_toast;
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
@@ -57,8 +58,8 @@ public class MainActivity extends FragmentActivity {
     //USAR UM DESTES IPs
 //    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
     //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
-//    public static final String IP_ADDRESS = "192.168.2.2"; //ip casa badaro
-    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
+    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+//    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
     //   public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
@@ -177,19 +178,29 @@ public class MainActivity extends FragmentActivity {
                 public void run() {
                     try {
                         boolean firstTime = true;
+                        System.out.println("À ESPERA DE OBJECTOS DO SERVIDOR!!!! ESPERO BEM QUE ENTRE AQUI HEHE");
 
                         while (true) {
                             //obtemos o estado do server, para o caso de reiniciarmos a aplicação
                             Home temp_house = getObjectFromServer();
-                            System.out.println("THREAD THREAD house is null???" + temp_house == null);
-                            if (temp_house != null)
-                                house = temp_house;
-                            if (firstTime) {
-                                Thread.sleep(5000);
-                                firstTime = false;
-                            } else
-                                Thread.sleep(2000);
+//                            get.runOnUiThread(new Runnable() {
+//                                public void run() {
+//                                    thread_toast.makeText(getParent().getBaseContext(), "RECEBI OBJECTO DO SERVIDOR",
+//                                            Toast.LENGTH_LONG).show();
+//                                }
+//                            });
+                            System.out.println("THREAD THREAD house is null??? " + (temp_house == null));
 
+                            if (firstTime) {
+                                if (temp_house != null)
+                                    house = temp_house;
+
+                                firstTime = false;
+                                Thread.sleep(5000);
+                            } else {
+                                //TODO: arranjar maneira de guardar aqui o que recebemos do server!!!
+                                Thread.sleep(2000);
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -200,16 +211,6 @@ public class MainActivity extends FragmentActivity {
             input_thread.start();
 
             System.out.println("ISTO É DEPOIS DA THREAD!!!!");
-
-
-//                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
-//                Home temp_house = getObjectFromServer();
-//                if (temp_house != null)
-//                    house = temp_house;
-
-//                obj_os.close();
-//                obj_is.close();
-//                client_socket.close();
         }
 
 
