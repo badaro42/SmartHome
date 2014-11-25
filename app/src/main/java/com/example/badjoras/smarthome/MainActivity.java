@@ -1,7 +1,9 @@
 package com.example.badjoras.smarthome;
 
+import android.app.ProgressDialog;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -70,7 +72,7 @@ public class MainActivity extends FragmentActivity {
 
     //USAR UM DESTES IPs
     public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
-//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+    //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
@@ -122,16 +124,17 @@ public class MainActivity extends FragmentActivity {
     public static FragmentManager app_fm;
 
     public static Thread input_thread;
+    public static Thread connection_thread;
 
     public static CharSequence m_title;
 
-    private Timer timer;
+    private static Timer timer;
 
-    private WifiManager mainWifiObj;
+    private static WifiManager mainWifiObj;
     //    private WifiScanReceiver wifiReciever;
-    private ListView list;
-    private String wifis[];
-    private HashMap<String, ArrayList<Double>> results_map;
+    private static ListView list;
+    private static String wifis[];
+    private static HashMap<String, ArrayList<Double>> results_map;
 
     public double distance_to_ap1;
     public double distance_to_ap2;
@@ -139,10 +142,13 @@ public class MainActivity extends FragmentActivity {
 
     public static boolean offline_mode;
     public static boolean first_time_running = true;
+    public static boolean connection_thread_finished = false;
 
-    public int wifiScanCount;
-    private Handler handler;
+    public static int wifiScanCount;
+    private static Handler handler;
 
+    //A ProgressDialog object
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,21 +156,21 @@ public class MainActivity extends FragmentActivity {
         System.out.println("******ON_CREATE DA MAIN ACTIVITY!!!******");
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_homepage);
-
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        //Initialize a LoadViewTask object and call the execute() method
+        new LoadViewTask().execute();
+
+//        setContentView(R.layout.activity_homepage);
+    }
+
+
+    public void handleConnection() {
 
         last_position = "";
         client_socket = null;
-
-//            results_map = new HashMap<String, ArrayList<Double>>(30);
-//            mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-//            wifiReciever = new WifiScanReceiver();
 
         //tentamos criar o socket para o servidor logo ao iniciar a app
         //para determinar se a app funcionara em modo online ou offline
@@ -172,66 +178,70 @@ public class MainActivity extends FragmentActivity {
         //nao sao permanentes. Se estiver em modo online e nalguma das comunicaçoes perder
         //a ligação, passa a funcionar em moddo offline até ser reiniciada.
         //MESMO QUE SE VIRE A ORIENTAÇAO, FICA SEMPRE EM ONLINE OU OFFLINE, NAO VOLTA A LIGAR!
-        if(first_time_running) {
+        if (first_time_running) {
+
             house = new Home();
             first_time_running = false;
-            establishConnection(true);
+//            establishConnection(true);
 
-            System.out.println("********* ESTOU LIGADO AO SERVER???? " + !offline_mode);
-            System.out.println(client_socket.toString());
-        }
+            if (offline_mode)
+                Toast.makeText(getApplicationContext(),
+                        "Ligação ao servidor bem sucedida!", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getApplicationContext(),
+                        "Falhou a ligação ao server. Modo offline", Toast.LENGTH_SHORT).show();
 
-        //se conseguimos ligar ao servidor, obtem o estado actual do servidor
-        if (!offline_mode) {
-            System.out.println("MODO ONLINE!!! VAMOS COMUNICAR COM O SERVER!");
-            System.out.println("CRIEI UMA CASA NOVA!!!! HEHEHEHE\n Counter:" + house.getCounter());
 
-            //fazemos um "fake send" para o server nos enviar o objeto que ele tem
-            sendObjectToServer(house);
+            //se conseguimos ligar ao servidor, obtem o estado actual do servidor
+            if (!offline_mode) {
+                System.out.println("MODO ONLINE!!! VAMOS COMUNICAR COM O SERVER!");
 
-            System.out.println("***já enviei o objecto inicial para o server e correu tudo bem!***");
+                //fazemos um "fake send" para o server nos enviar o objeto que ele tem
+                sendObjectToServer(house);
 
-            //thread que fica à espera de mensagens do servidor
-            //usar isto para a parte da inteligencia em que o server precisa de enviar cenas para a app
-            input_thread = new Thread() {
-                public void run() {
-                    try {
-                        boolean firstTime = true;
-                        System.out.println("À ESPERA DE OBJECTOS DO SERVIDOR!!!! ESPERO BEM QUE ENTRE AQUI HEHE");
+                System.out.println("***já enviei o objecto inicial para o server e correu tudo bem!***");
 
-                        while (true) {
-                            //obtemos o estado do server, para o caso de reiniciarmos a aplicação
-                            Home temp_house = getObjectFromServer();
-//                            get.runOnUiThread(new Runnable() {
-//                                public void run() {
-//                                    thread_toast.makeText(getParent().getBaseContext(), "RECEBI OBJECTO DO SERVIDOR",
-//                                            Toast.LENGTH_LONG).show();
-//                                }
-//                            });
-                            System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " + temp_house.getCurrentTimeOfDay());
+                //thread que fica à espera de mensagens do servidor
+                //usar isto para a parte da inteligencia em que o server precisa de enviar cenas para a app
+                input_thread = new Thread() {
+                    public void run() {
+                        try {
+                            boolean firstTime = true;
+                            System.out.println("À ESPERA DE OBJECTOS DO SERVIDOR!!!! ESPERO BEM QUE ENTRE AQUI HEHE");
 
-                            if (firstTime) {
-                                if (temp_house != null)
-                                    house = temp_house;
+                            while (true) {
+                                //obtemos o estado do server, para o caso de reiniciarmos a aplicação
+                                Home temp_house = getObjectFromServer();
 
-                                firstTime = false;
-                                Thread.sleep(5000);
-                            } else {
-                                //TODO: arranjar maneira de guardar aqui o que recebemos do server!!!
-                                Thread.sleep(2000);
+                                System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " + temp_house.getCurrentTimeOfDay());
+
+                                if (firstTime) {
+                                    if (temp_house != null)
+                                        house = temp_house;
+
+                                    firstTime = false;
+                                    Thread.sleep(5000);
+                                } else {
+                                    //TODO: arranjar maneira de guardar aqui o que recebemos do server!!!
+                                    Thread.sleep(2000);
+                                }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                }
-            };
+                };
 
-            input_thread.start();
-
-            System.out.println("ISTO É DEPOIS DA THREAD!!!!");
+                input_thread.start();
+            }
         }
+    }
 
+    public void initPositionThing() {
+
+//        results_map = new HashMap<String, ArrayList<Double>>(30);
+//        mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+//        wifiReciever = new WifiScanReceiver();
 
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
 //        timer = new Timer();
@@ -242,10 +252,12 @@ public class MainActivity extends FragmentActivity {
 //        handler = new Handler();
 //        handler.postDelayed(runnable, 2000);
 
-
         //obtem a posição inicial do utilizador
         getUserPosition();
+    }
 
+
+    public void initFragmentsAndTabs() {
         //calcular o maximo de features que teremos em qualquer momento no ecra
         int max_lenght1 = Math.max(bedroom_features.length, outside_general_features.length);
         int max_length2 = Math.max(kitchen_features.length, living_room_features.length);
@@ -262,27 +274,29 @@ public class MainActivity extends FragmentActivity {
 
 
     private void establishConnection(boolean display_toast) {
-        Toast t;
         try {
             InetSocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
             client_socket = new Socket();
             client_socket.connect(sockaddr, 2000);
 
+            System.out.println("CONSEGUI LIGAR AO SERVER, VAMOS CRIAR OS SOCKETS!!");
+
             obj_os = new ObjectOutputStream(client_socket.getOutputStream());
             obj_is = new ObjectInputStream(client_socket.getInputStream());
 
-            if (display_toast)
-                Toast.makeText(getApplicationContext(),
-                        "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG).show();
+//                    if (display_toast)
+//                        Toast.makeText(getApplicationContext(),
+//                                "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG).show();
 
             offline_mode = false;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("EXCEPTION!! Não é possível ligar ao server!!");
 
             offline_mode = true;
-            Toast.makeText(getBaseContext(),
-                    "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getBaseContext(),
+//                            "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG).show();
         }
+        connection_thread_finished = true;
     }
 
 
@@ -465,6 +479,15 @@ public class MainActivity extends FragmentActivity {
             System.out.println("NOVO TITULO!!!!! - " + item.getTitle());
 
             refreshTabs();
+        } else if (id == R.id.reconnect_submenu) {
+            System.out.println("RECONECTAR AO SERVIDOR!!!");
+            if (offline_mode) { //ainda nao estamos ligados, tentamos ligar!
+                Toast.makeText(getApplicationContext(), "Estabelecendo ligação ao servidor...",
+                        Toast.LENGTH_SHORT).show();
+                establishConnection(true);
+            } else
+                Toast.makeText(getBaseContext(), "Já está ligado ao servidor!",
+                        Toast.LENGTH_SHORT).show();
         }
 
         return true;
@@ -568,6 +591,70 @@ public class MainActivity extends FragmentActivity {
 
             fragment_list.add(myfrag);
             return myfrag;
+        }
+    }
+
+    //To use the AsyncTask, it must be subclassed
+    private class LoadViewTask extends AsyncTask<Void, Integer, Void> {
+        //Before running code in separate thread
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(MainActivity.this, "A carregar...",
+                    "Por favor espere enquanto tentamos ligar ao servidor...", false, false);
+        }
+
+        //The code to be executed in a background thread.
+        @Override
+        protected Void doInBackground(Void... params) {
+            /* This is just a code that delays the thread execution 4 times,
+             * during 850 milliseconds and updates the current progress. This
+             * is where the code that is going to be executed on a background
+             * thread must be placed.
+             */
+            try {
+                //Get the current thread's token
+                synchronized (this) {
+                    System.out.println("LOL TOU AQUI NA ASYNC_TASK");
+                    int counter = 0;
+
+                    establishConnection(true);
+                    while (!connection_thread_finished) {
+                        this.wait(100);
+//                        counter++;
+//                        publishProgress(counter * 25);
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        //Update the progress
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            //set the current progress of the progress dialog
+            progressDialog.setProgress(values[0]);
+        }
+
+        //after executing the code in the thread
+        @Override
+        protected void onPostExecute(Void result) {
+
+            //initialize the View
+            setContentView(R.layout.activity_homepage);
+
+            //cria a conexao para o server e tudo mais que esteja relaccionado
+            handleConnection();
+
+            //inicia a cena da posição: VER MELHOR!!!
+            initPositionThing();
+
+            //inicia a cena das tabs e dos fragmentos!
+            initFragmentsAndTabs();
+
+            //close the progress dialog
+            progressDialog.dismiss();
         }
     }
 

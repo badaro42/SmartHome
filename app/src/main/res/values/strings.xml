@@ -39,6 +39,7 @@
     <string name="settings_str">Definições</string>
     <string name="help_str">Ajuda</string>
     <string name="about_str">Acerca</string>
+    <string name="reconnect_str">Ligar ao servidor</string>
 
     <string name="add_new_product">Adicionar novo produto...</string>
     <string name="clear_updated_products">Limpar produtos actualizados</string>
