@@ -71,13 +71,13 @@ public class MainActivity extends FragmentActivity {
 
 
     //USAR UM DESTES IPs
-    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
-    //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+//    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
+//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
-//    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.240.1"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
 
     //TODO: colocar aqui os ids dos AP mais perto de cada sala
@@ -160,10 +160,16 @@ public class MainActivity extends FragmentActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        //Initialize a LoadViewTask object and call the execute() method
-        new LoadViewTask().execute();
-
-//        setContentView(R.layout.activity_homepage);
+        //se for a primeira vez, mostramos o eccra de loading
+        //se nao, chamamos todas as inicializações menos a da conexão!
+        if (first_time_running) {
+            //Initialize a LoadViewTask object and call the execute() method
+            new LoadViewTask().execute();
+        }
+        else {
+            initPositionThing();
+            initFragmentsAndTabs();
+        }
     }
 
 
@@ -184,7 +190,7 @@ public class MainActivity extends FragmentActivity {
             first_time_running = false;
 //            establishConnection(true);
 
-            if (offline_mode)
+            if (!offline_mode)
                 Toast.makeText(getApplicationContext(),
                         "Ligação ao servidor bem sucedida!", Toast.LENGTH_SHORT).show();
             else
@@ -223,7 +229,7 @@ public class MainActivity extends FragmentActivity {
                                     Thread.sleep(5000);
                                 } else {
                                     //TODO: arranjar maneira de guardar aqui o que recebemos do server!!!
-                                    Thread.sleep(2000);
+                                    Thread.sleep(5000);
                                 }
                             }
                         } catch (Exception e) {

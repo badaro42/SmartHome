@@ -213,6 +213,7 @@ public class Server implements Serializable {
 
                             //esta instrução repoe o counter a 1 e devolve-a ao novo cliente
                             server_house.setCounter(1);
+
                             outputstream.writeObject(server_house);
                             outputstream.flush();
                             outputstream.reset();
