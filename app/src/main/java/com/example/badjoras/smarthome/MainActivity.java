@@ -69,11 +69,11 @@ public class MainActivity extends FragmentActivity {
 
 
     //USAR UM DESTES IPs
-//    public static final String IP_ADDRESS = "10.171.240.101"; //ip fac canteiro
-    //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
-    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
+//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
-    //   public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
+//    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.239.99"; //ip casa badaro
     public static final int DEFAULT_PORT = 4444;
@@ -89,7 +89,7 @@ public class MainActivity extends FragmentActivity {
     private ObjectOutputStream obj_os;
     private ObjectInputStream obj_is;
 
-    private Home house = new Home();
+    private static Home house;
 
     public static List<Fragment> fragment_list;
 
@@ -137,7 +137,8 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap2;
     public double distance_to_ap3;
 
-    public boolean offline_mode;
+    public static boolean offline_mode;
+    public static boolean first_time_running = true;
 
     public int wifiScanCount;
     private Handler handler;
@@ -170,10 +171,15 @@ public class MainActivity extends FragmentActivity {
         //se nao conseguir ligar ao server fica sempre em modo offline, pelo que as alterações
         //nao sao permanentes. Se estiver em modo online e nalguma das comunicaçoes perder
         //a ligação, passa a funcionar em moddo offline até ser reiniciada.
-        establishConnection(true);
+        //MESMO QUE SE VIRE A ORIENTAÇAO, FICA SEMPRE EM ONLINE OU OFFLINE, NAO VOLTA A LIGAR!
+        if(first_time_running) {
+            house = new Home();
+            first_time_running = false;
+            establishConnection(true);
 
-        System.out.println("********* ESTOU LIGADO AO SERVER???? " + !offline_mode);
-        System.out.println(client_socket.toString());
+            System.out.println("********* ESTOU LIGADO AO SERVER???? " + !offline_mode);
+            System.out.println(client_socket.toString());
+        }
 
         //se conseguimos ligar ao servidor, obtem o estado actual do servidor
         if (!offline_mode) {

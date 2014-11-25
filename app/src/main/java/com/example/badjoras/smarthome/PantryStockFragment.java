@@ -2,6 +2,7 @@ package com.example.badjoras.smarthome;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -336,6 +339,9 @@ public class PantryStockFragment extends ListFragment {
         View view = inflater.inflate(R.layout.edit_product_dialog, null);
 
         final NumberPicker np = (NumberPicker) view.findViewById(R.id.numberPicker_pantrystock);
+
+//        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(np.getWindowToken(), 0);
 
         np.setPadding(50, 25, 50, 25);
         np.setMinValue(0);
