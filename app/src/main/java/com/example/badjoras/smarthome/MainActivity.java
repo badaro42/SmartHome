@@ -23,7 +23,6 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -40,7 +39,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
 
 public class MainActivity extends FragmentActivity {
 
@@ -76,8 +74,6 @@ public class MainActivity extends FragmentActivity {
 
     public static MediaPlayer cafe;
     public static Toast toast;
-    public static Toast thread_toast;
-
 
     //USAR UM DESTES IPs
     public static final String IP_ADDRESS = "10.171.241.205";
@@ -132,12 +128,6 @@ public class MainActivity extends FragmentActivity {
             LIGHTS, BLINDS, AIR_CONDITIONER
     };
 
-//    private String[] outside_general_features = new String[]{
-//            SPRINKLER, GARAGE_DOOR, SURVEILLANCE_CAMERAS, POWER_MONITORING, SCHEDULED_FUNCTIONS
-//    };
-
-//    public static boolean firstTime = true;
-
     public static PagerSlidingTabStrip tabs;
     public static ViewPager pager;
     public static MyPagerAdapter adapter;
@@ -149,12 +139,8 @@ public class MainActivity extends FragmentActivity {
 
     public static CharSequence m_title;
 
-    private static Timer timer;
-
     private static WifiManager mainWifiObj;
     private WifiScanReceiver wifiReciever;
-    private static ListView list;
-    private static String wifis[];
     private static HashMap<String, ArrayList<Double>> results_map;
 
     private static boolean receiver_registered = false;
@@ -169,7 +155,6 @@ public class MainActivity extends FragmentActivity {
     public static boolean trying_to_connect = false;
     public static boolean reset_fragment_list = true;
 
-    public static int wifiScanCount;
     private static Handler handler;
 
     //A ProgressDialog object
@@ -320,11 +305,6 @@ public class MainActivity extends FragmentActivity {
             receiver_registered = true;
         }
 
-        //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
-//        timer = new Timer();
-//        timer.schedule(new AlertTask(), 0, //initial delay
-//                1 * 3000); //subsequent rate (in ms)
-
         System.out.println("INIT_POSITION_THING -> ANTES DA CRIAÇAO DO HANDLER");
 
         //cena da posicao, comeca a correr ao fim de 2 segundos
@@ -437,7 +417,8 @@ public class MainActivity extends FragmentActivity {
     public int sendObjectToServer(Home home) {
         if (!offline_mode) {
             try {
-                System.out.println("COUNTER COUNTER COUNTER COUNTER COUNTER DA CASA: " + home.getCounter());
+                System.out.println("COUNTER COUNTER COUNTER COUNTER COUNTER DA CASA: " +
+                        home.getCounter());
 
                 obj_os.writeObject(home);
                 obj_os.flush();
@@ -453,8 +434,8 @@ public class MainActivity extends FragmentActivity {
 
     protected void onResume() {
         System.out.println("----------------ON_RESUME---------------");
-
-        System.out.println("************************* WIFIRECIEDER IS NULL?? " + (wifiReciever == null));
+        System.out.println("************************* WIFIRECIEDER IS NULL?? " +
+                (wifiReciever == null));
 
         if (wifiReciever != null) {
             registerReceiver(wifiReciever, new IntentFilter(
@@ -463,9 +444,6 @@ public class MainActivity extends FragmentActivity {
         }
 
         super.onResume();
-
-//        if(!first_time_running)
-//            refreshTabs();
     }
 
     @Override
@@ -749,7 +727,7 @@ public class MainActivity extends FragmentActivity {
             //cria a conexao para o server e tudo mais que esteja relaccionado
             handleConnection();
 
-            //inicia a cena da posição: VER MELHOR!!!
+            //inicia a cena da posição
             initPositionThing();
 
             //inicia a cena das tabs e dos fragmentos!
@@ -764,22 +742,10 @@ public class MainActivity extends FragmentActivity {
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-//            wifiScanCount = 0;
-//            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
-//            if (wifiScanCount % 3 == 2) {
-//                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
-//                mainWifiObj.startScan();
-//            } else {
-//                System.out.println("Vou fazer novo scan da rede!!!\n" +
-//                        "Estou a fazer o scan " + (wifiScanCount + 1) % 3 + " de 3");
-//                mainWifiObj.startScan();
-//            }
-//            wifiScanCount++;
-
             mainWifiObj.startScan();
 
-            //volta a chamar este handler, dizendo que vai executar ao fim de 3000ms
-            handler.postDelayed(this, 15000);
+            //volta a chamar este handler, dizendo que vai executar ao fim de 10s
+            handler.postDelayed(this, 10000);
         }
     };
 
@@ -829,9 +795,8 @@ public class MainActivity extends FragmentActivity {
             //TODO: PODER DO MARTELO CARAAAAAAAAAAAAAAALHHHHOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!
             printScanResults();
 
+            //calcula a divisao que se encontra mais perto do utilizador
             getClosestRoom();
-
-//            Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_SHORT).show();
 
             //limpa o mapa. já fica preparadinho para novo scan hehe :-)
             resetScanResultsMap();
@@ -891,7 +856,6 @@ public class MainActivity extends FragmentActivity {
         public void getClosestRoom() {
 
             String closest;
-
             distance_to_ap_kitchen = computeMean(results_map.get(KITCHEN));
             distance_to_ap_bedroom = computeMean(results_map.get(BEDROOM));
             distance_to_ap_livingroom = computeMean(results_map.get(LIVING_ROOM));
