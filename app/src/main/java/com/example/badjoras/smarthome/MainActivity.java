@@ -754,7 +754,6 @@ public class MainActivity extends FragmentActivity {
         @SuppressLint("UseValueOf")
         public void onReceive(Context c, Intent intent) {
             List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
-            wifis = new String[wifiScanList.size()];
             double result;
             String bssid_room;
 
