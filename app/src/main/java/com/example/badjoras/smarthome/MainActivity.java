@@ -1,7 +1,13 @@
 package com.example.badjoras.smarthome;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +22,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -34,6 +41,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 
 public class MainActivity extends FragmentActivity {
@@ -71,36 +79,47 @@ public class MainActivity extends FragmentActivity {
 
 
     //USAR UM DESTES IPs
-//    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
-//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
-//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
-//    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
-//    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
-//    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
-    public static final String IP_ADDRESS = "10.171.240.1"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.241.205";
+    //    public static final String IP_ADDRESS = "10.22.107.150";
+//    public static final String IP_ADDRESS = "192.168.1.78";
+//    public static final String IP_ADDRESS = "192.168.1.71";
+//    public static final String IP_ADDRESS = "192.168.46.1";
+//    public static final String IP_ADDRESS = "10.171.110.142";
+//    public static final String IP_ADDRESS = "10.171.240.101";
     public static final int DEFAULT_PORT = 4444;
 
-    //TODO: colocar aqui os ids dos AP mais perto de cada sala
-    public static final String BSSID_1 = "AP1";
-    public static final String BSSID_2 = "AP2";
-    public static final String BSSID_3 = "AP3";
+    //TODO: colocar aqui os ids dos AP mais perto de cada divisao
+    //SALA DE CIMA
+    public static final String BSSID_LIVING_ROOM_1 = "00:19:07:93:cc:b2";
+    public static final String BSSID_LIVING_ROOM_2 = "00:12:da:ae:b2:a1";
+    public static final String BSSID_LIVING_ROOM_3 = "00:12:da:ae:b2:a2";
+
+    //SALA DA PRATICA DE PI
+    public static final String BSSID_KITCHEN_1 = "00:19:07:93:cc:b0";
+    public static final String BSSID_KITCHEN_2 = "00:19:07:93:cc:b1";
+    public static final String BSSID_KITCHEN_3 = "00:19:07:93:cc:b2";
+
+    //ANTIGA SALA DE MESTRADO
+    public static final String BSSID_BEDROOM_1 = "00:11:21:6c:4a:b1";
+    public static final String BSSID_BEDROOM_2 = "00:11:21:6c:4a:b2";
+    public static final String BSSID_BEDROOM_3 = "00:11:21:6c:4a:b0";
 
     public static String last_position;
 
-    private Socket client_socket;
-    private ObjectOutputStream obj_os;
-    private ObjectInputStream obj_is;
+    //TODO: alterei isto para static para que não sejam reinicializadas com a mudança de orientação
+    private static Socket client_socket;
+    private static ObjectOutputStream obj_os;
+    private static ObjectInputStream obj_is;
 
     private static Home house;
 
     public static List<Fragment> fragment_list;
 
-    //TODO rever estas features mais tarde
     private String[] kitchen_features = new String[]{
             PANTRY_STOCK, AIR_CONDITIONER, LIGHTS, BLINDS, COFFEE_MACHINE, STOVE_OVEN
     };
 
-    private String[] bedroom_features = new String[]{ //TODO acrescentar mais??
+    private String[] bedroom_features = new String[]{
             AIR_CONDITIONER, LIGHTS, BLINDS
     };
 
@@ -122,6 +141,7 @@ public class MainActivity extends FragmentActivity {
     public static ViewPager pager;
     public static MyPagerAdapter adapter;
     public static FragmentManager app_fm;
+    public static Fragment curr_fragment;
 
     public static Thread input_thread;
     public static Thread connection_thread;
@@ -131,10 +151,12 @@ public class MainActivity extends FragmentActivity {
     private static Timer timer;
 
     private static WifiManager mainWifiObj;
-    //    private WifiScanReceiver wifiReciever;
+    private WifiScanReceiver wifiReciever;
     private static ListView list;
     private static String wifis[];
     private static HashMap<String, ArrayList<Double>> results_map;
+
+    private static boolean receiver_registered = false;
 
     public double distance_to_ap1;
     public double distance_to_ap2;
@@ -143,12 +165,27 @@ public class MainActivity extends FragmentActivity {
     public static boolean offline_mode;
     public static boolean first_time_running = true;
     public static boolean connection_thread_finished = false;
+    public static boolean trying_to_connect = false;
+    public static boolean reset_fragment_list = true;
 
     public static int wifiScanCount;
     private static Handler handler;
 
     //A ProgressDialog object
-    private ProgressDialog progressDialog;
+    private static ProgressDialog progressDialog;
+
+
+    // Need handler for callbacks to the UI thread
+    final Handler mHandler = new Handler();
+
+    // Create runnable for posting
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+//            TODO: arrebenta nesta merda, ver melhor!!
+            refreshTabs();
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,8 +202,8 @@ public class MainActivity extends FragmentActivity {
         if (first_time_running) {
             //Initialize a LoadViewTask object and call the execute() method
             new LoadViewTask().execute();
-        }
-        else {
+        } else {
+            setContentView(R.layout.activity_homepage);
             initPositionThing();
             initFragmentsAndTabs();
         }
@@ -174,9 +211,9 @@ public class MainActivity extends FragmentActivity {
 
 
     public void handleConnection() {
-
         last_position = "";
         client_socket = null;
+        first_time_running = false;
 
         //tentamos criar o socket para o servidor logo ao iniciar a app
         //para determinar se a app funcionara em modo online ou offline
@@ -184,22 +221,15 @@ public class MainActivity extends FragmentActivity {
         //nao sao permanentes. Se estiver em modo online e nalguma das comunicaçoes perder
         //a ligação, passa a funcionar em moddo offline até ser reiniciada.
         //MESMO QUE SE VIRE A ORIENTAÇAO, FICA SEMPRE EM ONLINE OU OFFLINE, NAO VOLTA A LIGAR!
-        if (first_time_running) {
-
+        if (trying_to_connect) {
             house = new Home();
-            first_time_running = false;
-//            establishConnection(true);
-
-            if (!offline_mode)
-                Toast.makeText(getApplicationContext(),
-                        "Ligação ao servidor bem sucedida!", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getApplicationContext(),
-                        "Falhou a ligação ao server. Modo offline", Toast.LENGTH_SHORT).show();
-
 
             //se conseguimos ligar ao servidor, obtem o estado actual do servidor
             if (!offline_mode) {
+
+                Toast.makeText(getApplicationContext(),
+                        "Ligação ao servidor bem sucedida!", Toast.LENGTH_SHORT).show();
+
                 System.out.println("MODO ONLINE!!! VAMOS COMUNICAR COM O SERVER!");
 
                 //fazemos um "fake send" para o server nos enviar o objeto que ele tem
@@ -222,13 +252,19 @@ public class MainActivity extends FragmentActivity {
                                 System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " + temp_house.getCurrentTimeOfDay());
 
                                 if (firstTime) {
-                                    if (temp_house != null)
-                                        house = temp_house;
-
+                                    house = temp_house;
                                     firstTime = false;
                                     Thread.sleep(5000);
                                 } else {
                                     //TODO: arranjar maneira de guardar aqui o que recebemos do server!!!
+                                    house = temp_house;
+
+                                    System.out.println("Tou na thread. Counter recebido -> " +
+                                            temp_house.getCounter());
+
+                                    //TODO: CORRIGIR ISTO, REBENTA QUANDO SE MUDA DE ORIENTAÇÃO!!
+//                                    mHandler.post(mUpdateResults);
+
                                     Thread.sleep(5000);
                                 }
                             }
@@ -237,31 +273,42 @@ public class MainActivity extends FragmentActivity {
                         }
                     }
                 };
-
                 input_thread.start();
+            } else {
+
+                Toast.makeText(getApplicationContext(),
+                        "Falhou a ligação ao server. Modo offline", Toast.LENGTH_SHORT).show();
             }
+            trying_to_connect = false;
         }
     }
 
     public void initPositionThing() {
 
-//        results_map = new HashMap<String, ArrayList<Double>>(30);
-//        mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-//        wifiReciever = new WifiScanReceiver();
+        results_map = new HashMap<String, ArrayList<Double>>(30);
+        mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiReciever = new WifiScanReceiver();
+
+        if (!receiver_registered) {
+            registerReceiver(wifiReciever, new IntentFilter(
+                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            receiver_registered = true;
+        }
 
         //cria um intervalo para actualizar a posição do utilizador. alterar o intervalo!!!
 //        timer = new Timer();
 //        timer.schedule(new AlertTask(), 0, //initial delay
 //                1 * 3000); //subsequent rate (in ms)
 
+        System.out.println("INIT_POSITION_THING -> ANTES DA CRIAÇAO DO HANDLER");
+
         //cena da posicao, comeca a correr ao fim de 2 segundos
-//        handler = new Handler();
-//        handler.postDelayed(runnable, 2000);
+        handler = new Handler();
+        handler.postDelayed(runnable, 10000);
 
         //obtem a posição inicial do utilizador
         getUserPosition();
     }
-
 
     public void initFragmentsAndTabs() {
         //calcular o maximo de features que teremos em qualquer momento no ecra
@@ -269,7 +316,10 @@ public class MainActivity extends FragmentActivity {
         int max_length2 = Math.max(kitchen_features.length, living_room_features.length);
         int max_length_final = Math.max(max_lenght1, max_length2);
 
-        fragment_list = new ArrayList<Fragment>(max_length_final);
+        if (reset_fragment_list) {
+            fragment_list = new ArrayList<Fragment>(max_length_final);
+            reset_fragment_list = false;
+        }
 
         refreshTabs();
 
@@ -278,65 +328,38 @@ public class MainActivity extends FragmentActivity {
         getActionBar().setIcon(android.R.color.transparent);
     }
 
-
+    //cria uma conexao para o servidor.
+    //envia uma tosta para alertar o utilizador do sucesso/insucesso da acção
     private void establishConnection(boolean display_toast) {
+        trying_to_connect = true;
+
         try {
+            System.out.println("VOU TENTAR LIGAR AO SERVER!!!");
+
             InetSocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
             client_socket = new Socket();
-            client_socket.connect(sockaddr, 2000);
+            client_socket.connect(sockaddr, 3000);
 
             System.out.println("CONSEGUI LIGAR AO SERVER, VAMOS CRIAR OS SOCKETS!!");
 
             obj_os = new ObjectOutputStream(client_socket.getOutputStream());
             obj_is = new ObjectInputStream(client_socket.getInputStream());
 
-//                    if (display_toast)
-//                        Toast.makeText(getApplicationContext(),
-//                                "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG).show();
+            if (display_toast)
+                Toast.makeText(getApplicationContext(),
+                        "Ligação ao servidor bem sucedida!", Toast.LENGTH_LONG).show();
 
             offline_mode = false;
         } catch (IOException e) {
             System.out.println("EXCEPTION!! Não é possível ligar ao server!!");
 
             offline_mode = true;
-//                    Toast.makeText(getBaseContext(),
-//                            "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG).show();
+            if (display_toast)
+                Toast.makeText(getBaseContext(),
+                        "Falhou a ligação ao server. Modo offline", Toast.LENGTH_LONG).show();
         }
         connection_thread_finished = true;
     }
-
-
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            wifiScanCount = 0;
-//            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
-//            if (wifiScanCount % 3 == 2) {
-//                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
-//                mainWifiObj.startScan();
-//            } else {
-//                System.out.println("Vou fazer novo scan da rede!!!\n" +
-//                        "Estou a fazer o scan " + (wifiScanCount + 1) % 3 + " de 3");
-//                mainWifiObj.startScan();
-//            }
-//            wifiScanCount++;
-//
-//            //volta a chamar este handler, dizendo que vai executar ao fim de 3000ms
-//            handler.postDelayed(this, 3000);
-//        }
-//    };
-
-
-//    //TODO: apenas para teste, remover!!
-//    public boolean isOutputStreamOpen() {
-//        return obj_os == null;
-//    }
-//
-//    //TODO: apenas para teste, remover!!
-//    public boolean isClientSocketOpen() {
-//        return client_socket == null;
-//    }
-
 
     //TODO placeholder!!! colocar aqui a obtenção da posição
     public void getUserPosition() {
@@ -370,10 +393,8 @@ public class MainActivity extends FragmentActivity {
             return res_house;
         } catch (InterruptedIOException e) {
             System.out.println("O servidor crashou!");
-            establishConnection(false);
         } catch (EOFException e) {
             System.out.println("SocketTimeout do lado do servidor. Vamos abrir novamente!");
-            establishConnection(false);
         } catch (ClassNotFoundException e) {
 //            e.printStackTrace();
             System.out.println("CLASS NOT FOUND EXCEPTION!!!");
@@ -407,27 +428,33 @@ public class MainActivity extends FragmentActivity {
 
     protected void onResume() {
         System.out.println("----------------ON_RESUME---------------");
-//        Toast.makeText(getBaseContext(), "resumeindo :D", Toast.LENGTH_LONG);
-//        Log.v("ScanResults ONRESUME", "ON RESUME CARALHO");
-//
-//        registerReceiver(wifiReciever, new IntentFilter(
-//                WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        System.out.println("************************* WIFIRECIEDER IS NULL?? " + (wifiReciever == null));
+
+        if (wifiReciever != null) {
+            registerReceiver(wifiReciever, new IntentFilter(
+                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+            receiver_registered = true;
+        }
+
         super.onResume();
-//        refreshTabs();
+
+//        if(!first_time_running)
+//            refreshTabs();
     }
 
     @Override
     protected void onPause() {
         System.out.println("----------------ON_PAUSE---------------");
-//        try {
-//            Toast.makeText(getBaseContext(), "ESTOU A PARAAR!!! :D", Toast.LENGTH_LONG);
-//            Log.v("ScanResults ONPAUSE", "ON PAUSE CARALHO");
 
-//            unregisterReceiver(wifiReciever);
+        unregisterReceiver(wifiReciever);
         super.onPause();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    }
+
+    @Override
+    protected void onStop() {
+        System.out.println("----------------ON_STOP---------------");
+        super.onStop();
     }
 
     @Override
@@ -444,16 +471,51 @@ public class MainActivity extends FragmentActivity {
 
     public void refreshTabs() {
 
-        System.out.println("**********FRAGMENT LIST SIZE: " + fragment_list.size() + "**************");
+        System.out.println("RefreshTabs. Counter actual -> " +
+                house.getCounter());
 
-        for (Fragment frag : fragment_list) {
+        System.out.println("********************************************************");
+        System.out.println("**********FRAGMENT LIST SIZE (ANTES DO REMOVE): " + fragment_list.size() + "**************");
+
+        Fragment frag;
+        for (int i = 0; i < fragment_list.size(); i++) {
+            frag = fragment_list.get(i);
+
             System.out.println("++++++++++++++FRAGMENT: " + frag.toString() + "+++++++++++++");
             getSupportFragmentManager().beginTransaction().remove(frag).commit();
+//            fragment_list.remove(i);
         }
 
         fragment_list = new ArrayList<Fragment>();
 
+        System.out.println("**********FRAGMENT LIST SIZE (DEPOIS DO REMOVE): " + fragment_list.size() + "**************");
+        System.out.println("********************************************************");
+
+//        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+
+
+//        System.out.println("TAMANHO DO BACK_STACK -> " + backStackCount);
+//
+//        for (int i = 0; i < backStackCount; i++) {
+//
+//            System.out.println("++++++++++++++FRAGMENT: " + getSupportFragmentManager().getBackStackEntryAt(i).toString() + "+++++++++++++");
+//
+//            // Get the back stack fragment id.
+//            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
+//
+//            app_fm.popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//
+//        }
+//        System.out.println("********************************************************");
+
+//        getSupportFragmentManager().executePendingTransactions();
+
+//        fragment_list = new ArrayList<Fragment>();
+
         System.out.println("**********REFRESH DAS TABS**************");
+
+        System.out.println("PAGER IS NULL?? " + (pager == null));
+        System.out.println("ADAPTER IS NULL?? " + (adapter == null));
 
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         pager = (ViewPager) findViewById(R.id.pager);
@@ -462,12 +524,20 @@ public class MainActivity extends FragmentActivity {
 
         pager.setAdapter(adapter);
 
+
         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
     }
+
+//    @Override
+//    protected void onSaveInstanceState(final Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        System.out.println("ON_SAVE_INSTANCE_STATE");
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -490,7 +560,13 @@ public class MainActivity extends FragmentActivity {
             if (offline_mode) { //ainda nao estamos ligados, tentamos ligar!
                 Toast.makeText(getApplicationContext(), "Estabelecendo ligação ao servidor...",
                         Toast.LENGTH_SHORT).show();
+
+                //tenta ligar ao servidor
                 establishConnection(true);
+
+                //cria os sockets e a thread para receber mensagens do servidor
+                if (!offline_mode)
+                    handleConnection();
             } else
                 Toast.makeText(getBaseContext(), "Já está ligado ao servidor!",
                         Toast.LENGTH_SHORT).show();
@@ -524,7 +600,6 @@ public class MainActivity extends FragmentActivity {
                 } else if (m_title.toString().equals(BEDROOM)) {
                     return bedroom_features[position];
                 } else if (m_title.toString().equals(KITCHEN)) {
-//                    System.out.println("KITCHEN KITCHEN KITCHEN");
                     return kitchen_features[position];
                 } else if (m_title.toString().equals(LIVING_ROOM)) {
                     return living_room_features[position];
@@ -550,10 +625,14 @@ public class MainActivity extends FragmentActivity {
         }
 
         @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+        }
+
+        @Override
         public Fragment getItem(int position) {
             Log.v("GET_ITEM:", String.valueOf(position));
 
-            Fragment myfrag = null;
             String feature = "";
             String chosen_arr;
             String[] temp_arr = new String[]{};
@@ -580,23 +659,27 @@ public class MainActivity extends FragmentActivity {
             Log.v("feature_name", feature);
 
             if (feature.equals(AIR_CONDITIONER)) {
-                myfrag = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = AirConditionerFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(PANTRY_STOCK)) {
-                myfrag = PantryStockFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = PantryStockFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(LIGHTS)) {
-                myfrag = LightsFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = LightsFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(BLINDS)) {
-                myfrag = BlindsFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = BlindsFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(COFFEE_MACHINE)) {
-                myfrag = CoffeeFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = CoffeeFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(STOVE_OVEN)) {
-                myfrag = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
-                myfrag = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
+                curr_fragment = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
 
-            fragment_list.add(myfrag);
-            return myfrag;
+            fragment_list.add(curr_fragment);
+//            app_fm.beginTransaction().add(curr_fragment, feature).commit();
+
+            System.out.println("fragmento adicionado!!! tamanho da lista -> " + fragment_list.size());
+
+            return curr_fragment;
         }
     }
 
@@ -612,26 +695,14 @@ public class MainActivity extends FragmentActivity {
         //The code to be executed in a background thread.
         @Override
         protected Void doInBackground(Void... params) {
-            /* This is just a code that delays the thread execution 4 times,
-             * during 850 milliseconds and updates the current progress. This
-             * is where the code that is going to be executed on a background
+            /* This is where the code that is going to be executed on a background
              * thread must be placed.
              */
-            try {
-                //Get the current thread's token
-                synchronized (this) {
-                    System.out.println("LOL TOU AQUI NA ASYNC_TASK");
-                    int counter = 0;
 
-                    establishConnection(true);
-                    while (!connection_thread_finished) {
-                        this.wait(100);
-//                        counter++;
-//                        publishProgress(counter * 25);
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            //Get the current thread's token
+            synchronized (this) {
+                System.out.println("LOL TOU AQUI NA ASYNC_TASK");
+                establishConnection(false);
             }
             return null;
         }
@@ -665,62 +736,136 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-//    class AlertTask extends TimerTask {
-//
-//        public void run() {
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
 //            wifiScanCount = 0;
 //            //ja fez 2 scans. assim que fizer o terceiro, calcula a media
 //            if (wifiScanCount % 3 == 2) {
 //                System.out.println("Vou fazer o 3º scan! Dps disto calculo a media");
 //                mainWifiObj.startScan();
-//            }
-//            else {
+//            } else {
 //                System.out.println("Vou fazer novo scan da rede!!!\n" +
-//                        "Estou a fazer o scan " + (wifiScanCount+1)%3 + " de 3");
+//                        "Estou a fazer o scan " + (wifiScanCount + 1) % 3 + " de 3");
 //                mainWifiObj.startScan();
 //            }
 //            wifiScanCount++;
-////            else {
-////                System.out.println("Já tenho tres scans");
-////                wifiScanCount
-////                timer.cancel(); //Not necessary because we call System.exit
-////                System.exit(0); //Stops the AWT thread (and everything else)
-////            }
-//        }
-//    }
 
-//    class WifiScanReceiver extends BroadcastReceiver {
-//        @SuppressLint("UseValueOf")
-//        public void onReceive(Context c, Intent intent) {
-//            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
-//            wifis = new String[wifiScanList.size()];
-//            double result;
-//
-//            for (ScanResult res : wifiScanList) {
-//                if (res.BSSID.equalsIgnoreCase(BSSID_1) ||
-//                        res.BSSID.equalsIgnoreCase(BSSID_2) ||
-//                        res.BSSID.equalsIgnoreCase(BSSID_3)) {
-//                    result = calculateDistance(res.level, res.frequency);
-//                    ArrayList<Double> temp_list = results_map.get(res.BSSID);
-//                    if (temp_list == null) {
-//                        temp_list = new ArrayList<Double>();
-//                        temp_list.add(result);
-//                        results_map.put(res.BSSID, temp_list);
-//                    } else
-//                        temp_list.add(result);
-//                }
-//            }
-//
+            mainWifiObj.startScan();
+
+            //volta a chamar este handler, dizendo que vai executar ao fim de 3000ms
+            handler.postDelayed(this, 15000);
+        }
+    };
+
+
+    class WifiScanReceiver extends BroadcastReceiver {
+        @SuppressLint("UseValueOf")
+        public void onReceive(Context c, Intent intent) {
+            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
+            wifis = new String[wifiScanList.size()];
+            double result;
+            String bssid_room;
+
+            System.out.println("ACABEI O SCAN, VOU CALCULAR AS DISTANCIAS!!");
+
+            for (ScanResult res : wifiScanList) {
+                //obtem a divisão a que corresponde o bssid
+                bssid_room = getRoomByBSSID(res.BSSID);
+
+                System.out.println("BSSID INFO -> (" + bssid_room + ", " + res.BSSID + ")");
+
+                if ((bssid_room == KITCHEN) || (bssid_room == BEDROOM) ||
+                        (bssid_room == LIVING_ROOM)) {
+                    result = calculateDistance(res.level, res.frequency);
+                    ArrayList<Double> temp_list = results_map.get(bssid_room);
+                    if (temp_list == null) {
+                        temp_list = new ArrayList<Double>();
+                        temp_list.add(result);
+                        results_map.put(bssid_room, temp_list);
+                    } else
+                        temp_list.add(result);
+                }
+            }
+
+            //TODO: EFEITOS DE TESTE, REMOVER!!!
+            //TODO: PODER DO MARTELO CARAAAAAAAAAAAAAAALHHHHOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!
+            System.out.println("++++++++++++++ RESULTADOS DA DISTANCIA ++++++++++++++");
+            ArrayList<Double> temp_list = results_map.get(KITCHEN);
+
+            System.out.println("------- COZINHA -------");
+
+            String s = "";
+            int i = 0;
+            if (temp_list != null) {
+                System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
+                for (Double d : temp_list) {
+                    i++;
+                    s += "AP " + i + ": " + d + "\n";
+                }
+                System.out.println(s);
+            } else
+                System.out.println("NÃO TEM RESULTADOS!!!!\n");
+
+            temp_list = results_map.get(LIVING_ROOM);
+
+            System.out.println("------- SALA DE ESTAR -------");
+
+            s = "";
+            i = 0;
+            if (temp_list != null) {
+                System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
+                for (Double d : temp_list) {
+                    i++;
+                    s += "AP " + i + ": " + d + "\n";
+                }
+                System.out.println(s);
+            } else
+                System.out.println("NÃO TEM RESULTADOS!!!!\n");
+
+            temp_list = results_map.get(BEDROOM);
+
+            System.out.println("------- QUARTO -------");
+
+            s = "";
+            i = 0;
+            if (temp_list != null) {
+                System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
+                for (Double d : temp_list) {
+                    i++;
+                    s += "AP " + i + ": " + d + "\n";
+                }
+                System.out.println(s);
+            } else
+                System.out.println("NÃO TEM RESULTADOS!!!!\n");
+
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
 //            if (wifiScanCount % 3 == 2) {
 //                getClosestRoom();
 //            }
-//
-//            Toast t = Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_LONG);
-//            t.show();
-//        }
-//
-//        //calcula a media das distancias e obtem a divisao onde o user se encontra
-//        //chama depois os metodos responsaveis por redesenhar os fragmentos
+
+            Toast t = Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_LONG);
+            t.show();
+        }
+
+        private String getRoomByBSSID(String bssid) {
+            String to_return = null;
+            if (bssid.equalsIgnoreCase(BSSID_KITCHEN_1) || bssid.equalsIgnoreCase(BSSID_KITCHEN_2) ||
+                    bssid.equalsIgnoreCase(BSSID_KITCHEN_3)) {
+                to_return = KITCHEN;
+            } else if (bssid.equalsIgnoreCase(BSSID_LIVING_ROOM_1) || bssid.equalsIgnoreCase(BSSID_LIVING_ROOM_2) ||
+                    bssid.equalsIgnoreCase(BSSID_LIVING_ROOM_3)) {
+                to_return = LIVING_ROOM;
+            } else if (bssid.equalsIgnoreCase(BSSID_BEDROOM_1) || bssid.equalsIgnoreCase(BSSID_BEDROOM_2) ||
+                    bssid.equalsIgnoreCase(BSSID_BEDROOM_3)) {
+                to_return = BEDROOM;
+            }
+            return to_return;
+        }
+
+        //calcula a media das distancias e obtem a divisao onde o user se encontra
+        //chama depois os metodos responsaveis por redesenhar os fragmentos
 //        public void getClosestRoom() {
 //
 //            String closest;
@@ -745,19 +890,20 @@ public class MainActivity extends FragmentActivity {
 //                refreshTabs();
 //            }
 //        }
-//
-//
-//        public double computeMean(ArrayList<Double> list) {
-//            int sum = 0;
-//            for (Double el : list) {
-//                sum += el;
-//            }
-//            return sum / list.size();
-//        }
-//
-//        public double calculateDistance(double levelInDb, double freqInMHz) {
-//            double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
-//            return Math.pow(10.0, exp);
-//        }
-//    }
+
+        //calcula a media dos elementos numa arraylist
+        public double computeMean(ArrayList<Double> list) {
+            int sum = 0;
+            for (Double el : list) {
+                sum += el;
+            }
+            return sum / list.size();
+        }
+
+        //calcula a distancia ao AP com base nos dB e na frequencia
+        public double calculateDistance(double levelInDb, double freqInMHz) {
+            double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(levelInDb)) / 20.0;
+            return Math.pow(10.0, exp);
+        }
+    }
 }

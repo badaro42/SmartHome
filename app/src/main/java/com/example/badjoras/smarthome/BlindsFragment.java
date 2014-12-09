@@ -29,8 +29,8 @@ public class BlindsFragment extends Fragment {
     private String title;
     private int position;
 
-    private SeekBar seekBar;
-    private Switch sw;
+    private static SeekBar seekBar;
+    private static Switch sw;
 
     public static BlindsFragment newInstance(int position, String function, String title) {
         BlindsFragment f = new BlindsFragment();
@@ -60,6 +60,8 @@ public class BlindsFragment extends Fragment {
         seekBar = (SeekBar) rootView.findViewById(R.id.blinds_interact);
         sw = (Switch) rootView.findViewById(R.id.blindState);
 
+        System.out.println("ESTAMOS EM QUE DIVISAO?? -> " + title);
+
         Home house = ((MainActivity) getActivity()).getHouse();
         Room room = (Room) house.getMap().get(title);
         Blinds blind = (Blinds) room.getMap().get(BLINDS);
@@ -68,6 +70,8 @@ public class BlindsFragment extends Fragment {
         sw.setChecked(blindsUnlocked);
         seekBar.setEnabled(blindsUnlocked);
         seekBar.setProgress(blind.getOpening());
+
+        System.out.println("ABERTURA DOS ESTORES -> " + blind.getOpening());
 
         sw.setOnClickListener(new View.OnClickListener() {
             @Override

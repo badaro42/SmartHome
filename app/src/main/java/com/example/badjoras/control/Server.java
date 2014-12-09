@@ -11,6 +11,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 
+import static com.example.badjoras.smarthome.MainActivity.AIR_CONDITIONER;
+import static com.example.badjoras.smarthome.MainActivity.BEDROOM;
+import static com.example.badjoras.smarthome.MainActivity.BLINDS;
 import static com.example.badjoras.smarthome.MainActivity.CAT_CAFE;
 import static com.example.badjoras.smarthome.MainActivity.CAT_ENLATADOS;
 import static com.example.badjoras.smarthome.MainActivity.CAT_FRUTAS;
@@ -20,6 +23,7 @@ import static com.example.badjoras.smarthome.MainActivity.CAT_MASSAS;
 import static com.example.badjoras.smarthome.MainActivity.DEFAULT_PORT;
 import static com.example.badjoras.smarthome.MainActivity.IP_ADDRESS;
 import static com.example.badjoras.smarthome.MainActivity.KITCHEN;
+import static com.example.badjoras.smarthome.MainActivity.LIVING_ROOM;
 import static com.example.badjoras.smarthome.MainActivity.PANTRY_STOCK;
 import static com.example.badjoras.smarthome.MainActivity.DAY;
 import static com.example.badjoras.smarthome.MainActivity.NIGHT;
@@ -59,7 +63,6 @@ public class Server implements Serializable {
 
     private static int current_time_of_day;
     private static int day_night_cicles;
-
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -206,8 +209,6 @@ public class Server implements Serializable {
                         if (firstTime) {
                             System.out.println("Primeiro envio: para a app ficar consistente com o server");
 
-//                            updatePantryStock();
-
                             //actualizamos a altura do dia em que estamos apenas do objecto do server!!
                             server_house.changeTimeOfDay(current_time_of_day);
 
@@ -225,23 +226,26 @@ public class Server implements Serializable {
                             Thread.sleep(MILISSECONDS_TO_SLEEP);
                             firstTime = false;
                         } else {
-                            System.out.println("Novo envio, desta vez é daqueles periódicos");
-
-                            //TODO: nao precisamos de calcular o stock por cada alteração dia/noite
-                            //TODO usando o contador day_night_cycles podemos calcular o stock apenas
-                            //TODO quando day_night_cycles % 4 == 0, por exemplo (de 2 em 2 dias)
-//                            updatePantryStock();
+                            System.out.println("Novo envio, desta vez é daqueles periódicos\n" +
+                                    "DAY_NIGHT_CYCLES -> " + day_night_cicles);
 
                             //actualizamos a altura do dia do server e enviamos para a aplicação
                             changeTimeOfDay();
                             server_house.changeTimeOfDay(current_time_of_day);
 
+                            //consoante a altura do dia, altera vários elementos da casa
+                            //p.e. fecha/abre estores
+                            //verifica tambem se é preciso actualizar o stock da despensa
+                            performChangesInHouse();
+
+                            server_house.incrementCounter();
                             outputstream.writeObject(server_house);
                             outputstream.flush();
                             outputstream.reset();
 
                             System.out.println("Já enviei, agr volto a dormir " +
-                                    (MILISSECONDS_TO_SLEEP / 1000) + "s.");
+                                    (MILISSECONDS_TO_SLEEP / 1000) + "s.\n" +
+                                    "Counter da casa enviada -> " + server_house.getCounter());
 
                             //dorme por 1 minuto -> simula o ciclo dia e noite (1m = 1 dia)
                             Thread.sleep(MILISSECONDS_TO_SLEEP);
@@ -260,10 +264,10 @@ public class Server implements Serializable {
         output_thread.start();
     }
 
-    //quando é de DIA:
+    //quando é de DIA -> proximo: NOITE
     //current_time_of_day = 1; next = 0
     //next = (1 + 1) % 2 <=> 2 % 2 = 0 jeje
-    //quando é de NOITE:
+    //quando é de NOITE -> proximo: DIA
     //current_time_of_day = 0; next = 1
     //next = (0 + 1) % 2 <=> 1 % 2 = 1 jaja
     private static void changeTimeOfDay() {
@@ -271,6 +275,45 @@ public class Server implements Serializable {
         System.out.println("MUDOU A ALTURA DO DIA!!!\nActual: " + ((current_time_of_day == 1) ? "Dia" : "Noite"));
     }
 
+    //por enquanto, apenas abre/fecha os estores consoante a altura do dia
+    private static void performChangesInHouse() {
+        //adicionamos aqui as divisões que vamos alterar
+        String[] rooms = new String[]{KITCHEN, LIVING_ROOM, BEDROOM};
+
+        //altera o estado dos estores consoante a altura do dia
+        changeBlinds(current_time_of_day, rooms);
+
+        //TODO: TESTE TESTE -> REMOVER!
+        Room room = (Room) server_house.getMap().get(KITCHEN);
+        Blinds blind = (Blinds) room.getMap().get(BLINDS);
+        System.out.println("Abertura dos estores da cozinha -> " + blind.getOpening());
+
+
+        //TODO: nao precisamos de calcular o stock por cada alteração dia/noite
+        //TODO usando o contador day_night_cycles podemos calcular o stock apenas
+        //TODO quando day_night_cycles % 4 == 0, por exemplo (de 2 em 2 dias)
+        //só verifica uma vez "por dia"
+        if (day_night_cicles % 2 == 0) {
+            boolean updated = updatePantryStock();
+            System.out.println("STOCK DA DESPENSA ACTUALIZADO? -> " + updated);
+        }
+    }
+
+
+    private static void changeBlinds(int time_of_day, String[] rooms) {
+        for (String r_name : rooms) {
+            Room room = (Room) server_house.getMap().get(r_name);
+
+            //à noite, fecha todos os estores da casa
+            Blinds blind = (Blinds) room.getMap().get(BLINDS);
+            blind.changeUnlockingStatus(false);
+
+            if (time_of_day == NIGHT) //fecha totalmente os estores
+                blind.changeOpening(100);
+            else if (time_of_day == DAY) //abre quase totalmente os estores
+                blind.changeOpening(20);
+        }
+    }
 
     private static boolean updatePantryStock() {
         Room room = (Room) server_house.getMap().get(KITCHEN);

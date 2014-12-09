@@ -7,7 +7,10 @@ import java.io.Serializable;
  */
 public class Blinds extends Feature implements Serializable {
 
+    //true -> desbloqueado; false -> bloqueado
     private boolean unlocked;
+
+    //0 -> totalmente aberto; 100 -> totalmente fechado
     private int opening;
 
     public Blinds() {

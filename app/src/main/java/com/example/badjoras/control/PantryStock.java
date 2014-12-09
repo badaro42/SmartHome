@@ -16,6 +16,7 @@ import static com.example.badjoras.smarthome.MainActivity.CAT_FRUTAS;
 public class PantryStock extends Feature implements Serializable {
 
     private LinkedList<Product> products;
+    private boolean products_ordered;
 
     private String[] init_products_names = new String[]{
             "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
