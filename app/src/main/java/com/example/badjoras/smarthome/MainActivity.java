@@ -149,11 +149,15 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap_bedroom;
     public double distance_to_ap_livingroom;
 
+    public static boolean disable_location_for_good = false;
+
     public static boolean offline_mode;
     public static boolean first_time_running = true;
     public static boolean connection_thread_finished = false;
     public static boolean trying_to_connect = false;
     public static boolean reset_fragment_list = true;
+
+    public static boolean canRedrawFrags = false;
 
     private static Handler handler;
 
@@ -207,7 +211,7 @@ public class MainActivity extends FragmentActivity {
         for (int i = 0; i < 3; i++) {
             list = new ArrayList<Double>(3);
 
-            //para cada um dos AP, vai inicializar o seu valor com MAX_VALUE
+            //para cada um dos AP, vai inicializar o seu valor com um numero mta grande
             for (int ii = 0; ii < 3; ii++)
                 list.add(UM_CARALHAO_DE_METROS);
 
@@ -296,20 +300,23 @@ public class MainActivity extends FragmentActivity {
 
     public void initPositionThing() {
 
-        mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        wifiReciever = new WifiScanReceiver();
+        //só entra aqui se o utilizador desactivar a cena da localização
+        if(!disable_location_for_good) {
+            mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            wifiReciever = new WifiScanReceiver();
 
-        if (!receiver_registered) {
-            registerReceiver(wifiReciever, new IntentFilter(
-                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-            receiver_registered = true;
+            if (!receiver_registered) {
+                registerReceiver(wifiReciever, new IntentFilter(
+                        WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                receiver_registered = true;
+            }
+
+            System.out.println("INIT_POSITION_THING -> ANTES DA CRIAÇAO DO HANDLER");
+
+            //cena da posicao, comeca a correr ao fim de 2 segundos
+            handler = new Handler();
+            handler.postDelayed(runnable, 10000);
         }
-
-        System.out.println("INIT_POSITION_THING -> ANTES DA CRIAÇAO DO HANDLER");
-
-        //cena da posicao, comeca a correr ao fim de 2 segundos
-        handler = new Handler();
-        handler.postDelayed(runnable, 10000);
 
         //obtem a posição inicial do utilizador
         getUserPosition();
@@ -437,10 +444,14 @@ public class MainActivity extends FragmentActivity {
         System.out.println("************************* WIFIRECIEDER IS NULL?? " +
                 (wifiReciever == null));
 
+//        canRedrawFrags = true;
+
         if (wifiReciever != null) {
-            registerReceiver(wifiReciever, new IntentFilter(
-                    WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-            receiver_registered = true;
+            if(!disable_location_for_good) {
+                registerReceiver(wifiReciever, new IntentFilter(
+                        WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+                receiver_registered = true;
+            }
         }
 
         super.onResume();
@@ -450,7 +461,10 @@ public class MainActivity extends FragmentActivity {
     protected void onPause() {
         System.out.println("----------------ON_PAUSE---------------");
 
-        unregisterReceiver(wifiReciever);
+        if(receiver_registered) {
+            unregisterReceiver(wifiReciever);
+            receiver_registered = false;
+        }
         super.onPause();
     }
 
@@ -463,6 +477,9 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         System.out.println("----------------ON_DESTROY---------------");
+
+//        canRedrawFrags = false;
+
         super.onDestroy();
     }
 
@@ -474,11 +491,13 @@ public class MainActivity extends FragmentActivity {
 
     public void refreshTabs() {
 
+//        if(canRedrawFrags) {
         System.out.println("RefreshTabs. Counter actual -> " +
                 house.getCounter());
 
         System.out.println("********************************************************");
-        System.out.println("**********FRAGMENT LIST SIZE (ANTES DO REMOVE): " + fragment_list.size() + "**************");
+        System.out.println("**********FRAGMENT LIST SIZE (ANTES DO REMOVE): " +
+                fragment_list.size() + "**************");
 
         Fragment frag;
         for (int i = 0; i < fragment_list.size(); i++) {
@@ -491,7 +510,8 @@ public class MainActivity extends FragmentActivity {
 
         fragment_list = new ArrayList<Fragment>();
 
-        System.out.println("**********FRAGMENT LIST SIZE (DEPOIS DO REMOVE): " + fragment_list.size() + "**************");
+        System.out.println("**********FRAGMENT LIST SIZE (DEPOIS DO REMOVE): " +
+                fragment_list.size() + "**************");
         System.out.println("********************************************************");
 
 //        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
@@ -533,14 +553,15 @@ public class MainActivity extends FragmentActivity {
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
+//        }
     }
 
-//    @Override
-//    protected void onSaveInstanceState(final Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        System.out.println("ON_SAVE_INSTANCE_STATE");
-//    }
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        System.out.println("ON_SAVE_INSTANCE_STATE");
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -561,8 +582,8 @@ public class MainActivity extends FragmentActivity {
         } else if (id == R.id.reconnect_submenu) {
             System.out.println("RECONECTAR AO SERVIDOR!!!");
             if (offline_mode) { //ainda nao estamos ligados, tentamos ligar!
-                Toast.makeText(getApplicationContext(), "Estabelecendo ligação ao servidor...",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Estabelecendo ligação ao servidor...",
+//                        Toast.LENGTH_SHORT).show();
 
                 //tenta ligar ao servidor
                 establishConnection(true);
@@ -573,6 +594,17 @@ public class MainActivity extends FragmentActivity {
             } else
                 Toast.makeText(getBaseContext(), "Já está ligado ao servidor!",
                         Toast.LENGTH_SHORT).show();
+        } else if(id == R.id.disable_location_submenu) {
+            if(disable_location_for_good)
+                Toast.makeText(getApplicationContext(), "A localização já está desactivada",
+                        Toast.LENGTH_SHORT).show();
+            else {
+                receiver_registered = false;
+                disable_location_for_good = true;
+                unregisterReceiver(wifiReciever);
+                Toast.makeText(getApplicationContext(), "Localização desactivada",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
 
         return true;
@@ -775,15 +807,13 @@ public class MainActivity extends FragmentActivity {
                     result = calculateDistance(res.level, res.frequency);
                     ArrayList<Double> temp_list = results_map.get(bssid_room);
 
-                    if(bssid_room.equals(KITCHEN)) {
+                    if (bssid_room.equals(KITCHEN)) {
                         temp_list.set(last_pos_kitchen, result);
                         last_pos_kitchen++;
-                    }
-                    else if(bssid_room.equals(BEDROOM)) {
+                    } else if (bssid_room.equals(BEDROOM)) {
                         temp_list.set(last_pos_bedroom, result);
                         last_pos_bedroom++;
-                    }
-                    else if(bssid_room.equals(LIVING_ROOM)) {
+                    } else if (bssid_room.equals(LIVING_ROOM)) {
                         temp_list.set(last_pos_livingroom, result);
                         last_pos_livingroom++;
                     }
