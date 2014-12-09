@@ -23,7 +23,6 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -41,7 +40,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Timer;
 
 public class MainActivity extends FragmentActivity {
@@ -69,6 +67,9 @@ public class MainActivity extends FragmentActivity {
     public static final String CAT_CAFE = "Café";
     public static final String CAT_HIGIENE = "Higiene";
     public static final String CAT_FRUTAS = "Frutas";
+
+    //valor bem grande, para inicializar as distancias dos AP -> 42.000km
+    public static final Double UM_CARALHAO_DE_METROS = 42000000.0;
 
     public static final int DAY = 1;
     public static final int NIGHT = 0;
@@ -158,9 +159,9 @@ public class MainActivity extends FragmentActivity {
 
     private static boolean receiver_registered = false;
 
-    public double distance_to_ap1;
-    public double distance_to_ap2;
-    public double distance_to_ap3;
+    public double distance_to_ap_kitchen;
+    public double distance_to_ap_bedroom;
+    public double distance_to_ap_livingroom;
 
     public static boolean offline_mode;
     public static boolean first_time_running = true;
@@ -197,7 +198,9 @@ public class MainActivity extends FragmentActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        //se for a primeira vez, mostramos o eccra de loading
+        resetScanResultsMap();
+
+        //se for a primeira vez, mostramos o ecra de loading
         //se nao, chamamos todas as inicializações menos a da conexão!
         if (first_time_running) {
             //Initialize a LoadViewTask object and call the execute() method
@@ -206,6 +209,29 @@ public class MainActivity extends FragmentActivity {
             setContentView(R.layout.activity_homepage);
             initPositionThing();
             initFragmentsAndTabs();
+        }
+    }
+
+    //reinicia o mapa que contém os valores das distancias aos AP
+    public void resetScanResultsMap() {
+
+        results_map = new HashMap<String, ArrayList<Double>>(15);
+        ArrayList<Double> list;
+
+        //para cada divisao, vai criar uma lista com 3 posições
+        for (int i = 0; i < 3; i++) {
+            list = new ArrayList<Double>(3);
+
+            //para cada um dos AP, vai inicializar o seu valor com MAX_VALUE
+            for (int ii = 0; ii < 3; ii++)
+                list.add(UM_CARALHAO_DE_METROS);
+
+            if (i == 0)
+                results_map.put(KITCHEN, list);
+            else if (i == 1)
+                results_map.put(BEDROOM, list);
+            else
+                results_map.put(LIVING_ROOM, list);
         }
     }
 
@@ -285,7 +311,6 @@ public class MainActivity extends FragmentActivity {
 
     public void initPositionThing() {
 
-        results_map = new HashMap<String, ArrayList<Double>>(30);
         mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         wifiReciever = new WifiScanReceiver();
 
@@ -767,90 +792,87 @@ public class MainActivity extends FragmentActivity {
             double result;
             String bssid_room;
 
+            int last_pos_kitchen = 0;
+            int last_pos_bedroom = 0;
+            int last_pos_livingroom = 0;
+
             System.out.println("ACABEI O SCAN, VOU CALCULAR AS DISTANCIAS!!");
 
             for (ScanResult res : wifiScanList) {
+
                 //obtem a divisão a que corresponde o bssid
                 bssid_room = getRoomByBSSID(res.BSSID);
 
                 System.out.println("BSSID INFO -> (" + bssid_room + ", " + res.BSSID + ")");
 
-                if ((bssid_room == KITCHEN) || (bssid_room == BEDROOM) ||
-                        (bssid_room == LIVING_ROOM)) {
+                if ((bssid_room.equals(KITCHEN)) || (bssid_room.equals(BEDROOM)) ||
+                        (bssid_room.equals(LIVING_ROOM))) {
                     result = calculateDistance(res.level, res.frequency);
                     ArrayList<Double> temp_list = results_map.get(bssid_room);
-                    if (temp_list == null) {
-                        temp_list = new ArrayList<Double>();
-                        temp_list.add(result);
-                        results_map.put(bssid_room, temp_list);
-                    } else
-                        temp_list.add(result);
+
+                    if(bssid_room.equals(KITCHEN)) {
+                        temp_list.set(last_pos_kitchen, result);
+                        last_pos_kitchen++;
+                    }
+                    else if(bssid_room.equals(BEDROOM)) {
+                        temp_list.set(last_pos_bedroom, result);
+                        last_pos_bedroom++;
+                    }
+                    else if(bssid_room.equals(LIVING_ROOM)) {
+                        temp_list.set(last_pos_livingroom, result);
+                        last_pos_livingroom++;
+                    }
                 }
             }
 
             //TODO: EFEITOS DE TESTE, REMOVER!!!
             //TODO: PODER DO MARTELO CARAAAAAAAAAAAAAAALHHHHOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!
-            System.out.println("++++++++++++++ RESULTADOS DA DISTANCIA ++++++++++++++");
-            ArrayList<Double> temp_list = results_map.get(KITCHEN);
+            printScanResults();
 
-            System.out.println("------- COZINHA -------");
+            getClosestRoom();
 
-            String s = "";
-            int i = 0;
-            if (temp_list != null) {
-                System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
-                for (Double d : temp_list) {
-                    i++;
-                    s += "AP " + i + ": " + d + "\n";
-                }
-                System.out.println(s);
-            } else
-                System.out.println("NÃO TEM RESULTADOS!!!!\n");
+//            Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_SHORT).show();
 
-            temp_list = results_map.get(LIVING_ROOM);
-
-            System.out.println("------- SALA DE ESTAR -------");
-
-            s = "";
-            i = 0;
-            if (temp_list != null) {
-                System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
-                for (Double d : temp_list) {
-                    i++;
-                    s += "AP " + i + ": " + d + "\n";
-                }
-                System.out.println(s);
-            } else
-                System.out.println("NÃO TEM RESULTADOS!!!!\n");
-
-            temp_list = results_map.get(BEDROOM);
-
-            System.out.println("------- QUARTO -------");
-
-            s = "";
-            i = 0;
-            if (temp_list != null) {
-                System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
-                for (Double d : temp_list) {
-                    i++;
-                    s += "AP " + i + ": " + d + "\n";
-                }
-                System.out.println(s);
-            } else
-                System.out.println("NÃO TEM RESULTADOS!!!!\n");
-
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-//            if (wifiScanCount % 3 == 2) {
-//                getClosestRoom();
-//            }
-
-            Toast t = Toast.makeText(c, "Teste concluído hehe :D", Toast.LENGTH_LONG);
-            t.show();
+            //limpa o mapa. já fica preparadinho para novo scan hehe :-)
+            resetScanResultsMap();
         }
 
+        //metodo de teste que imprime os valores do mapa que contem as distancias
+        private void printScanResults() {
+            System.out.println("++++++++++++++ RESULTADOS DA DISTANCIA ++++++++++++++");
+
+            ArrayList<Double> temp_list;
+            for (int index = 0; index < 3; index++) {
+                if (index == 0) {
+                    temp_list = results_map.get(KITCHEN);
+                    System.out.println("------- COZINHA -------");
+                } else if (index == 1) {
+                    temp_list = results_map.get(BEDROOM);
+                    System.out.println("------- QUARTO -------");
+                } else {
+                    temp_list = results_map.get(LIVING_ROOM);
+                    System.out.println("------- SALA DE ESTAR -------");
+                }
+
+                String s = "";
+                int i = 0;
+                if (temp_list != null) {
+                    System.out.println("TAMANHO DA LISTA -> " + temp_list.size());
+                    for (Double d : temp_list) {
+                        i++;
+                        s += "AP " + i + ": " + d + "\n";
+                    }
+                    System.out.println(s);
+                } else
+                    System.out.println("NÃO TEM RESULTADOS!!!!\n");
+            }
+
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        }
+
+        //dado um bssid, devolve a divisao a que ele corresponde
         private String getRoomByBSSID(String bssid) {
-            String to_return = null;
+            String to_return = "";
             if (bssid.equalsIgnoreCase(BSSID_KITCHEN_1) || bssid.equalsIgnoreCase(BSSID_KITCHEN_2) ||
                     bssid.equalsIgnoreCase(BSSID_KITCHEN_3)) {
                 to_return = KITCHEN;
@@ -866,38 +888,47 @@ public class MainActivity extends FragmentActivity {
 
         //calcula a media das distancias e obtem a divisao onde o user se encontra
         //chama depois os metodos responsaveis por redesenhar os fragmentos
-//        public void getClosestRoom() {
-//
-//            String closest;
-//
-//            distance_to_ap1 = computeMean(results_map.get(BSSID_1));
-//            distance_to_ap2 = computeMean(results_map.get(BSSID_2));
-//            distance_to_ap3 = computeMean(results_map.get(BSSID_3));
-//
-//            if (distance_to_ap1 < distance_to_ap2 &&
-//                    distance_to_ap1 < distance_to_ap3) {
-//                closest = KITCHEN;
-//            } else if (distance_to_ap2 < distance_to_ap3 &&
-//                    distance_to_ap2 < distance_to_ap1) {
-//                closest = BEDROOM;
-//            } else
-//                closest = LIVING_ROOM;
-//
-//            //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
-//            if (!last_position.equalsIgnoreCase(closest)) {
-//                last_position = closest;
-//                setTitle(closest);
-//                refreshTabs();
-//            }
-//        }
+        public void getClosestRoom() {
+
+            String closest;
+
+            distance_to_ap_kitchen = computeMean(results_map.get(KITCHEN));
+            distance_to_ap_bedroom = computeMean(results_map.get(BEDROOM));
+            distance_to_ap_livingroom = computeMean(results_map.get(LIVING_ROOM));
+
+            System.out.println("<<<<<<<<<<<< DISTANCIAS MÉDIAS A CADA DIVISAO >>>>>>>>>>>>>>");
+            System.out.println("Cozinha -> " + distance_to_ap_kitchen + "\nQuarto -> " +
+                    distance_to_ap_bedroom + "\nSala da estar -> " + distance_to_ap_livingroom);
+            System.out.println("<<<<<<<<<<<<<<<<<< FINAL DAS DISTANCIAS >>>>>>>>>>>>>>>>>>>>");
+
+            if (distance_to_ap_kitchen < distance_to_ap_bedroom &&
+                    distance_to_ap_kitchen < distance_to_ap_livingroom) {
+                closest = KITCHEN;
+            } else if (distance_to_ap_bedroom < distance_to_ap_livingroom &&
+                    distance_to_ap_bedroom < distance_to_ap_kitchen) {
+                closest = BEDROOM;
+            } else
+                closest = LIVING_ROOM;
+
+            Toast.makeText(getApplicationContext(), "Divisao mais perto: " + closest,
+                    Toast.LENGTH_LONG).show();
+
+            //TODO: esta merda encontra-se desactivada por enquanto
+            //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
+            if (!last_position.equalsIgnoreCase(closest)) {
+                last_position = closest;
+                setTitle(closest);
+                refreshTabs();
+            }
+        }
 
         //calcula a media dos elementos numa arraylist
-        public double computeMean(ArrayList<Double> list) {
-            int sum = 0;
+        private double computeMean(ArrayList<Double> list) {
+            double sum = 0;
             for (Double el : list) {
                 sum += el;
             }
-            return sum / list.size();
+            return (sum / list.size());
         }
 
         //calcula a distancia ao AP com base nos dB e na frequencia
