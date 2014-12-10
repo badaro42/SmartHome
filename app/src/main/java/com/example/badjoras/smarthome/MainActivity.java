@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
@@ -76,10 +77,10 @@ public class MainActivity extends FragmentActivity {
     public static Toast toast;
 
     //USAR UM DESTES IPs
-    public static final String IP_ADDRESS = "10.171.241.205";
+//    public static final String IP_ADDRESS = "10.171.241.205";
     //    public static final String IP_ADDRESS = "10.22.107.150";
-//    public static final String IP_ADDRESS = "192.168.1.78";
-//    public static final String IP_ADDRESS = "192.168.1.71";
+    public static final String IP_ADDRESS = "192.168.1.78";
+    //    public static final String IP_ADDRESS = "192.168.1.71";
 //    public static final String IP_ADDRESS = "192.168.46.1";
 //    public static final String IP_ADDRESS = "10.171.110.142";
 //    public static final String IP_ADDRESS = "10.171.240.101";
@@ -149,7 +150,8 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap_bedroom;
     public double distance_to_ap_livingroom;
 
-    public static boolean disable_location_for_good = false;
+    //TODO: COLOCAR A TRUE PARA EFEITOS DE TESTE -> DPS MUDAR PARA FALSE!!!!!
+    public static boolean disable_location_for_good = true;
 
     public static boolean offline_mode;
     public static boolean first_time_running = true;
@@ -157,7 +159,7 @@ public class MainActivity extends FragmentActivity {
     public static boolean trying_to_connect = false;
     public static boolean reset_fragment_list = true;
 
-    public static boolean canRedrawFrags = false;
+    public static boolean canRedrawFrags = true;
 
     private static Handler handler;
 
@@ -172,7 +174,15 @@ public class MainActivity extends FragmentActivity {
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
 //            TODO: arrebenta nesta merda, ver melhor!!
-            refreshTabs();
+            if(canRedrawFrags) {
+                Toast.makeText(getApplicationContext(), "Posso redesenhar os fragmentos!!!",
+                        Toast.LENGTH_SHORT).show();
+                refreshTabs();
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Já mudei de orientação, não redesenha!",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -264,21 +274,22 @@ public class MainActivity extends FragmentActivity {
                                 //obtemos o estado do server, para o caso de reiniciarmos a aplicação
                                 Home temp_house = getObjectFromServer();
 
-                                System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " + temp_house.getCurrentTimeOfDay());
+                                System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " +
+                                        temp_house.getCurrentTimeOfDay());
 
                                 if (firstTime) {
                                     house = temp_house;
                                     firstTime = false;
                                     Thread.sleep(5000);
                                 } else {
-                                    //TODO: arranjar maneira de guardar aqui o que recebemos do server!!!
+                                    //recebemos uma cena do servidor -> actualizamos a info actual
                                     house = temp_house;
 
                                     System.out.println("Tou na thread. Counter recebido -> " +
                                             temp_house.getCounter());
 
                                     //TODO: CORRIGIR ISTO, REBENTA QUANDO SE MUDA DE ORIENTAÇÃO!!
-//                                    mHandler.post(mUpdateResults);
+                                    mHandler.post(mUpdateResults);
 
                                     Thread.sleep(5000);
                                 }
@@ -301,7 +312,7 @@ public class MainActivity extends FragmentActivity {
     public void initPositionThing() {
 
         //só entra aqui se o utilizador desactivar a cena da localização
-        if(!disable_location_for_good) {
+        if (!disable_location_for_good) {
             mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
             wifiReciever = new WifiScanReceiver();
 
@@ -447,7 +458,7 @@ public class MainActivity extends FragmentActivity {
 //        canRedrawFrags = true;
 
         if (wifiReciever != null) {
-            if(!disable_location_for_good) {
+            if (!disable_location_for_good) {
                 registerReceiver(wifiReciever, new IntentFilter(
                         WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 receiver_registered = true;
@@ -461,7 +472,7 @@ public class MainActivity extends FragmentActivity {
     protected void onPause() {
         System.out.println("----------------ON_PAUSE---------------");
 
-        if(receiver_registered) {
+        if (receiver_registered) {
             unregisterReceiver(wifiReciever);
             receiver_registered = false;
         }
@@ -555,12 +566,27 @@ public class MainActivity extends FragmentActivity {
         tabs.setViewPager(pager);
 //        }
     }
+//
+//    @Override
+//    protected void onSaveInstanceState(final Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        System.out.println("ON_SAVE_INSTANCE_STATE");
+//    }
 
     @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-        System.out.println("ON_SAVE_INSTANCE_STATE");
+        System.out.println("---------------- orientation changed -------------------");
+        canRedrawFrags = false;
+
+//        // Checks the orientation of the screen
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+//            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override
@@ -594,8 +620,8 @@ public class MainActivity extends FragmentActivity {
             } else
                 Toast.makeText(getBaseContext(), "Já está ligado ao servidor!",
                         Toast.LENGTH_SHORT).show();
-        } else if(id == R.id.disable_location_submenu) {
-            if(disable_location_for_good)
+        } else if (id == R.id.disable_location_submenu) {
+            if (disable_location_for_good)
                 Toast.makeText(getApplicationContext(), "A localização já está desactivada",
                         Toast.LENGTH_SHORT).show();
             else {
@@ -624,6 +650,9 @@ public class MainActivity extends FragmentActivity {
             super(fm);
             Log.v("page_title", String.valueOf(m_title));
             Log.v("frag_man", "TOU NO CONSTRUTOR DO MY_PAGER_ADAPTER");
+
+            //só entra aqui quando mudamos de divisao!!!!
+            canRedrawFrags = true;
         }
 
         @Override
@@ -708,6 +737,8 @@ public class MainActivity extends FragmentActivity {
             } else {
                 curr_fragment = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
+
+//            curr_fragment.setRetainInstance(true);
 
             fragment_list.add(curr_fragment);
 //            app_fm.beginTransaction().add(curr_fragment, feature).commit();
