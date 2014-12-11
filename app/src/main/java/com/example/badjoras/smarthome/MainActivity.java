@@ -154,7 +154,7 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap_livingroom;
 
     //TODO: COLOCAR A TRUE PARA EFEITOS DE TESTE -> DPS MUDAR PARA FALSE!!!!!
-    public static boolean disable_location_for_good = true;
+    public static boolean disable_location_for_good = false;
 
     public static boolean offline_mode;
     public static boolean first_time_running = true;
@@ -285,24 +285,31 @@ public class MainActivity extends FragmentActivity {
                                 //obtemos o estado do server, para o caso de reiniciarmos a aplicação
                                 Home temp_house = getObjectFromServer();
 
-                                System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " +
-                                        temp_house.getCurrentTimeOfDay());
+                                if(temp_house != null) {
+                                    System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " +
+                                            temp_house.getCurrentTimeOfDay());
 
-                                if (firstTime) {
-                                    house = temp_house;
-                                    firstTime = false;
-                                    Thread.sleep(5000);
-                                } else {
-                                    //recebemos uma cena do servidor -> actualizamos a info actual
-                                    house = temp_house;
+                                    if (firstTime) {
+                                        house = temp_house;
+                                        firstTime = false;
+                                        Thread.sleep(5000);
+                                    } else {
+                                        //recebemos uma cena do servidor -> actualizamos a info actual
+                                        house = temp_house;
 
-                                    System.out.println("Tou na thread. Counter recebido -> " +
-                                            temp_house.getCounter());
+                                        System.out.println("Tou na thread. Counter recebido -> " +
+                                                temp_house.getCounter());
 
-                                    //TODO: CORRIGIR ISTO, REBENTA QUANDO SE MUDA DE ORIENTAÇÃO!!
-                                    mHandler.post(mUpdateResults);
+                                        //TODO: CORRIGIR ISTO, REBENTA QUANDO SE MUDA DE ORIENTAÇÃO!!
+                                        mHandler.post(mUpdateResults);
 
-                                    Thread.sleep(5000);
+                                        Thread.sleep(5000);
+                                    }
+                                }
+                                else {
+                                    System.out.println("VOU INTERROMPER A THREAD, O SERVER TA MORTO!!");
+                                    Thread.currentThread().interrupt();
+                                    break;
                                 }
                             }
                         } catch (Exception e) {
@@ -373,6 +380,7 @@ public class MainActivity extends FragmentActivity {
             InetSocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
             client_socket = new Socket();
             client_socket.connect(sockaddr, 3000);
+            client_socket.setSoTimeout(60000);
 
             System.out.println("CONSEGUI LIGAR AO SERVER, VAMOS CRIAR OS SOCKETS!!");
 
@@ -427,6 +435,7 @@ public class MainActivity extends FragmentActivity {
             return res_house;
         } catch (InterruptedIOException e) {
             System.out.println("O servidor crashou!");
+            offline_mode = true;
         } catch (EOFException e) {
             System.out.println("SocketTimeout do lado do servidor. Vamos abrir novamente!");
         } catch (ClassNotFoundException e) {
@@ -454,7 +463,7 @@ public class MainActivity extends FragmentActivity {
                 obj_os.reset();
 
                 return 1;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
