@@ -72,8 +72,7 @@
                 android:thumb="@android:color/transparent"
                 android:progressDrawable="@drawable/blinds_progress"
                 android:rotation="90"
-                android:max="14"
-                android:progress="100"
+                android:max="100"
                 android:layout_below="@+id/blind_relative"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp" />

@@ -284,6 +284,12 @@ public class Server implements Serializable {
         //altera o estado dos estores consoante a altura do dia
         changeBlinds(current_time_of_day, rooms);
 
+        for(String r : rooms) {
+            Room room1 = (Room) server_house.getMap().get(r);
+            Blinds bl = (Blinds) room1.getMap().get(BLINDS);
+            System.out.println(":::: Estores -> (" + r + ", " + bl.getOpening() + ")");
+        }
+
         //TODO: TESTE TESTE -> REMOVER!
         Room room = (Room) server_house.getMap().get(KITCHEN);
         Blinds blind = (Blinds) room.getMap().get(BLINDS);

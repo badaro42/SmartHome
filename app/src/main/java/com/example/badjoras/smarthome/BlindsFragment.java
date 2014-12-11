@@ -127,6 +127,7 @@ public class BlindsFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+
         return rootView;
     }
 }

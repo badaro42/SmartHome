@@ -48,7 +48,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relativeLayout"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="50dp"
                 android:id="@+id/blind_relative">
             <Switch
                 android:layout_width="wrap_content"
@@ -72,11 +72,10 @@
                 android:thumb="@android:color/transparent"
                 android:progressDrawable="@drawable/blinds_progress"
                 android:rotation="90"
-                android:max="14"
-                android:progress="100"
+                android:max="100"
                 android:layout_below="@+id/blind_relative"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="182dp" />
+                android:layout_marginTop="50dp" />
             </LinearLayout>
 
         </RelativeLayout>
