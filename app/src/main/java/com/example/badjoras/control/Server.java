@@ -114,7 +114,7 @@ public class Server implements Serializable {
                         if (house.getCounter() == 0) {
 
                             System.out.println("******** É A PRIMEIRA VEZ, VOU ENVIAR O MEU ESTADO");
-                            System.out.println("server_house is null? " + server_house == null);
+                            System.out.println("server_house is null? " + (server_house == null));
                             System.out.println("**************************************************");
 
                             if (server_house == null) {
@@ -272,7 +272,8 @@ public class Server implements Serializable {
     //next = (0 + 1) % 2 <=> 1 % 2 = 1 jaja
     private static void changeTimeOfDay() {
         current_time_of_day = (current_time_of_day + 1) % 2;
-        System.out.println("MUDOU A ALTURA DO DIA!!!\nActual: " + ((current_time_of_day == 1) ? "Dia" : "Noite"));
+        System.out.println("MUDOU A ALTURA DO DIA!!!\nActual: " +
+                ((current_time_of_day == 1) ? "Dia" : "Noite"));
     }
 
     //por enquanto, apenas abre/fecha os estores consoante a altura do dia

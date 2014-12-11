@@ -67,6 +67,8 @@ public class MainActivity extends FragmentActivity {
     public static final String CAT_HIGIENE = "Higiene";
     public static final String CAT_FRUTAS = "Frutas";
 
+    public static final String CURRENT_TAB = "current_tab";
+
     //valor bem grande, para inicializar as distancias dos AP -> 42.000km
     public static final Double UM_CARALHAO_DE_METROS = 42000000.0;
 
@@ -79,11 +81,11 @@ public class MainActivity extends FragmentActivity {
     //USAR UM DESTES IPs
 //    public static final String IP_ADDRESS = "10.171.241.205";
     //    public static final String IP_ADDRESS = "10.22.107.150";
-    public static final String IP_ADDRESS = "192.168.1.78";
+//    public static final String IP_ADDRESS = "192.168.1.78";
     //    public static final String IP_ADDRESS = "192.168.1.71";
 //    public static final String IP_ADDRESS = "192.168.46.1";
-//    public static final String IP_ADDRESS = "10.171.110.142";
-//    public static final String IP_ADDRESS = "10.171.240.101";
+    public static final String IP_ADDRESS = "10.22.107.141";
+    //    public static final String IP_ADDRESS = "10.171.240.101";
     public static final int DEFAULT_PORT = 4444;
 
     //TODO: colocar aqui os ids dos AP mais perto de cada divisao
@@ -134,6 +136,7 @@ public class MainActivity extends FragmentActivity {
     public static MyPagerAdapter adapter;
     public static FragmentManager app_fm;
     public static Fragment curr_fragment;
+    public static int current_fragment_tab = 0;
 
     public static Thread input_thread;
     public static Thread connection_thread;
@@ -174,12 +177,11 @@ public class MainActivity extends FragmentActivity {
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
 //            TODO: arrebenta nesta merda, ver melhor!!
-            if(canRedrawFrags) {
+            if (canRedrawFrags) {
                 Toast.makeText(getApplicationContext(), "Posso redesenhar os fragmentos!!!",
                         Toast.LENGTH_SHORT).show();
                 refreshTabs();
-            }
-            else {
+            } else {
                 Toast.makeText(getApplicationContext(), "Já mudei de orientação, não redesenha!",
                         Toast.LENGTH_SHORT).show();
             }
@@ -209,6 +211,15 @@ public class MainActivity extends FragmentActivity {
             initPositionThing();
             initFragmentsAndTabs();
         }
+
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            pager.setCurrentItem(savedInstanceState.getInt(CURRENT_TAB));
+        } else {
+            // Probably initialize members with default values for a new instance
+        }
+
     }
 
     //reinicia o mapa que contém os valores das distancias aos AP
@@ -455,8 +466,6 @@ public class MainActivity extends FragmentActivity {
         System.out.println("************************* WIFIRECIEDER IS NULL?? " +
                 (wifiReciever == null));
 
-//        canRedrawFrags = true;
-
         if (wifiReciever != null) {
             if (!disable_location_for_good) {
                 registerReceiver(wifiReciever, new IntentFilter(
@@ -488,9 +497,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         System.out.println("----------------ON_DESTROY---------------");
-
-//        canRedrawFrags = false;
-
         super.onDestroy();
     }
 
@@ -501,10 +507,17 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void refreshTabs() {
-
-//        if(canRedrawFrags) {
         System.out.println("RefreshTabs. Counter actual -> " +
                 house.getCounter());
+
+        if (pager != null) {
+            if(current_fragment_tab == -1)
+                current_fragment_tab = 0;
+            else {
+                current_fragment_tab = pager.getCurrentItem();
+                System.out.println("------- Tab actual -> " + pager.getCurrentItem());
+            }
+        }
 
         System.out.println("********************************************************");
         System.out.println("**********FRAGMENT LIST SIZE (ANTES DO REMOVE): " +
@@ -516,7 +529,6 @@ public class MainActivity extends FragmentActivity {
 
             System.out.println("++++++++++++++FRAGMENT: " + frag.toString() + "+++++++++++++");
             getSupportFragmentManager().beginTransaction().remove(frag).commit();
-//            fragment_list.remove(i);
         }
 
         fragment_list = new ArrayList<Fragment>();
@@ -524,27 +536,6 @@ public class MainActivity extends FragmentActivity {
         System.out.println("**********FRAGMENT LIST SIZE (DEPOIS DO REMOVE): " +
                 fragment_list.size() + "**************");
         System.out.println("********************************************************");
-
-//        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-
-
-//        System.out.println("TAMANHO DO BACK_STACK -> " + backStackCount);
-//
-//        for (int i = 0; i < backStackCount; i++) {
-//
-//            System.out.println("++++++++++++++FRAGMENT: " + getSupportFragmentManager().getBackStackEntryAt(i).toString() + "+++++++++++++");
-//
-//            // Get the back stack fragment id.
-//            int backStackId = getSupportFragmentManager().getBackStackEntryAt(i).getId();
-//
-//            app_fm.popBackStack(backStackId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//
-//        }
-//        System.out.println("********************************************************");
-
-//        getSupportFragmentManager().executePendingTransactions();
-
-//        fragment_list = new ArrayList<Fragment>();
 
         System.out.println("**********REFRESH DAS TABS**************");
 
@@ -564,15 +555,21 @@ public class MainActivity extends FragmentActivity {
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
-//        }
+
+        System.out.println("SÓ DEVIA VIR AQUI DEPOIS DOS FRAGMENTOS TODOS DESENHADINHOS HUEHUEHUE");
+        pager.setCurrentItem(current_fragment_tab);
     }
-//
-//    @Override
-//    protected void onSaveInstanceState(final Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        System.out.println("ON_SAVE_INSTANCE_STATE");
-//    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+
+        outState.putInt(CURRENT_TAB, pager.getCurrentItem());
+
+        System.out.println("-------------PÁGINA ACTUAL -> " + pager.getCurrentItem());
+        System.out.println("ON_SAVE_INSTANCE_STATE");
+
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -601,6 +598,9 @@ public class MainActivity extends FragmentActivity {
         if ((id == R.id.room_menu_bedroom) || (id == R.id.room_menu_outside_general) ||
                 (id == R.id.room_menu_kitchen) || (id == R.id.room_menu_living_room)) {
             setTitle(item.getTitle());
+
+            //Coloca o current_fragment_tab a -1 para o refreshtabs não alterar a variavel
+            current_fragment_tab = -1;
 
             System.out.println("NOVO TITULO!!!!! - " + item.getTitle());
 
@@ -653,6 +653,7 @@ public class MainActivity extends FragmentActivity {
 
             //só entra aqui quando mudamos de divisao!!!!
             canRedrawFrags = true;
+//            pager.setCurrentItem(current_fragment_tab);
         }
 
         @Override
