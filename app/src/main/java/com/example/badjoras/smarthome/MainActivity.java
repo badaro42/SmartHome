@@ -81,13 +81,23 @@ public class MainActivity extends FragmentActivity {
     public static Toast toast;
 
     //USAR UM DESTES IPs
+
 //    public static final String IP_ADDRESS = "10.171.241.205";
     //    public static final String IP_ADDRESS = "10.22.107.150";
 //    public static final String IP_ADDRESS = "192.168.1.78";
     //    public static final String IP_ADDRESS = "192.168.1.71";
 //    public static final String IP_ADDRESS = "192.168.46.1";
-    public static final String IP_ADDRESS = "10.22.107.141";
+  //  public static final String IP_ADDRESS = "10.22.107.141";
     //    public static final String IP_ADDRESS = "10.171.240.101";
+
+//    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
+//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
+//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+//    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
+//    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
+//    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.240.101"; //ip casa badaro
+
     public static final int DEFAULT_PORT = 4444;
 
     //TODO: colocar aqui os ids dos AP mais perto de cada divisao

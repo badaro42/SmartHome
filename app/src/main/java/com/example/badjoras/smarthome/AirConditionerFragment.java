@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,8 +16,9 @@ import com.example.badjoras.control.AirConditioner;
 import com.example.badjoras.control.Home;
 import com.example.badjoras.control.Room;
 
-import static com.example.badjoras.smarthome.MainActivity.*;
-import static com.example.badjoras.control.AirConditioner.*;
+import static com.example.badjoras.control.AirConditioner.COLD;
+import static com.example.badjoras.control.AirConditioner.HOT;
+import static com.example.badjoras.smarthome.MainActivity.AIR_CONDITIONER;
 
 /**
  * Created by Diogo on 17/10/14.
@@ -34,8 +36,11 @@ public class AirConditionerFragment extends Fragment {
 
     private Button hot;
     private Button cold;
+    private Switch control;
     private SeekBar sb;
     private TextView text_to_show;
+
+    private static boolean ischecked;
 
     private String title;
     private int position;
@@ -74,6 +79,7 @@ public class AirConditionerFragment extends Fragment {
         cold = (Button) rootView.findViewById(R.id.button_cold);
         sb = (SeekBar) rootView.findViewById(R.id.air_cond_choose_temperature);
         text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
+        control = (Switch) rootView.findViewById(R.id.switchAC);
 
         //TODO alterar para o valor que recebemos do servidor
         sb.setProgress(ac.getTemperature()-SEEKBAR_DESIRED_MIN);
@@ -86,6 +92,9 @@ public class AirConditionerFragment extends Fragment {
         System.out.println("AR CONDICIONADO: modo actual -> " + ac.getMode());
 
 
+        ischecked = ac.getStatus();
+        if(!ischecked)
+            sb.setEnabled(false);
 
 //        hot.setEnabled(true);
 //        cold.setEnabled(true);
@@ -104,36 +113,40 @@ public class AirConditionerFragment extends Fragment {
         hot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                hot.setEnabled(false);
-                cold.setEnabled(true);
-                Toast.makeText(getActivity(),
-                        "Modo Quente escolhido", Toast.LENGTH_SHORT).show();
+                if(ischecked) {
+                    hot.setEnabled(false);
+                    cold.setEnabled(true);
+                    Toast.makeText(getActivity(),
+                            "Modo Quente escolhido", Toast.LENGTH_SHORT).show();
 
-                Home house = ((MainActivity) getActivity()).getHouse();
-                Room room = (Room) house.getMap().get(title);
-                AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
-                ac.changeMode(HOT);
+                    Home house = ((MainActivity) getActivity()).getHouse();
+                    Room room = (Room) house.getMap().get(title);
+                    AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
+                    ac.changeMode(HOT);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).incrementHouseCounter();
+                    ((MainActivity) getActivity()).sendObjectToServer(house);
+                    ((MainActivity) getActivity()).incrementHouseCounter();
+                }
             }
         });
 
         cold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                hot.setEnabled(true);
-                cold.setEnabled(false);
-                Toast.makeText(getActivity(),
-                        "Modo Frio escolhido", Toast.LENGTH_SHORT).show();
+                if(ischecked) {
+                    hot.setEnabled(true);
+                    cold.setEnabled(false);
+                    Toast.makeText(getActivity(),
+                            "Modo Frio escolhido", Toast.LENGTH_SHORT).show();
 
-                Home house = ((MainActivity) getActivity()).getHouse();
-                Room room = (Room) house.getMap().get(title);
-                AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
-                ac.changeMode(COLD);
+                    Home house = ((MainActivity) getActivity()).getHouse();
+                    Room room = (Room) house.getMap().get(title);
+                    AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
+                    ac.changeMode(COLD);
 
-                ((MainActivity) getActivity()).sendObjectToServer(house);
-                ((MainActivity) getActivity()).incrementHouseCounter();
+                    ((MainActivity) getActivity()).sendObjectToServer(house);
+                    ((MainActivity) getActivity()).incrementHouseCounter();
+                }
             }
         });
 
@@ -174,6 +187,31 @@ public class AirConditionerFragment extends Fragment {
             }
         });
 
+        control.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if (control.isChecked()) {
+                    ischecked = true;
+                    sb.setEnabled(true);
+                    Toast.makeText(getActivity(),
+                            "AC activado", Toast.LENGTH_SHORT).show();
+                } else {
+                    ischecked = false;
+                    sb.setEnabled(false);
+                    Toast.makeText(getActivity(),
+                            "AC desactivado", Toast.LENGTH_SHORT).show();
+                }
+
+                Home house = ((MainActivity) getActivity()).getHouse();
+                Room room = (Room) house.getMap().get(title);
+                AirConditioner ac = (AirConditioner) room.getMap().get(AIR_CONDITIONER);
+                ac.setStatus(ischecked);
+
+                ((MainActivity) getActivity()).sendObjectToServer(house);
+                ((MainActivity) getActivity()).incrementHouseCounter();
+
+            }
+        });
         return rootView;
     }
 }

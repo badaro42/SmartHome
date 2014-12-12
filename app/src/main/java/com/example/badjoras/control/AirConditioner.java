@@ -12,11 +12,14 @@ public class AirConditioner extends Feature implements Serializable {
 
     String mode;
     int temperature;
+    boolean isOn;
 
     public AirConditioner() {
         super();
         temperature = 20;
         mode = HOT;
+        isOn=false;
+
     }
 
     public String getMode() {
@@ -34,4 +37,8 @@ public class AirConditioner extends Feature implements Serializable {
     public void changeMode(String new_mode) {
         this.mode = new_mode;
     }
+
+    public boolean getStatus(){return isOn;}
+
+    public void setStatus(boolean status){this.isOn=status;}
 }
