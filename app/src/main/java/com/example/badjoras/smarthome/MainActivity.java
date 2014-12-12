@@ -138,7 +138,7 @@ public class MainActivity extends FragmentActivity {
     };
 
     private String[] outside_general_features = new String[]{
-            ENTER_HOUSE, EXIT_HOUSE, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
+            ENTER_HOUSE, EXIT_HOUSE, LIGHTS, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
     };
 
     private String[] living_room_features = new String[]{

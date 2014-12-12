@@ -66,6 +66,13 @@ public class LightsFragment extends Fragment {
         Light light = (Light) room.getMap().get(LIGHTS);
         int intensity = light.getIntensity();
 
+        if(intensity==0)
+            image.setImageResource(R.drawable.off_lamp_icon);
+        else if(intensity>0 && intensity<=50)
+            image.setImageResource(R.drawable.lamp125);
+        else
+            image.setImageResource(R.drawable.on_lamp_icon);
+
         sb.setProgress(intensity);
         text.setText("Luminosidade: " + intensity + "%");
 
