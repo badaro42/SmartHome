@@ -47,8 +47,8 @@ public class MainActivity extends FragmentActivity {
     public static final String PANTRY_STOCK = "Stock da Despensa";
     public static final String LIGHTS = "Iluminação";
     public static final String BLINDS = "Estores";
-    public static final String WATER_CONSUMPTION = "Consumo Electricidade";
-    public static final String POWER_CONSUMPTION = "Consumo Água";
+    public static final String WATER_CONSUMPTION = "Consumo Água";
+    public static final String POWER_CONSUMPTION = "Consumo Electricidade";
     public static final String GAS_CONSUMPTION = "Consumo Gás";
     public static final String GARAGE_DOOR = "Portão da Garagem";
     public static final String SURVEILLANCE_CAMERAS = "Câmaras de Vigilância";
@@ -56,8 +56,8 @@ public class MainActivity extends FragmentActivity {
     public static final String COFFEE_MACHINE = "Máquina de Café";
     public static final String STOVE_OVEN = "Fogão/Forno";
     public static final String SPRINKLER = "Aspersores da Rega";
-    public static final String ENTER_HOUSE = "Entrar em Casa";
-    public static final String EXIT_HOUSE = "Sair de Casa";
+    public static final String ENTER_EXIT_HOUSE = "Entrar/Sair de Casa";
+//    public static final String EXIT_HOUSE = "Sair de Casa";
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
@@ -138,7 +138,7 @@ public class MainActivity extends FragmentActivity {
     };
 
     private String[] outside_general_features = new String[]{
-            ENTER_HOUSE, EXIT_HOUSE, LIGHTS, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
+            ENTER_EXIT_HOUSE, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION, LIGHTS, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
     };
 
     private String[] living_room_features = new String[]{
@@ -168,7 +168,7 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap_livingroom;
 
     //TODO: COLOCAR A TRUE PARA EFEITOS DE TESTE -> DPS MUDAR PARA FALSE!!!!!
-    public static boolean disable_location_for_good = false;
+    public static boolean disable_location_for_good = true;
 
     public static boolean offline_mode;
     public static boolean first_time_running = true;
@@ -763,6 +763,8 @@ public class MainActivity extends FragmentActivity {
                 curr_fragment = PowerMonitoringFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(GAS_CONSUMPTION)) {
                 curr_fragment = GasMonitoringFragment.newInstance(position, temp_arr[position], chosen_arr);
+            } else if (feature.equals(ENTER_EXIT_HOUSE)) {
+                curr_fragment = EnterExitHouseFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
                 curr_fragment = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }

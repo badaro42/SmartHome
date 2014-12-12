@@ -40,8 +40,7 @@ public class Room implements Serializable {
             features.put(BLINDS, new Blinds());
         }
         else if (room.equalsIgnoreCase(OUTSIDE_GENERAL)) {
-            features.put(ENTER_HOUSE, new Feature());
-            features.put(EXIT_HOUSE, new Feature());
+            features.put(ENTER_EXIT_HOUSE, new Feature());
             features.put(LIGHTS, new Light());
             features.put(WATER_CONSUMPTION, new Feature());
             features.put(POWER_CONSUMPTION, new Feature());

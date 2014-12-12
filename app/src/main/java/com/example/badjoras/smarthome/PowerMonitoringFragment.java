@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.YLabels;
 
@@ -41,6 +42,7 @@ public class PowerMonitoringFragment extends Fragment {
     private String function;
     private String title;
     private int position;
+    public BarChart bc;
 
 
     public static PowerMonitoringFragment newInstance(int position, String function, String title) {
@@ -70,7 +72,7 @@ public class PowerMonitoringFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.power_monitoring, container,
                 false);
 
-        BarChart bc = (BarChart) rootView.findViewById(R.id.chart1);
+        bc = (BarChart) rootView.findViewById(R.id.chart_power);
 
         // enable the drawing of values
         bc.setDrawYValues(true);
@@ -90,15 +92,19 @@ public class PowerMonitoringFragment extends Fragment {
         bc.setDrawValuesForWholeStack(true);
 
         // disable 3D
-        bc.set3DEnabled(false);
+        bc.set3DEnabled(true);
         // scaling can now only be done on x- and y-axis separately
-        bc.setPinchZoom(false);
+        bc.setPinchZoom(true);
 
         bc.setDrawBarShadow(false);
+        bc.setUnit(" €");
+
+        // sets the text size of the values inside the chart
+        bc.setValueTextSize(12f);
 
         // change the position of the y-labels
         YLabels yLabels = bc.getYLabels();
-        yLabels.setPosition(YLabels.YLabelPosition.BOTH_SIDED);
+        yLabels.setPosition(YLabels.YLabelPosition.LEFT);
         yLabels.setLabelCount(5);
         yLabels.setFormatter(customFormatter);
 
@@ -135,6 +141,12 @@ public class PowerMonitoringFragment extends Fragment {
 
         bc.setData(data);
 
+        Legend l = bc.getLegend();
+        l.setFormSize(15f);
+        l.setPosition(Legend.LegendPosition.BELOW_CHART_LEFT);
+        l.setTextSize(12f);
+        l.setXEntrySpace(4f);
+
         return rootView;
     }
 
@@ -150,7 +162,7 @@ public class PowerMonitoringFragment extends Fragment {
         m.add("Jul");
         m.add("Aug");
         m.add("Sep");
-        m.add("Okt");
+        m.add("Oct");
         m.add("Nov");
         m.add("Dec");
 

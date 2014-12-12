@@ -18,11 +18,21 @@ public class Home implements Serializable {
     private HashMap<String, Room> rooms;
     private int counter;
     private int current_time_of_day;
+    private boolean user_in_house;
 
     public Home() {
         populateMap();
         counter = 0;
+        user_in_house = true;
         current_time_of_day = 1; //começa de dia!
+    }
+
+    public void changeUserInHouse(boolean isInHouse) {
+        this.user_in_house = isInHouse;
+    }
+
+    public boolean getUserInHouse() {
+        return user_in_house;
     }
 
     public void setCounter(int new_count) {

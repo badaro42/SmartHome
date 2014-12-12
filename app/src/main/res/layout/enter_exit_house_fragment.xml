@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:id="@+id/enter_exit_house_fragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/app_margin_background"
+        android:clickable="false"
+        android:longClickable="false"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/app_fragment_background">
+
+            <RelativeLayout
+                android:id="@+id/enter_exit_house_separator_options"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:paddingTop="50dp"
+                android:layout_marginBottom="30dp">
+
+                <TextView
+                    android:id="@+id/pantry_option_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Simular controlo de acessos"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/pantry_option_text_view"
+                    android:background="@android:color/darker_gray" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_below="@id/enter_exit_house_separator_options"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/first_button"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp" >
+
+                <Button
+                    android:id="@+id/btn_enter_house"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Abrir a casa!"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/first_button"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp" >
+
+                <Button
+                    android:id="@+id/btn_exit_house"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Fechar a casa!" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+</ScrollView>
+

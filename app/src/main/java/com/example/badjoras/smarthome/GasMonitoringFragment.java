@@ -67,10 +67,10 @@ public class GasMonitoringFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.power_monitoring, container,
+        View rootView = inflater.inflate(R.layout.gas_monitoring, container,
                 false);
 
-        BarChart bc = (BarChart) rootView.findViewById(R.id.chart1);
+        BarChart bc = (BarChart) rootView.findViewById(R.id.chart_gas);
 
 //        ListView lv = (ListView) rootView.findViewById(R.id.listView_power_monitor);
 //        ArrayList<ChartItem> list = new ArrayList<ChartItem>();
@@ -94,9 +94,9 @@ public class GasMonitoringFragment extends Fragment {
         bc.setDrawValuesForWholeStack(true);
 
         // disable 3D
-        bc.set3DEnabled(false);
+        bc.set3DEnabled(true);
         // scaling can now only be done on x- and y-axis separately
-        bc.setPinchZoom(false);
+        bc.setPinchZoom(true);
 
         bc.setDrawBarShadow(false);
 
