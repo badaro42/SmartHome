@@ -47,7 +47,9 @@ public class MainActivity extends FragmentActivity {
     public static final String PANTRY_STOCK = "Stock da Despensa";
     public static final String LIGHTS = "Iluminação";
     public static final String BLINDS = "Estores";
-    public static final String POWER_MONITORING = "Monitorização Energética";
+    public static final String WATER_CONSUMPTION = "Consumo Electricidade";
+    public static final String POWER_CONSUMPTION = "Consumo Água";
+    public static final String GAS_CONSUMPTION = "Consumo Gás";
     public static final String GARAGE_DOOR = "Portão da Garagem";
     public static final String SURVEILLANCE_CAMERAS = "Câmaras de Vigilância";
     public static final String SCHEDULED_FUNCTIONS = "Tarefas Agendadas";
@@ -136,7 +138,7 @@ public class MainActivity extends FragmentActivity {
     };
 
     private String[] outside_general_features = new String[]{
-            ENTER_HOUSE, EXIT_HOUSE, POWER_MONITORING, SPRINKLER, GARAGE_DOOR, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
+            ENTER_HOUSE, EXIT_HOUSE, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
     };
 
     private String[] living_room_features = new String[]{
@@ -755,8 +757,12 @@ public class MainActivity extends FragmentActivity {
                 curr_fragment = CoffeeFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(STOVE_OVEN)) {
                 curr_fragment = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
-            } else if (feature.equals(POWER_MONITORING)) {
+            } else if (feature.equals(WATER_CONSUMPTION)) {
+                curr_fragment = WaterMonitoringFragment.newInstance(position, temp_arr[position], chosen_arr);
+            } else if (feature.equals(POWER_CONSUMPTION)) {
                 curr_fragment = PowerMonitoringFragment.newInstance(position, temp_arr[position], chosen_arr);
+            } else if (feature.equals(GAS_CONSUMPTION)) {
+                curr_fragment = GasMonitoringFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
                 curr_fragment = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
