@@ -287,7 +287,7 @@ public class MainActivity extends FragmentActivity {
                                 //obtemos o estado do server, para o caso de reiniciarmos a aplicação
                                 Home temp_house = getObjectFromServer();
 
-                                if(temp_house != null) {
+                                if (temp_house != null) {
                                     System.out.println("ESTAMOS EM QUE PARTE DO DIA?? " +
                                             temp_house.getCurrentTimeOfDay());
 
@@ -307,8 +307,7 @@ public class MainActivity extends FragmentActivity {
 
                                         Thread.sleep(5000);
                                     }
-                                }
-                                else {
+                                } else {
                                     System.out.println("VOU INTERROMPER A THREAD, O SERVER TA MORTO!!");
                                     Thread.currentThread().interrupt();
                                     break;
@@ -382,7 +381,7 @@ public class MainActivity extends FragmentActivity {
             InetSocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
             client_socket = new Socket();
             client_socket.connect(sockaddr, 3000);
-            client_socket.setSoTimeout(60000);
+            client_socket.setSoTimeout(60000); //timeout -> 1 minuto
 
             System.out.println("CONSEGUI LIGAR AO SERVER, VAMOS CRIAR OS SOCKETS!!");
 
@@ -522,7 +521,7 @@ public class MainActivity extends FragmentActivity {
                 house.getCounter());
 
         if (pager != null) {
-            if(current_fragment_tab == -1)
+            if (current_fragment_tab == -1)
                 current_fragment_tab = 0;
             else {
                 current_fragment_tab = pager.getCurrentItem();
@@ -746,6 +745,8 @@ public class MainActivity extends FragmentActivity {
                 curr_fragment = CoffeeFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else if (feature.equals(STOVE_OVEN)) {
                 curr_fragment = StoveFragment.newInstance(position, temp_arr[position], chosen_arr);
+            } else if (feature.equals(POWER_MONITORING)) {
+                curr_fragment = PowerMonitoringFragment.newInstance(position, temp_arr[position], chosen_arr);
             } else {
                 curr_fragment = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
