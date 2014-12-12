@@ -54,6 +54,8 @@ public class MainActivity extends FragmentActivity {
     public static final String COFFEE_MACHINE = "Máquina de Café";
     public static final String STOVE_OVEN = "Fogão/Forno";
     public static final String SPRINKLER = "Aspersores da Rega";
+    public static final String ENTER_HOUSE = "Entrar em Casa";
+    public static final String EXIT_HOUSE = "Sair de Casa";
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
@@ -124,7 +126,7 @@ public class MainActivity extends FragmentActivity {
     };
 
     private String[] outside_general_features = new String[]{
-            SPRINKLER, GARAGE_DOOR, SURVEILLANCE_CAMERAS, POWER_MONITORING, SCHEDULED_FUNCTIONS
+            ENTER_HOUSE, EXIT_HOUSE, POWER_MONITORING, SPRINKLER, GARAGE_DOOR, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
     };
 
     private String[] living_room_features = new String[]{
