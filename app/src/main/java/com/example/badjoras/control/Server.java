@@ -317,8 +317,10 @@ public class Server implements Serializable {
 
             if (time_of_day == NIGHT) //fecha totalmente os estores
                 blind.changeOpening(100);
-            else if (time_of_day == DAY) //abre quase totalmente os estores
-                blind.changeOpening(20);
+            else if (time_of_day == DAY) {//abre quase totalmente os estores, mas só se tiver alguem em casa
+                if(server_house.getUserInHouse())
+                    blind.changeOpening(20);
+            }
         }
     }
 
