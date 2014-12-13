@@ -19,7 +19,7 @@
             android:layout_height="fill_parent"
             android:background="@color/app_fragment_background">
 
-            <com.github.mikephil.charting.charts.BarChart
+            <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/chart_gas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
