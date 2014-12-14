@@ -87,22 +87,8 @@ public class MainActivity extends FragmentActivity {
     public static Toast toast;
 
     //USAR UM DESTES IPs
-
-//    public static final String IP_ADDRESS = "10.171.241.205";
-    //    public static final String IP_ADDRESS = "10.22.107.150";
-//    public static final String IP_ADDRESS = "192.168.1.78";
-    //    public static final String IP_ADDRESS = "192.168.1.71";
-//    public static final String IP_ADDRESS = "192.168.46.1";
-    //  public static final String IP_ADDRESS = "10.22.107.141";
-    //    public static final String IP_ADDRESS = "10.171.240.101";
-
-    //    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
-//    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
-    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
-//    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
-//    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
-//    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
-//    public static final String IP_ADDRESS = "10.171.240.101"; //ip casa badaro
+//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+    public static final String IP_ADDRESS = "10.171.240.101"; //ip casa badaro
 
     public static final int DEFAULT_PORT = 4444;
 
@@ -193,8 +179,6 @@ public class MainActivity extends FragmentActivity {
 
     private static ProgressDialog progressDialog;
 
-    private static Context appContext;
-
     // Need handler for callbacks to the UI thread
     final Handler mHandler = new Handler();
 
@@ -208,12 +192,7 @@ public class MainActivity extends FragmentActivity {
             if (canRedrawFrags) {
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " +
                         "HANDLER -> canredraw está a true!");
-//                Toast.makeText(getApplicationContext(), "Posso redesenhar os fragmentos!!!",
-//                        Toast.LENGTH_SHORT).show();
                 refreshTabs();
-            } else {
-//                Toast.makeText(getApplicationContext(), "Já mudei de orientação, não redesenha!",
-//                        Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -223,30 +202,6 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         System.out.println("******ON_CREATE DA MAIN ACTIVITY!!!******");
-
-        appContext = getApplicationContext();
-
-//        Display display = getWindowManager().getDefaultDisplay();
-//        Point size = new Point();
-//        display.getSize(size);
-//        int width = size.x;
-//        int height = size.y;
-//
-//        System.out.println("++++++++ANTIGO TAMANHO DO ECRA: (" +
-//                current_width + ", " + current_height + ")++++++++++");
-//
-//        //é a primeira vez, inicializamos as medidas!
-//        if ((current_height == -1) && (current_width == -1)) {
-//            current_width = width;
-//            current_height = height;
-//            canRedrawFrags = true;
-//        }
-//        //mudamos de orientaçao, ja nao podemos redesenhar os fragmentos!!!
-//        else if ((current_height != height) || (current_width != width)) {
-//            current_width = width;
-//            current_height = height;
-//            canRedrawFrags = false;
-//        }
 
         System.out.println("++++++++NOVO TAMANHO DO ECRA: (" +
                 current_width + ", " + current_height + ")++++++++++");
@@ -269,14 +224,6 @@ public class MainActivity extends FragmentActivity {
             initPositionThing();
             initFragmentsAndTabs();
         }
-
-        // Check whether we're recreating a previously destroyed instance
-//        if (savedInstanceState != null) {
-//            // Restore value of members from saved state
-//            pager.setCurrentItem(savedInstanceState.getInt(CURRENT_TAB));
-//        } else {
-//            // Probably initialize members with default values for a new instance
-//        }
 
     }
 
@@ -311,15 +258,6 @@ public class MainActivity extends FragmentActivity {
                 results_map.put(LIVING_ROOM, list);
         }
     }
-
-
-    private final Handler showToast = new Handler() {
-        public void handleMessage(Message msg) {
-            if (msg.arg1 == 1)
-                Toast.makeText(getApplicationContext(), "A ligação com o servidor foi perdida!",
-                        Toast.LENGTH_SHORT).show();
-        }
-    };
 
 
     public void handleConnection() {
@@ -385,10 +323,6 @@ public class MainActivity extends FragmentActivity {
                                 } else {
                                     System.out.println("VOU INTERROMPER A THREAD, O SERVER TA MORTO!!");
                                     Thread.currentThread().interrupt();
-
-//                                    Message msg = showToast.obtainMessage();
-//                                    msg.arg1 = 1;
-//                                    showToast.handleMessage(msg);
 
                                     MainActivity.this.runOnUiThread(
                                             new Runnable() {
@@ -533,7 +467,6 @@ public class MainActivity extends FragmentActivity {
         } catch (EOFException e) {
             System.out.println("SocketTimeout do lado do servidor. Vamos abrir novamente!");
         } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
             System.out.println("CLASS NOT FOUND EXCEPTION!!!");
         } catch (OptionalDataException e) {
             e.printStackTrace();
@@ -613,14 +546,6 @@ public class MainActivity extends FragmentActivity {
         System.out.println("RefreshTabs. Counter actual -> " +
                 house.getCounter());
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-
-        System.out.println("++++++++TAMANHO DO ECRA: (" + width + ", " + height + ")++++++++++");
-
         if (pager != null) {
             if (current_fragment_tab == -1)
                 current_fragment_tab = 0;
@@ -657,8 +582,8 @@ public class MainActivity extends FragmentActivity {
 
         pager.setAdapter(adapter);
 
-        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                .getDisplayMetrics());
+        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                getResources().getDisplayMetrics());
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
@@ -666,17 +591,6 @@ public class MainActivity extends FragmentActivity {
         System.out.println("SÓ DEVIA VIR AQUI DEPOIS DOS FRAGMENTOS TODOS DESENHADINHOS HUEHUEHUE");
         pager.setCurrentItem(current_fragment_tab);
     }
-
-//    @Override
-//    protected void onSaveInstanceState(final Bundle outState) {
-//
-//        outState.putInt(CURRENT_TAB, pager.getCurrentItem());
-//
-//        System.out.println("-------------PÁGINA ACTUAL -> " + pager.getCurrentItem());
-//        System.out.println("ON_SAVE_INSTANCE_STATE");
-//
-//        super.onSaveInstanceState(outState);
-//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -704,7 +618,6 @@ public class MainActivity extends FragmentActivity {
 
             //Coloca o current_fragment_tab a -1 para o refreshtabs não alterar a variavel
             current_fragment_tab = -1;
-//            canRedrawFrags = true;
 
             System.out.println("NOVO TITULO!!!!! - " + item.getTitle());
 
@@ -712,8 +625,6 @@ public class MainActivity extends FragmentActivity {
         } else if (id == R.id.reconnect_submenu) {
             System.out.println("RECONECTAR AO SERVIDOR!!!");
             if (offline_mode) { //ainda nao estamos ligados, tentamos ligar!
-//                Toast.makeText(getApplicationContext(), "Estabelecendo ligação ao servidor...",
-//                        Toast.LENGTH_SHORT).show();
 
                 //tenta ligar ao servidor
                 establishConnection(true);
@@ -736,7 +647,6 @@ public class MainActivity extends FragmentActivity {
                         Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.refresh_fragment_submenu) {
-//            canRedrawFrags = true;
             Toast.makeText(getApplicationContext(), "Fragmentos redesenhados",
                     Toast.LENGTH_SHORT).show();
             refreshTabs();
@@ -764,7 +674,6 @@ public class MainActivity extends FragmentActivity {
 
             //só entra aqui quando mudamos de divisao!!!!
             canRedrawFrags = true;
-//            pager.setCurrentItem(current_fragment_tab);
         }
 
         @Override
@@ -878,9 +787,6 @@ public class MainActivity extends FragmentActivity {
         //The code to be executed in a background thread.
         @Override
         protected Void doInBackground(Void... params) {
-            /* This is where the code that is going to be executed on a background
-             * thread must be placed.
-             */
 
             //Get the current thread's token
             synchronized (this) {
@@ -969,7 +875,6 @@ public class MainActivity extends FragmentActivity {
             }
 
             //TODO: EFEITOS DE TESTE, REMOVER!!!
-            //TODO: PODER DO MARTELO CARAAAAAAAAAAAAAAALHHHHOOOOOOOOOOOOOO!!!!!!!!!!!!!!!!!!!
             printScanResults();
 
             //calcula a divisao que se encontra mais perto do utilizador
@@ -1060,7 +965,6 @@ public class MainActivity extends FragmentActivity {
                 last_position = closest;
                 setTitle(closest);
 
-//                canRedrawFrags = true;
                 refreshTabs();
             }
         }
