@@ -14,6 +14,8 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Server;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -119,6 +122,10 @@ public class MainActivity extends FragmentActivity {
     public static final String BSSID_BEDROOM_2 = "00:11:21:6c:4a:b2";
     public static final String BSSID_BEDROOM_3 = "00:11:21:6c:4a:b0";
 
+    public static final int WIFI_SCAN_TIMEOUT = 15000;
+    public static final int READ_OBJECT_TIMEOUT = 15000;
+    public static final int CONNECT_TO_SERVER_TIMEOUT = 3000;
+
     public static String last_position;
 
     private static Socket client_socket;
@@ -186,6 +193,8 @@ public class MainActivity extends FragmentActivity {
 
     private static ProgressDialog progressDialog;
 
+    private static Context appContext;
+
     // Need handler for callbacks to the UI thread
     final Handler mHandler = new Handler();
 
@@ -214,6 +223,8 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         System.out.println("******ON_CREATE DA MAIN ACTIVITY!!!******");
+
+        appContext = getApplicationContext();
 
 //        Display display = getWindowManager().getDefaultDisplay();
 //        Point size = new Point();
@@ -302,6 +313,15 @@ public class MainActivity extends FragmentActivity {
     }
 
 
+    private final Handler showToast = new Handler() {
+        public void handleMessage(Message msg) {
+            if (msg.arg1 == 1)
+                Toast.makeText(getApplicationContext(), "A ligação com o servidor foi perdida!",
+                        Toast.LENGTH_SHORT).show();
+        }
+    };
+
+
     public void handleConnection() {
         last_position = "";
         client_socket = null;
@@ -337,6 +357,8 @@ public class MainActivity extends FragmentActivity {
                             boolean firstTime = true;
                             System.out.println("À ESPERA DE OBJECTOS DO SERVIDOR!!!! ESPERO BEM QUE ENTRE AQUI HEHE");
 
+//                            Looper.prepare();
+
                             while (true) {
                                 //obtemos o estado do server, para o caso de reiniciarmos a aplicação
                                 Home temp_house = getObjectFromServer();
@@ -356,10 +378,6 @@ public class MainActivity extends FragmentActivity {
                                         System.out.println("Tou na thread. Counter recebido -> " +
                                                 temp_house.getCounter());
 
-//                                        toast_daychange.makeText(getApplicationContext(), "Agora é de " +
-//                                                        house.getCurrentTimeOfDay() + "!",
-//                                                Toast.LENGTH_SHORT).show();
-
                                         mHandler.post(mUpdateResults);
 
                                         Thread.sleep(5000);
@@ -367,6 +385,21 @@ public class MainActivity extends FragmentActivity {
                                 } else {
                                     System.out.println("VOU INTERROMPER A THREAD, O SERVER TA MORTO!!");
                                     Thread.currentThread().interrupt();
+
+//                                    Message msg = showToast.obtainMessage();
+//                                    msg.arg1 = 1;
+//                                    showToast.handleMessage(msg);
+
+                                    MainActivity.this.runOnUiThread(
+                                            new Runnable() {
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "A ligação com o servidor foi perdida!",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                    );
+
                                     break;
                                 }
                             }
@@ -374,7 +407,9 @@ public class MainActivity extends FragmentActivity {
                             e.printStackTrace();
                         }
                     }
-                };
+                }
+
+                ;
                 input_thread.start();
             } else {
 
@@ -402,7 +437,7 @@ public class MainActivity extends FragmentActivity {
 
             //cena da posicao, comeca a correr ao fim de 2 segundos
             handler = new Handler();
-            handler.postDelayed(runnable, 15000);
+            handler.postDelayed(runnable, WIFI_SCAN_TIMEOUT);
         }
 
         //obtem a posição inicial do utilizador
@@ -437,8 +472,9 @@ public class MainActivity extends FragmentActivity {
 
             InetSocketAddress sockaddr = new InetSocketAddress(IP_ADDRESS, DEFAULT_PORT);
             client_socket = new Socket();
-            client_socket.connect(sockaddr, 3000);
-            client_socket.setSoTimeout(60000); //timeout -> 1 minuto
+            client_socket.connect(sockaddr, CONNECT_TO_SERVER_TIMEOUT);
+            client_socket.setSoTimeout(
+                    READ_OBJECT_TIMEOUT + Server.MILISSECONDS_TO_SLEEP); //timeout -> 45 segundos
 
             System.out.println("CONSEGUI LIGAR AO SERVER, VAMOS CRIAR OS SOCKETS!!");
 
@@ -889,7 +925,7 @@ public class MainActivity extends FragmentActivity {
             mainWifiObj.startScan();
 
             //volta a chamar este handler, dizendo que vai executar ao fim de 10s
-            handler.postDelayed(this, 15000);
+            handler.postDelayed(this, WIFI_SCAN_TIMEOUT);
         }
     };
 

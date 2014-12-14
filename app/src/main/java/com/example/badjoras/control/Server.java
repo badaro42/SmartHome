@@ -52,7 +52,7 @@ public class Server implements Serializable {
     private static Thread output_thread;
 
     //TODO: para ser mais facil de testar este valor fica em 30000 (30s). no fim alterar para 60000
-    private static final int MILISSECONDS_TO_SLEEP = 30000;
+    public static final int MILISSECONDS_TO_SLEEP = 30000;
 
     private static String[] products_names = new String[]{
             "Tomate", "Alface", "Lata de Atum", "Esparguete", "Cebola", "Batata",
