@@ -53,13 +53,14 @@ public class MainActivity extends FragmentActivity {
     public static final String POWER_CONSUMPTION = "Consumo Electricidade";
     public static final String GAS_CONSUMPTION = "Consumo Gás";
     public static final String GARAGE_DOOR = "Portão da Garagem";
-    public static final String SURVEILLANCE_CAMERAS = "Câmaras de Vigilância";
-    public static final String SCHEDULED_FUNCTIONS = "Tarefas Agendadas";
     public static final String COFFEE_MACHINE = "Máquina de Café";
     public static final String STOVE_OVEN = "Fogão/Forno";
     public static final String SPRINKLER = "Aspersores da Rega";
     public static final String ENTER_EXIT_HOUSE = "Entrar/Sair de Casa";
-//    public static final String EXIT_HOUSE = "Sair de Casa";
+
+    //TODO: fica para uma proxima versao :p
+    public static final String SURVEILLANCE_CAMERAS = "Câmaras de Vigilância";
+    public static final String SCHEDULED_FUNCTIONS = "Tarefas Agendadas";
 
     public static final String OUTSIDE_GENERAL = "Exterior/Geral";
     public static final String KITCHEN = "Cozinha";
@@ -73,10 +74,8 @@ public class MainActivity extends FragmentActivity {
     public static final String CAT_HIGIENE = "Higiene";
     public static final String CAT_FRUTAS = "Frutas";
 
-    public static final String CURRENT_TAB = "current_tab";
-
-    //valor bem grande, para inicializar as distancias dos AP -> 42.000km
-    public static final Double UM_CARALHAO_DE_METROS = 42000000.0;
+    //valor bem grande, para inicializar as distancias dos AP -> 10.000km
+    public static final Double UM_PORRADAO_DE_METROS = 10000000.0;
 
     public static final int DAY = 1;
     public static final int NIGHT = 0;
@@ -96,11 +95,11 @@ public class MainActivity extends FragmentActivity {
 
     //    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
 //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
-//    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
+    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.46.1"; //ip casa badaro
 //    public static final String IP_ADDRESS = "10.171.110.142"; //ip casa badaro
-    public static final String IP_ADDRESS = "10.171.240.101"; //ip casa badaro
+//    public static final String IP_ADDRESS = "10.171.240.101"; //ip casa badaro
 
     public static final int DEFAULT_PORT = 4444;
 
@@ -122,7 +121,6 @@ public class MainActivity extends FragmentActivity {
 
     public static String last_position;
 
-    //TODO: alterei isto para static para que não sejam reinicializadas com a mudança de orientação
     private static Socket client_socket;
     private static ObjectOutputStream obj_os;
     private static ObjectInputStream obj_is;
@@ -140,7 +138,8 @@ public class MainActivity extends FragmentActivity {
     };
 
     private String[] outside_general_features = new String[]{
-            ENTER_EXIT_HOUSE, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION, LIGHTS, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
+            ENTER_EXIT_HOUSE, WATER_CONSUMPTION, POWER_CONSUMPTION, GAS_CONSUMPTION,
+            LIGHTS, SPRINKLER, GARAGE_DOOR //, SURVEILLANCE_CAMERAS, SCHEDULED_FUNCTIONS
     };
 
     private String[] living_room_features = new String[]{
@@ -155,7 +154,6 @@ public class MainActivity extends FragmentActivity {
     public static int current_fragment_tab = 0;
 
     public static Thread input_thread;
-    public static Thread connection_thread;
 
     public static CharSequence m_title;
 
@@ -181,12 +179,12 @@ public class MainActivity extends FragmentActivity {
     public static boolean reset_fragment_list = true;
 
     public static boolean canRedrawFrags = true;
+    public static int current_width = -1;
+    public static int current_height = -1;
 
     private static Handler handler;
 
-    //A ProgressDialog object
     private static ProgressDialog progressDialog;
-
 
     // Need handler for callbacks to the UI thread
     final Handler mHandler = new Handler();
@@ -194,13 +192,16 @@ public class MainActivity extends FragmentActivity {
     // Create runnable for posting
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
-//            TODO: arrebenta nesta merda, ver melhor!!
+            Toast.makeText(getApplicationContext(), "Agora é de " +
+                            ((getHouse().getCurrentTimeOfDay() == 1) ? "Dia" : "Noite") + "!",
+                    Toast.LENGTH_SHORT).show();
+
             if (canRedrawFrags) {
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " +
+                        "HANDLER -> canredraw está a true!");
 //                Toast.makeText(getApplicationContext(), "Posso redesenhar os fragmentos!!!",
 //                        Toast.LENGTH_SHORT).show();
-
-                //TODO: DESACTIVADO, SE ARRANJAR UMA MANEIRA FIXE AINDA ACTIVO ISTO HEHE
-//                refreshTabs();
+                refreshTabs();
             } else {
 //                Toast.makeText(getApplicationContext(), "Já mudei de orientação, não redesenha!",
 //                        Toast.LENGTH_SHORT).show();
@@ -214,13 +215,31 @@ public class MainActivity extends FragmentActivity {
 
         System.out.println("******ON_CREATE DA MAIN ACTIVITY!!!******");
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+//        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        int width = size.x;
+//        int height = size.y;
+//
+//        System.out.println("++++++++ANTIGO TAMANHO DO ECRA: (" +
+//                current_width + ", " + current_height + ")++++++++++");
+//
+//        //é a primeira vez, inicializamos as medidas!
+//        if ((current_height == -1) && (current_width == -1)) {
+//            current_width = width;
+//            current_height = height;
+//            canRedrawFrags = true;
+//        }
+//        //mudamos de orientaçao, ja nao podemos redesenhar os fragmentos!!!
+//        else if ((current_height != height) || (current_width != width)) {
+//            current_width = width;
+//            current_height = height;
+//            canRedrawFrags = false;
+//        }
 
-        System.out.println("++++++++TAMANHO DO ECRA: (" + width + ", " + height + ")++++++++++");
+        System.out.println("++++++++NOVO TAMANHO DO ECRA: (" +
+                current_width + ", " + current_height + ")++++++++++");
+        System.out.println("POSSO REDESENHAR OS FRAGMENTOS?? -> " + canRedrawFrags);
 
         super.onCreate(savedInstanceState);
 
@@ -250,6 +269,15 @@ public class MainActivity extends FragmentActivity {
 
     }
 
+
+    //TESTE: só para ver se se pode usar o onOrientationChange
+    public void executeOnOrientationChange() {
+        setContentView(R.layout.activity_homepage);
+        initPositionThing();
+        initFragmentsAndTabs();
+    }
+
+
     //reinicia o mapa que contém os valores das distancias aos AP
     public void resetScanResultsMap() {
 
@@ -262,7 +290,7 @@ public class MainActivity extends FragmentActivity {
 
             //para cada um dos AP, vai inicializar o seu valor com um numero mta grande
             for (int ii = 0; ii < 3; ii++)
-                list.add(UM_CARALHAO_DE_METROS);
+                list.add(UM_PORRADAO_DE_METROS);
 
             if (i == 0)
                 results_map.put(KITCHEN, list);
@@ -328,9 +356,9 @@ public class MainActivity extends FragmentActivity {
                                         System.out.println("Tou na thread. Counter recebido -> " +
                                                 temp_house.getCounter());
 
-                                        toast_daychange.makeText(getApplicationContext(), "Agora é de " +
-                                                        house.getCurrentTimeOfDay() + "!",
-                                                Toast.LENGTH_SHORT).show();
+//                                        toast_daychange.makeText(getApplicationContext(), "Agora é de " +
+//                                                        house.getCurrentTimeOfDay() + "!",
+//                                                Toast.LENGTH_SHORT).show();
 
                                         mHandler.post(mUpdateResults);
 
@@ -374,7 +402,7 @@ public class MainActivity extends FragmentActivity {
 
             //cena da posicao, comeca a correr ao fim de 2 segundos
             handler = new Handler();
-            handler.postDelayed(runnable, 10000);
+            handler.postDelayed(runnable, 15000);
         }
 
         //obtem a posição inicial do utilizador
@@ -618,6 +646,8 @@ public class MainActivity extends FragmentActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        executeOnOrientationChange();
+
         System.out.println("---------------- orientation changed -------------------");
 
         canRedrawFrags = false;
@@ -638,6 +668,7 @@ public class MainActivity extends FragmentActivity {
 
             //Coloca o current_fragment_tab a -1 para o refreshtabs não alterar a variavel
             current_fragment_tab = -1;
+//            canRedrawFrags = true;
 
             System.out.println("NOVO TITULO!!!!! - " + item.getTitle());
 
@@ -669,7 +700,12 @@ public class MainActivity extends FragmentActivity {
                         Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.refresh_fragment_submenu) {
+//            canRedrawFrags = true;
+            Toast.makeText(getApplicationContext(), "Fragmentos redesenhados",
+                    Toast.LENGTH_SHORT).show();
             refreshTabs();
+        } else if (id == R.id.about_submenu) {
+            //TODO: criar popup com info sobre nós, se houver tempo e vontade!
         }
 
         return true;
@@ -688,7 +724,7 @@ public class MainActivity extends FragmentActivity {
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
             Log.v("page_title", String.valueOf(m_title));
-            Log.v("frag_man", "TOU NO CONSTRUTOR DO MY_PAGER_ADAPTER");
+            Log.v("frag_man", "---------------- TOU NO CONSTRUTOR DO MY_PAGER_ADAPTER");
 
             //só entra aqui quando mudamos de divisao!!!!
             canRedrawFrags = true;
@@ -853,7 +889,7 @@ public class MainActivity extends FragmentActivity {
             mainWifiObj.startScan();
 
             //volta a chamar este handler, dizendo que vai executar ao fim de 10s
-            handler.postDelayed(this, 10000);
+            handler.postDelayed(this, 15000);
         }
     };
 
@@ -979,14 +1015,16 @@ public class MainActivity extends FragmentActivity {
             } else
                 closest = LIVING_ROOM;
 
-            Toast.makeText(getApplicationContext(), "Divisao mais perto: " + closest,
-                    Toast.LENGTH_LONG).show();
-
-            //TODO: esta merda encontra-se desactivada por enquanto - JA TA ACTIVADA!
             //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
+            //SO MANDA TOSTA SE A NOVA DIVISAO MAIS PERTO FOR DIFERENTE DA ANTERIOR!!
             if (!last_position.equalsIgnoreCase(closest)) {
+                Toast.makeText(getApplicationContext(), "Divisão mais perto: " + closest,
+                        Toast.LENGTH_LONG).show();
+
                 last_position = closest;
                 setTitle(closest);
+
+//                canRedrawFrags = true;
                 refreshTabs();
             }
         }
