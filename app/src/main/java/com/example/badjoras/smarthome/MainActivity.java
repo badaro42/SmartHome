@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
@@ -21,6 +22,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -89,10 +91,10 @@ public class MainActivity extends FragmentActivity {
 //    public static final String IP_ADDRESS = "192.168.1.78";
     //    public static final String IP_ADDRESS = "192.168.1.71";
 //    public static final String IP_ADDRESS = "192.168.46.1";
-  //  public static final String IP_ADDRESS = "10.22.107.141";
+    //  public static final String IP_ADDRESS = "10.22.107.141";
     //    public static final String IP_ADDRESS = "10.171.240.101";
 
-//    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
+    //    public static final String IP_ADDRESS = "10.171.241.205"; //ip fac canteiro
 //    public static final String IP_ADDRESS = "10.22.107.150"; //ip fac badaro
 //    public static final String IP_ADDRESS = "192.168.1.78"; //ip casa badaro
 //    public static final String IP_ADDRESS = "192.168.1.71"; //ip casa badaro
@@ -108,10 +110,10 @@ public class MainActivity extends FragmentActivity {
     public static final String BSSID_LIVING_ROOM_2 = "00:12:da:ae:b2:a1";
     public static final String BSSID_LIVING_ROOM_3 = "00:12:da:ae:b2:a2";
 
-    //SALA DA PRATICA DE PI
-    public static final String BSSID_KITCHEN_1 = "00:19:07:93:cc:b0";
-    public static final String BSSID_KITCHEN_2 = "00:19:07:93:cc:b1";
-    public static final String BSSID_KITCHEN_3 = "00:19:07:93:cc:b2";
+    //SALA DA DISCUSSAO DE SCMU -> 124
+    public static final String BSSID_KITCHEN_1 = "00:1b:fc:22:43:4e";
+    public static final String BSSID_KITCHEN_2 = "00:11:21:6c:50:e0";
+    public static final String BSSID_KITCHEN_3 = "00:11:21:6c:50:e2";
 
     //ANTIGA SALA DE MESTRADO
     public static final String BSSID_BEDROOM_1 = "00:11:21:6c:4a:b1";
@@ -167,8 +169,10 @@ public class MainActivity extends FragmentActivity {
     public double distance_to_ap_bedroom;
     public double distance_to_ap_livingroom;
 
+    public static Toast toast_daychange;
+
     //TODO: COLOCAR A TRUE PARA EFEITOS DE TESTE -> DPS MUDAR PARA FALSE!!!!!
-    public static boolean disable_location_for_good = true;
+    public static boolean disable_location_for_good = false;
 
     public static boolean offline_mode;
     public static boolean first_time_running = true;
@@ -192,12 +196,14 @@ public class MainActivity extends FragmentActivity {
         public void run() {
 //            TODO: arrebenta nesta merda, ver melhor!!
             if (canRedrawFrags) {
-                Toast.makeText(getApplicationContext(), "Posso redesenhar os fragmentos!!!",
-                        Toast.LENGTH_SHORT).show();
-                refreshTabs();
+//                Toast.makeText(getApplicationContext(), "Posso redesenhar os fragmentos!!!",
+//                        Toast.LENGTH_SHORT).show();
+
+                //TODO: DESACTIVADO, SE ARRANJAR UMA MANEIRA FIXE AINDA ACTIVO ISTO HEHE
+//                refreshTabs();
             } else {
-                Toast.makeText(getApplicationContext(), "Já mudei de orientação, não redesenha!",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Já mudei de orientação, não redesenha!",
+//                        Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -207,6 +213,14 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         System.out.println("******ON_CREATE DA MAIN ACTIVITY!!!******");
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+
+        System.out.println("++++++++TAMANHO DO ECRA: (" + width + ", " + height + ")++++++++++");
 
         super.onCreate(savedInstanceState);
 
@@ -227,12 +241,12 @@ public class MainActivity extends FragmentActivity {
         }
 
         // Check whether we're recreating a previously destroyed instance
-        if (savedInstanceState != null) {
-            // Restore value of members from saved state
-            pager.setCurrentItem(savedInstanceState.getInt(CURRENT_TAB));
-        } else {
-            // Probably initialize members with default values for a new instance
-        }
+//        if (savedInstanceState != null) {
+//            // Restore value of members from saved state
+//            pager.setCurrentItem(savedInstanceState.getInt(CURRENT_TAB));
+//        } else {
+//            // Probably initialize members with default values for a new instance
+//        }
 
     }
 
@@ -314,7 +328,10 @@ public class MainActivity extends FragmentActivity {
                                         System.out.println("Tou na thread. Counter recebido -> " +
                                                 temp_house.getCounter());
 
-                                        //TODO: CORRIGIR ISTO, REBENTA QUANDO SE MUDA DE ORIENTAÇÃO!!
+                                        toast_daychange.makeText(getApplicationContext(), "Agora é de " +
+                                                        house.getCurrentTimeOfDay() + "!",
+                                                Toast.LENGTH_SHORT).show();
+
                                         mHandler.post(mUpdateResults);
 
                                         Thread.sleep(5000);
@@ -532,6 +549,14 @@ public class MainActivity extends FragmentActivity {
         System.out.println("RefreshTabs. Counter actual -> " +
                 house.getCounter());
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+
+        System.out.println("++++++++TAMANHO DO ECRA: (" + width + ", " + height + ")++++++++++");
+
         if (pager != null) {
             if (current_fragment_tab == -1)
                 current_fragment_tab = 0;
@@ -545,10 +570,7 @@ public class MainActivity extends FragmentActivity {
         System.out.println("**********FRAGMENT LIST SIZE (ANTES DO REMOVE): " +
                 fragment_list.size() + "**************");
 
-        Fragment frag;
-        for (int i = 0; i < fragment_list.size(); i++) {
-            frag = fragment_list.get(i);
-
+        for (Fragment frag : fragment_list) {
             System.out.println("++++++++++++++FRAGMENT: " + frag.toString() + "+++++++++++++");
             getSupportFragmentManager().beginTransaction().remove(frag).commit();
         }
@@ -571,7 +593,6 @@ public class MainActivity extends FragmentActivity {
 
         pager.setAdapter(adapter);
 
-
         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
         pager.setPageMargin(pageMargin);
@@ -582,30 +603,24 @@ public class MainActivity extends FragmentActivity {
         pager.setCurrentItem(current_fragment_tab);
     }
 
-    @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-
-        outState.putInt(CURRENT_TAB, pager.getCurrentItem());
-
-        System.out.println("-------------PÁGINA ACTUAL -> " + pager.getCurrentItem());
-        System.out.println("ON_SAVE_INSTANCE_STATE");
-
-        super.onSaveInstanceState(outState);
-    }
+//    @Override
+//    protected void onSaveInstanceState(final Bundle outState) {
+//
+//        outState.putInt(CURRENT_TAB, pager.getCurrentItem());
+//
+//        System.out.println("-------------PÁGINA ACTUAL -> " + pager.getCurrentItem());
+//        System.out.println("ON_SAVE_INSTANCE_STATE");
+//
+//        super.onSaveInstanceState(outState);
+//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
         System.out.println("---------------- orientation changed -------------------");
-        canRedrawFrags = false;
 
-//        // Checks the orientation of the screen
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-//            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
-//        }
+        canRedrawFrags = false;
     }
 
     @Override
@@ -653,6 +668,8 @@ public class MainActivity extends FragmentActivity {
                 Toast.makeText(getApplicationContext(), "Localização desactivada",
                         Toast.LENGTH_SHORT).show();
             }
+        } else if (id == R.id.refresh_fragment_submenu) {
+            refreshTabs();
         }
 
         return true;
@@ -769,10 +786,7 @@ public class MainActivity extends FragmentActivity {
                 curr_fragment = PageFragment.newInstance(position, temp_arr[position], chosen_arr);
             }
 
-//            curr_fragment.setRetainInstance(true);
-
             fragment_list.add(curr_fragment);
-//            app_fm.beginTransaction().add(curr_fragment, feature).commit();
 
             System.out.println("fragmento adicionado!!! tamanho da lista -> " + fragment_list.size());
 
@@ -968,7 +982,7 @@ public class MainActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), "Divisao mais perto: " + closest,
                     Toast.LENGTH_LONG).show();
 
-            //TODO: esta merda encontra-se desactivada por enquanto
+            //TODO: esta merda encontra-se desactivada por enquanto - JA TA ACTIVADA!
             //altera o titulo e redesenha os fragmentos se o user tiver mudado de posicao
             if (!last_position.equalsIgnoreCase(closest)) {
                 last_position = closest;

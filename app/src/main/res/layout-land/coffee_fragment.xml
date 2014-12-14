@@ -6,7 +6,7 @@
     android:fillViewport="true">
 
     <RelativeLayout
-        android:id="@+id/blinds_layout"
+        android:id="@+id/coffe_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/app_margin_background"
@@ -15,7 +15,7 @@
         android:padding="8dp">
 
         <RelativeLayout
-            android:id="@+id/blinds2"
+            android:id="@+id/coffe2"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:background="@color/app_fragment_background">
@@ -26,117 +26,116 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp">
 
-            <RelativeLayout
-                android:id="@+id/relativeLayout"
-                android:layout_width="460dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingRight="50dp"
-                >
-
-                <TextView
-                    android:id="@+id/textViewBlinds"
-                    android:layout_width="match_parent"
+                <RelativeLayout
+                    android:id="@+id/relativeLayout"
+                    android:layout_width="460dp"
                     android:layout_height="wrap_content"
-                    android:text="Tirar café"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:orientation="horizontal"
+                    android:paddingLeft="50dp"
+                    android:paddingRight="50dp">
 
-                <View
+                    <TextView
+                        android:id="@+id/textViewCoffe"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tirar café"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@+id/textViewCoffe"
+                        android:background="@android:color/darker_gray" />
+
+
+                    <RelativeLayout
+                        android:id="@+id/coffe_relative"
+                        android:layout_width="450dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/coffee_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="150dp"
+                            android:layout_marginTop="30dp"
+                            android:text="Agora" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBar1"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/coffee_button"
+                            android:layout_marginLeft="88dp"
+                            android:indeterminate="false"
+                            android:max="100"
+                            android:minHeight="50dp"
+                            android:minWidth="200dp"
+                            android:progress="1"
+                            android:visibility="invisible" />
+
+                        <TextView
+                            android:id="@+id/textView1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignLeft="@+id/progressBar1"
+                            android:layout_below="@+id/progressBar1"
+                            android:visibility="invisible" />
+
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/blind_relative2"
                     android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/textViewBlinds"
-                    android:background="@android:color/darker_gray" />
-
-
-            <RelativeLayout
-                android:id="@+id/blind_relative"
-                android:layout_width="450dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/coffee_button"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="150dp"
-                    android:layout_marginTop="30dp"
-                    android:text="Agora" />
+                    android:orientation="horizontal"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="50dp">
 
-                <ProgressBar
-                    android:id="@+id/progressBar1"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/coffee_button"
-                    android:indeterminate="false"
-                    android:layout_marginLeft="88dp"
-                    android:max="100"
-                    android:minHeight="50dp"
-                    android:minWidth="200dp"
-                    android:progress="1"
-                    android:visibility="invisible" />
+                    <TextView
+                        android:id="@+id/textView42"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="false"
+                        android:layout_centerHorizontal="true"
+                        android:text="Agendar operação"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                <TextView
-                    android:id="@+id/textView1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/progressBar1"
-                    android:layout_below="@+id/progressBar1"
-                    android:visibility="invisible" />
-
-            </RelativeLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/blind_relative2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="50dp"
-                android:paddingRight="50dp">
-
-                <TextView
-                    android:id="@+id/textView42"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="false"
-                    android:layout_centerHorizontal="true"
-                    android:text="Agendar operação"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/textView42"
-                    android:background="@android:color/darker_gray" />
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@id/textView42"
+                        android:background="@android:color/darker_gray" />
 
 
-            <LinearLayout
-                android:id="@+id/blind_relative3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView42"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:orientation="horizontal"
-                android:layout_centerInParent="true">
+                    <LinearLayout
+                        android:id="@+id/blind_relative3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView42"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="30dp"
+                        android:orientation="horizontal">
 
-                <ToggleButton
-                    android:id="@+id/coffee_toggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="30dp"/>
+                        <ToggleButton
+                            android:id="@+id/coffee_toggle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="30dp" />
 
-                <TimePicker
-                    android:id="@+id/coffee_picker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            </RelativeLayout>
+                        <TimePicker
+                            android:id="@+id/coffee_picker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
 
         </RelativeLayout>

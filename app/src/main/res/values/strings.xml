@@ -36,7 +36,7 @@
     <string name="living_room">Sala de Estar</string>
     <string name="bedroom">Quarto</string>
     <string name="choose_room">Mudar de divisão...</string>
-    <string name="settings_str">Definições</string>
+    <string name="refresh_fragment_str">Actualizar fragmento</string>
     <string name="help_str">Ajuda</string>
     <string name="about_str">Acerca</string>
     <string name="reconnect_str">Ligar ao servidor</string>
