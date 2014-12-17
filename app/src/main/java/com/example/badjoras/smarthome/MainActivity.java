@@ -984,7 +984,7 @@ public class MainActivity extends FragmentActivity {
                 last_position = closest;
                 setTitle(closest);
 
-                performActionsOnRoomChange(previous_temp);
+                //performActionsOnRoomChange(previous_temp);
                 refreshTabs();
             }
         }
