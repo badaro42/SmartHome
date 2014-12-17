@@ -32,6 +32,8 @@ import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.example.badjoras.control.Home;
+import com.example.badjoras.control.Light;
+import com.example.badjoras.control.Room;
 import com.example.badjoras.control.Server;
 
 import java.io.EOFException;
@@ -603,6 +605,22 @@ public class MainActivity extends FragmentActivity {
         canRedrawFrags = false;
     }
 
+    //realiza certas acções quando o utilizador sai duma divisao e entra noutra
+    //de momento, apenas apaga a luz da divisao anterior a acende (a 50%) a da nova
+    //TODO: verificar se é o ultimo utilizador na divisao antes de apagar
+    public void performActionsOnRoomChange(String previous_room) {
+        Room prev_room = (Room) house.getMap().get(previous_room); //divisao anterior
+        Room next_room = (Room) house.getMap().get(last_position); //nova divisao
+        Light prev_light = (Light) prev_room.getMap().get(LIGHTS);
+        Light next_light = (Light) next_room.getMap().get(LIGHTS);
+
+        prev_light.changeIntensity(0);
+        next_light.changeIntensity(50);
+
+        sendObjectToServer(house);
+        incrementHouseCounter();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -962,9 +980,11 @@ public class MainActivity extends FragmentActivity {
                 Toast.makeText(getApplicationContext(), "Divisão mais perto: " + closest,
                         Toast.LENGTH_LONG).show();
 
+                String previous_temp = last_position;
                 last_position = closest;
                 setTitle(closest);
 
+                performActionsOnRoomChange(previous_temp);
                 refreshTabs();
             }
         }

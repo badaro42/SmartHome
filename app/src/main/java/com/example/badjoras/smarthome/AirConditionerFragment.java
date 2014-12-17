@@ -81,10 +81,8 @@ public class AirConditionerFragment extends Fragment {
         text_to_show = (TextView) rootView.findViewById(R.id.display_curr_temp_air_cond);
         control = (Switch) rootView.findViewById(R.id.switchAC);
 
-        //TODO alterar para o valor que recebemos do servidor
         sb.setProgress(ac.getTemperature()-SEEKBAR_DESIRED_MIN);
         text_to_show.setText(String.valueOf(ac.getTemperature()) + " ºC");
-//        sb.setProgress(SEEKBAR_DEFAULT_PROGRESS - SEEKBAR_DESIRED_MIN);
 
         hot.setBackground(getResources().getDrawable(R.drawable.new_button));
         cold.setBackground(getResources().getDrawable(R.drawable.new_button));
@@ -96,8 +94,8 @@ public class AirConditionerFragment extends Fragment {
         if(!ischecked)
             sb.setEnabled(false);
 
-//        hot.setEnabled(true);
-//        cold.setEnabled(true);
+        //TODO: CORRIGIR O VALOR INICIAL DO BOTAO DE TOGGLE
+        control.setEnabled(ischecked);
 
         //está seleccionado o modo QUENTE
         if(ac.getMode().equals(HOT)) {
